@@ -4,7 +4,7 @@
 (require test-engine/racket-tests)
 
 
-(define board (bitmap "imgs/board.png"))
+(define board (scale .8 (bitmap "imgs/board.png")))
 (define titlescrn (bitmap "imgs/titlescreen.jpg"))
 
 ;System struct (Holds a list of players and keeps tracks of whose turn it is)
@@ -53,7 +53,6 @@
    
    (above
     (text "How many players will be joining us?" 48 "white")
-    (button "2 players" 500 100 "red")
     (button "3 players" 500 100 "red")
     (button "4 players" 500 100 "red")
     (button "5 players" 500 100 "red")
@@ -68,7 +67,9 @@
   (cond [(equal? (system-screen model) "splash")
          splash]
         [(equal? (system-screen model) "playerscrn")
-         playerscrn]))
+         playerscrn]
+        [(equal? (system-screen model) "gameplay")
+         board        ]))
 
 
 (define (mouse-handler model x y event)
@@ -79,24 +80,83 @@
                              [screen "playerscrn"])]
                [else model])]
         [(equal? (system-screen model) "playerscrn")
-         (cond [(and
-                 (< x 750)
-                 (> x 250))
+         (cond [(equal? event "button-down")
+                
                 (cond [(and
-                        (<= x 624)
-                        (> x 524))
-                       (struct-copy system model
-                                    [playerlist '((make-player (list) (list) (army-count 3) "alive")
-                                                  (make-player (list) (list) (army-count 3) "alive")
-                                                  (make-player (list) (list) (army-count 3) "alive"))])])]
-               [else model])]))
-        
-        
-        (big-bang (make-system 
-                   ;Will be changed later
-                   (list)
-                   0
-                   "init-place"
-                   "splash")
-                  (to-draw render)
-                  (on-mouse mouse-handler))
+                        (< x 750)
+                        (> x 250))
+                       (cond [(and
+                               (<= y 274)
+                               (> y 174))
+                              (struct-copy system model
+                                           [playerlist '((make-player (list) (list) (army-count 3) "alive")
+                                                         (make-player (list) (list) (army-count 3) "alive")
+                                                         (make-player (list) (list) (army-count 3) "alive")
+                                                         )
+                                                       ]
+                                           [screen "gameplay"]
+                                           )
+                              ]
+                             [(and
+                               (<= y 374)
+                               (> y 274))
+                              (struct-copy system model
+                                           [playerlist '((make-player (list) (list) (army-count 4) "alive")
+                                                         (make-player (list) (list) (army-count 4) "alive")
+                                                         (make-player (list) (list) (army-count 4) "alive")
+                                                         (make-player (list) (list) (army-count 4) "alive")
+                                                         )
+                                                       ]
+                                           [screen "gameplay"]
+                                           )
+                              ]
+                             [(and
+                               (<= y 474)
+                               (> y 374))
+                              (struct-copy system model
+                                           [playerlist '((make-player (list) (list) (army-count 5) "alive")
+                                                         (make-player (list) (list) (army-count 5) "alive")
+                                                         (make-player (list) (list) (army-count 5) "alive")
+                                                         (make-player (list) (list) (army-count 5) "alive")
+                                                         (make-player (list) (list) (army-count 5) "alive")
+                                                         )
+                                                       ]
+                                           [screen "gameplay"]
+                                           )
+                              ]
+                             [(and
+                               (<= y 574)
+                               (> y 474))
+                              (struct-copy system model
+                                           [playerlist '((make-player (list) (list) (army-count 6) "alive")
+                                                         (make-player (list) (list) (army-count 6) "alive")
+                                                         (make-player (list) (list) (army-count 6) "alive")
+                                                         (make-player (list) (list) (army-count 6) "alive")
+                                                         (make-player (list) (list) (army-count 6) "alive")
+                                                         (make-player (list) (list) (army-count 6) "alive")
+                                                         )
+                                                       ]
+                                           [screen "gameplay"]
+                                           )
+                              ]
+                             [else model]
+                             )
+                       ]
+                      [else model]
+                      )
+                ] [else model]
+               )]
+        [(equal? (system-screen model) "gameplay") model]
+         
+         [else model]))
+
+
+
+(big-bang (make-system 
+           ;Will be changed later
+           (list)
+           0
+           "init-place"
+           "splash")
+          (to-draw render 1250 1200)
+          (on-mouse mouse-handler))
