@@ -1,0 +1,13 @@
+Current Version: 0.2
+BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1
+- Established "src" and "img" libraries to optimize project efficiency and prevent corruption errors
+- Defined structs for early gameplay
+- Initialized Draw and Mouse handlers for early gameplay
+
+Version 0.2 (5/11/15)
+- Created Title Screen and enabled Player Selection
+- Fixed window size bugs
+- Added Game Board source image to Draw handler
+- "system" struct/model now incorporates "player" struct
