@@ -38,6 +38,22 @@ Images in the "imgs" library will be utilized with the bitmap function provided 
 (bitmap [String path])
 - These images will be defined as global variables in the source code that they are used in.
 
+*** INSTALL ***
+Project is using BitBucket repository: https://TheHeroOfTimez@bitbucket.org/TheHeroOfTimez/risk.git
+In order to acquire access to this repository, clients must have appropriate Git credentials that have been approved by the repository owner.
+Game files can be downloaded into any folder named "Risk" with any path, but to be updated remotely, they must have Git initialized in said folder.
 
+*** AUTHORS ***
+Joshua Sanchez & Patrick "Patty G" Gallagher
 
+*** PROJECT MANAGEMENT FEATURES ***
+Bugs should be reported at the following URL: https://bitbucket.org/TheHeroOfTimez/risk/issues?status=new&status=open
+Wiki can be found at https://bitbucket.org/TheHeroOfTimez/risk/wiki/Home.
+
+*** CONTACT ***
+Josh Sanchez 
+- E-mail: joshuaesanch@gmail.com
+- Phone Number: +1(773)499-5535
+
+Patty G: pghahaha@gmail.com 
 
