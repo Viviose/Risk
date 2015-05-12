@@ -4,12 +4,12 @@
 (require test-engine/racket-tests)
 
 
-(define board (scale .8 (bitmap "imgs/board.png")))
+(define board (scale .6 (bitmap "imgs/board.png")))
 (define titlescrn (bitmap "imgs/titlescreen.jpg"))
 
 ;System struct (Holds a list of players and keeps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen)
+(define-struct system (playerlist player-turn turn-stage screen dicelist)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -21,6 +21,7 @@
 ;[Card]: String (unit name) String (territory value)
 (define-struct card (unit territory)
   #:transparent)
+(define-struct dice (number type))
 
 
 ;The number of armies per player
@@ -58,7 +59,87 @@
     (button "5 players" 500 100 "red")
     (button "6 players" 500 100 "red"))
    (rectangle 1000 700 "solid" "green")))
+;HUD HELPERS
+(define (dice-face number type)
+  (overlay
+   
+   (cond [(equal? number 1)
+          (circle 10 "solid" "white")]
+         [(equal? number 2)
+          (beside
+           (circle 10 "solid" "white")
+           (circle 10 "solid" "white"))]
+         [(equal? number 3)
+          (above
+           (circle 10 "solid" "white")
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white")))
+          ]
+         [(equal? number 4)
+          (above
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white"))
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white")))
+          ]
+         [(equal? number 5)
+          (above 
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white"))
+           (circle 10 "solid" "white")
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white")))
+          ]
+         [(equal? number 6)
+          (above
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white"))
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white"))
+           (beside
+            (circle 10 "solid" "white")
+            (circle 10 "solid" "white")))])
+   (square 80 "solid" (cond [(equal? type "attack")
+                             "red"]
+                            [(equal? type "defend")
+                             "black"]))))
+          
+(define (playercolor model)
+  (cond [(equal? (system-player-turn model) 0)
+         "red"]
+        [(equal? (system-player-turn model) 1)
+         "yellow"]
+        [(equal? (system-player-turn model) 2)
+         "blue"]
+        [(equal? (system-player-turn model) 3)
+         "green"]
+        [(equal? (system-player-turn model) 4)
+         "purple"]
+        [(equal? (system-player-turn model) 5)
+         "brown"]))
 
+(define (die-bar leest)
+  (cond [(empty? leest) (square 0 "outline" "white")]
+        [else (beside (dice-face (dice-number(first leest)) (dice-type (first leest)))
+              (die-bar (rest leest)))]))
+  
+
+(define (toolbar model)
+  (beside
+   (square 80 "solid" (playercolor model))
+   (overlay
+    (text "Roll" 16 "black")
+    (square 80 "solid" "green"))
+   (die-bar (system-dicelist model))
+   ))
+   
 ;HANDLERS
 (define (render model)
   ;Render is the draw handler. It interprets various elements of the model, such as the screen the player
@@ -69,7 +150,9 @@
         [(equal? (system-screen model) "playerscrn")
          playerscrn]
         [(equal? (system-screen model) "gameplay")
-         board        ]))
+         (above
+          board
+          (toolbar model))]))
 
 
 (define (mouse-handler model x y event)
@@ -157,6 +240,8 @@
            (list)
            0
            "init-place"
-           "splash")
+           "splash"
+           (list (make-dice 1 "attack")
+                 (make-dice 2 "defend")))
           (to-draw render 1250 1200)
           (on-mouse mouse-handler))
