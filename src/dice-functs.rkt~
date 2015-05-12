@@ -1,0 +1,11 @@
+#lang racket
+(require picturing-programs)
+(require test-engine/racket-tests)
+
+;Dice functions to be called when dice are rolled in-game
+
+;roll-die: anything -> die
+;Rolls a die that returns a value 1-6. The input doesn't matter.
+(define (roll-die null)
+  (random 6)
+  )
