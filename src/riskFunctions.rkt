@@ -9,7 +9,7 @@
 
 ;System struct (Holds a list of players and keeps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected debug x y)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -60,57 +60,70 @@
     (button "6 players" 500 100 "red"))
    (rectangle 1000 700 "solid" "green")))
 ;HUD HELPERS
+(define dicecircle (circle 10 "solid" "white"))
 (define (dice-face number type)
-  (overlay
-   
-   (cond [(equal? number 1)
-          (circle 10 "solid" "white")]
-         [(equal? number 2)
-          (beside
-           (circle 10 "solid" "white")
-           (circle 10 "solid" "white"))]
-         [(equal? number 3)
-          (above
-           (circle 10 "solid" "white")
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white")))
-          ]
-         [(equal? number 4)
-          (above
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white"))
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white")))
-          ]
-         [(equal? number 5)
-          (above 
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white"))
-           (circle 10 "solid" "white")
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white")))
-          ]
-         [(equal? number 6)
-          (above
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white"))
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white"))
-           (beside
-            (circle 10 "solid" "white")
-            (circle 10 "solid" "white")))])
-   (square 80 "solid" (cond [(equal? type "attack")
-                             "red"]
-                            [(equal? type "defend")
-                             "black"]))))
-          
+  (cond [(equal? number 1)
+         (overlay
+          dicecircle
+          (square 75 "solid" (cond [(equal? type "attack")
+                                    "red"]
+                                   [(equal? type "defend")
+                                    "black"])))]
+        [(equal? number 2)
+         (overlay/align "right" "top"
+                        dicecircle
+                        (overlay/align "left" "bottom"
+                                       dicecircle
+                                       (square 75 "solid" (cond [(equal? type "attack")
+                                                                 "red"]
+                                                                [(equal? type "defend")
+                                                                 "black"]))))]
+        [(equal? number 3)
+         (overlay
+          dicecircle
+          (overlay/align "right" "top"
+                         dicecircle
+                         (overlay/align "left" "bottom"
+                                        dicecircle
+                                        (square 75 "solid" (cond [(equal? type "attack")
+                                                                  "red"]
+                                                                 [(equal? type "defend")
+                                                                  "black"])))))]
+        [(equal? number 4)
+         (overlay/align "right" "top"
+                        dicecircle
+                        (overlay/align "right" "bottom"
+                                       dicecircle
+                                       (overlay/align "left" "top"
+                                                      dicecircle
+                                                      (overlay/align "left" "bottom"
+                                                                     dicecircle
+                                                                     (overlay/align "left" "bottom"
+                                                                                    dicecircle
+                                                                                    (square 75 "solid" (cond [(equal? type "attack")
+                                                                                                              "red"]
+                                                                                                             [(equal? type "defend")
+                                                                                                              "black"])))))))]
+        [(equal? number 5)
+         (overlay/align "right" "top"
+                        dicecircle
+                        (overlay/align "right" "bottom"
+                                       dicecircle
+                                       (overlay/align "left" "top"
+                                                      dicecircle
+                                                      (overlay/align "left" "bottom"
+                                                                     dicecircle
+                                                                     (overlay
+                                                                      dicecircle
+                                                                      (overlay/align "left" "bottom"
+                                                                                     dicecircle
+                                                                                     (square 75 "solid" (cond [(equal? type "attack")
+                                                                                                               "red"]
+                                                                                                              [(equal? type "defend")
+                                                                                                               "black"]))))))))]
+        
+        ))
+
 (define (playercolor model)
   (cond [(equal? (system-player-turn model) 0)
          "red"]
@@ -128,18 +141,20 @@
 (define (die-bar leest)
   (cond [(empty? leest) (square 0 "outline" "white")]
         [else (beside (dice-face (dice-number(first leest)) (dice-type (first leest)))
-              (die-bar (rest leest)))]))
-  
+                      (die-bar (rest leest)))]))
+
 
 (define (toolbar model)
   (beside
-   (square 80 "solid" (playercolor model))
+   (overlay
+   (text (system-debug model) 16 "black")
+   (square 75 "solid" (playercolor model)))
    (overlay
     (text "Roll" 16 "black")
-    (square 80 "solid" "green"))
+    (square 75 "solid" "green"))
    (die-bar (system-dicelist model))
    ))
-   
+
 ;HANDLERS
 (define (render model)
   ;Render is the draw handler. It interprets various elements of the model, such as the screen the player
@@ -151,7 +166,17 @@
          playerscrn]
         [(equal? (system-screen model) "gameplay")
          (above
-          board
+          (cond [(not (equal? (system-territory-selected model) "null"))
+                 (place-image (overlay
+                               (text (system-territory-selected model) 16 "black")
+                               (rectangle 100 50 "solid" "white"))
+                              (system-x model) (system-y model)
+                              
+                              board)]
+                [else board])
+                              
+                       
+           
           (toolbar model))]))
 
 
@@ -228,12 +253,38 @@
                       [else model]
                       )
                 ] [else model]
-               )]
-        [(equal? (system-screen model) "gameplay") model]
-         
-         [else model]))
+                  )]
+        [(equal? (system-screen model) "gameplay")
+         (cond [
+                 (not
+                  (equal? event "button-down"))
+                 (cond [(< (distance x y 119 134) 10)
+                        (struct-copy
+                         system model
+                         [territory-selected "Alaska"]
+                         [x x]
+                         [y y])]
+                       [else 
+                        (struct-copy
+                         system model
+                         [territory-selected "null"])])])
+                                                       
+                         
+        ; (struct-copy
+         ; system model
+         ; [debug (string-append (number->string x) " " (number->string y))])
+         ]
+        
+        [else model]))
 
-
+(define (distance x y static-x static-y)
+  (sqrt
+   (+
+    (sqr
+     (- static-x x))
+    (sqr
+     (- static-y y)))))
+      
 
 (big-bang (make-system 
            ;Will be changed later
@@ -242,6 +293,13 @@
            "init-place"
            "splash"
            (list (make-dice 1 "attack")
-                 (make-dice 2 "defend")))
+                 (make-dice 2 "defend")
+                 (make-dice 3 "defend")
+                 (make-dice 4 "attack")
+                 (make-dice 5 "attack"))
+           "null"
+           "0 0"
+           0
+           0)
           (to-draw render 1250 1200)
           (on-mouse mouse-handler))
