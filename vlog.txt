@@ -1,6 +1,12 @@
 Current Version: 0.1.2
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 0.1.4 (5/13/15)
+- Added tooltip foundation and completed tooltip for Alaska territory
+- Added territory-selected parameter to "system" struct for smoother background operations
+- Fixed up dice creation images
+- Completed dice functions for gameplay
+
 Version 0.1.3 (5/12/15)
 - Created basic dice functions for use in-game
 - HUD and Toolbar have now been introduced and are being debugged
