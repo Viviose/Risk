@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 0.1
+Version 0.1.4.1
 
 Project Name: Riskit
 A combination of Risk and Racket, yeah?
@@ -55,5 +55,6 @@ Josh Sanchez
 - E-mail: joshuaesanch@gmail.com
 - Phone Number: +1(773)499-5535
 
-Patty G: pghahaha@gmail.com 
+Patty G
+- E-mail: pghahaha@gmail.com 
 

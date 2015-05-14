@@ -2,6 +2,9 @@
 (require picturing-programs)
 (require test-engine/racket-tests)
 
+;All functions defined in this file can be accessed by other files upon request.
+(provide (all-defined-out))
+
 ;Dice functions to be called when dice are rolled in-game
 
 ;roll-die: anything -> die

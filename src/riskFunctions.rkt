@@ -1,11 +1,12 @@
 #lang racket
 
+(require "dice-functs.rkt")
+(require "graph.rkt")
 (require picturing-programs)
 (require test-engine/racket-tests)
 
-
-(define board (scale .6 (bitmap "imgs/board.png")))
-(define titlescrn (bitmap "imgs/titlescreen.jpg"))
+(define BOARD (scale .6 (bitmap "imgs/board.png")))
+(define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
 
 ;System struct (Holds a list of players and keeps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
@@ -21,7 +22,10 @@
 ;[Card]: String (unit name) String (territory value)
 (define-struct card (unit territory)
   #:transparent)
-(define-struct dice (number type))
+(define-struct dice (number type)
+  ;Transparent instance call was added by Josh Sanch on 5/14/15
+  ;Didn't know if you left it out by mistake or added it, so I left this for you in case you wanted to keep it opaque.
+  #:transparent)
 
 
 ;The number of armies per player
@@ -43,13 +47,13 @@
    (rectangle x 2  "solid" "black")))
 
 
-(define splash
+(define SPLASH
   (overlay
    (text "\n\nClick anywhere to continue" 60 "black")
-   (scale 1.8 titlescrn)
+   (scale 1.8 TITLESCRN)
    )) 
 
-(define playerscrn
+(define PLAYERSCRN
   (overlay
    
    (above
@@ -59,64 +63,66 @@
     (button "5 players" 500 100 "red")
     (button "6 players" 500 100 "red"))
    (rectangle 1000 700 "solid" "green")))
+
 ;HUD HELPERS
-(define dicecircle (circle 10 "solid" "white"))
+(define DICECIRCLE (circle 10 "solid" "white"))
+
 (define (dice-face number type)
   (cond [(equal? number 1)
          (overlay
-          dicecircle
+          DICECIRCLE
           (square 75 "solid" (cond [(equal? type "attack")
                                     "red"]
                                    [(equal? type "defend")
                                     "black"])))]
         [(equal? number 2)
          (overlay/align "right" "top"
-                        dicecircle
+                        DICECIRCLE
                         (overlay/align "left" "bottom"
-                                       dicecircle
+                                       DICECIRCLE
                                        (square 75 "solid" (cond [(equal? type "attack")
                                                                  "red"]
                                                                 [(equal? type "defend")
                                                                  "black"]))))]
         [(equal? number 3)
          (overlay
-          dicecircle
+          DICECIRCLE
           (overlay/align "right" "top"
-                         dicecircle
+                         DICECIRCLE
                          (overlay/align "left" "bottom"
-                                        dicecircle
+                                        DICECIRCLE
                                         (square 75 "solid" (cond [(equal? type "attack")
                                                                   "red"]
                                                                  [(equal? type "defend")
                                                                   "black"])))))]
         [(equal? number 4)
          (overlay/align "right" "top"
-                        dicecircle
+                        DICECIRCLE
                         (overlay/align "right" "bottom"
-                                       dicecircle
+                                       DICECIRCLE
                                        (overlay/align "left" "top"
-                                                      dicecircle
+                                                      DICECIRCLE
                                                       (overlay/align "left" "bottom"
-                                                                     dicecircle
+                                                                     DICECIRCLE
                                                                      (overlay/align "left" "bottom"
-                                                                                    dicecircle
+                                                                                    DICECIRCLE
                                                                                     (square 75 "solid" (cond [(equal? type "attack")
                                                                                                               "red"]
                                                                                                              [(equal? type "defend")
                                                                                                               "black"])))))))]
         [(equal? number 5)
          (overlay/align "right" "top"
-                        dicecircle
+                        DICECIRCLE
                         (overlay/align "right" "bottom"
-                                       dicecircle
+                                       DICECIRCLE
                                        (overlay/align "left" "top"
-                                                      dicecircle
+                                                      DICECIRCLE
                                                       (overlay/align "left" "bottom"
-                                                                     dicecircle
+                                                                     DICECIRCLE
                                                                      (overlay
-                                                                      dicecircle
+                                                                      DICECIRCLE
                                                                       (overlay/align "left" "bottom"
-                                                                                     dicecircle
+                                                                                     DICECIRCLE
                                                                                      (square 75 "solid" (cond [(equal? type "attack")
                                                                                                                "red"]
                                                                                                               [(equal? type "defend")
@@ -161,9 +167,9 @@
   ;should see at a given moment or on a given event
   ;Ex: if the screen element of the model is "splash", the "splash" screen displays.
   (cond [(equal? (system-screen model) "splash")
-         splash]
+         SPLASH]
         [(equal? (system-screen model) "playerscrn")
-         playerscrn]
+         PLAYERSCRN]
         [(equal? (system-screen model) "gameplay")
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
@@ -172,8 +178,8 @@
                                (rectangle 100 50 "solid" "white"))
                               (system-x model) (system-y model)
                               
-                              board)]
-                [else board])
+                              BOARD)]
+                [else BOARD])
                               
                        
            
@@ -276,16 +282,7 @@
          ]
         
         [else model]))
-
-(define (distance x y static-x static-y)
-  (sqrt
-   (+
-    (sqr
-     (- static-x x))
-    (sqr
-     (- static-y y)))))
       
-
 (big-bang (make-system 
            ;Will be changed later
            (list)

@@ -1,5 +1,11 @@
-Current Version: 0.1.2
+Current Version: 0.1.4.1
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.4.1 (5/14/15)
+- Added transparent instance call in "dice" struct to improve background work
+- Changed all global variable instances from lower-case to upper-case in riskFunctions.rkt to make source code more coder-friendly.
+- Moved all mathematical functions used for animation purposes (i.e. Mouse-Coordinate:Coordinate comparison, changes in mouse-speed, etc.) to a new
+  source file, graph.rkt
 
 Version 0.1.4 (5/13/15)
 - Added tooltip foundation and completed tooltip for Alaska territory
