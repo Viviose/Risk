@@ -68,13 +68,14 @@
    (rectangle 1000 700 "solid" "green")))
 
 ;HUD HELPERS
-;Dots of the die
+;White dots used to create the faces of dice.
 (define DICECIRCLE (circle 10 "solid" "white"))
 
 ;This produces a dice face dependent on the number rolled and red/black based on the type of dice rolled
-;Number (roll) String (attack/defend) -> Image (dice)
+;Number(roll) String(attack/defend) -> Image(dice)
 (define (dice-face number type)
   (cond [(equal? number 1)
+         ;When the number to be represented by the die is 1
          (overlay
           DICECIRCLE
           (square 75 "solid" (cond [(equal? type "attack")
@@ -82,6 +83,7 @@
                                    [(equal? type "defend")
                                     "black"])))]
         [(equal? number 2)
+         ;When the number to be represented by the die is 2
          (overlay/align "right" "top"
                         DICECIRCLE
                         (overlay/align "left" "bottom"
@@ -91,6 +93,7 @@
                                                                 [(equal? type "defend")
                                                                  "black"]))))]
         [(equal? number 3)
+         ;When the number to be represented by the die is 3
          (overlay
           DICECIRCLE
           (overlay/align "right" "top"
@@ -102,6 +105,7 @@
                                                                  [(equal? type "defend")
                                                                   "black"])))))]
         [(equal? number 4)
+         ;When the number to be represented by the die is 4
          (overlay/align "right" "top"
                         DICECIRCLE
                         (overlay/align "right" "bottom"
@@ -117,6 +121,7 @@
                                                                                                              [(equal? type "defend")
                                                                                                               "black"])))))))]
         [(equal? number 5)
+         ;When the number to be represented by the die is 5
          (overlay/align "right" "top"
                         DICECIRCLE
                         (overlay/align "right" "bottom"
@@ -133,8 +138,40 @@
                                                                                                                "red"]
                                                                                                               [(equal? type "defend")
                                                                                                                "black"]))))))))]
-        
-        ))
+        [(equal? number 6)
+         ;When the number to be represented by the die is 6
+         (overlay/align "right" "top"
+                        DICECIRCLE
+                        ;Top-right dot
+                        (overlay/align "right" "middle"
+                                       DICECIRCLE
+                                       ;Middle-right dot
+                                       (overlay/align "right" "bottom"
+                                                      DICECIRCLE
+                                                      ;Bottom-right dot
+                                                      (overlay/align "left" "top"
+                                                                     DICECIRCLE
+                                                                     ;Top-left dot
+                                                                     (overlay/align "left" "middle"
+                                                                                    DICECIRCLE
+                                                                                    ;Middle-left dot
+                                                                                    (overlay/align "left" "bottom"
+                                                                                                   DICECIRCLE
+                                                                                                   ;Bottom-left dot
+                                                                                                   (square 75 "solid" (cond [(equal? type "attack")
+                                                                                                                             "red"]
+                                                                                                                            [(equal? type "defend")
+                                                                                                                             "black"]
+                                                                                                                            )
+                                                                                                           )
+                                                                                                   )
+                                                                                    )
+                                                                     )
+                                                      )
+                                       )
+                        )]
+        )
+  )
 
 ;This assigns a designated color to each player, and is used to custom color player objects like army markers.
 ;THIS SHOULD BE CHANGED TO BE DEPENDENT ON THE NUMBER, NOT THE MODEL, MY B. IT WILL BE A PROBLEM LATER ON.

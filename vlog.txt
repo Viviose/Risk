@@ -1,6 +1,12 @@
 Current Version: 0.1.4.1
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 0.1.5 (5/15/15)
+- Added tooltip compatablility to more territories
+- Added in a method for constructing a die with a value of 1-6, compared to previous methods only creating die of values 1-5
+- Added in structure for dynamic tooltip system
+- Made source code more coder-friendly with additional comments and some improvements to spacing and indentation
+
 Version 0.1.4.1 (5/14/15)
 - Added transparent instance call in "dice" struct to improve background work
 - Changed all global variable instances from lower-case to upper-case in riskFunctions.rkt to make source code more coder-friendly.
