@@ -39,6 +39,8 @@
 
 ;SCREEN SECTION: Make screens here
 
+;This makes a button with given parameters.
+;String (button text) Number (x pos) Number (y pos) String (color) -> Image (button)
 (define (button string x y color)
   (above
    (overlay
@@ -46,13 +48,14 @@
     (rectangle x y "solid" color))
    (rectangle x 2  "solid" "black")))
 
-
+;The splash banner
 (define SPLASH
   (overlay
    (text "\n\nClick anywhere to continue" 60 "black")
    (scale 1.8 TITLESCRN)
    )) 
 
+;The player selection screen with player buttons
 (define PLAYERSCRN
   (overlay
    
@@ -65,8 +68,11 @@
    (rectangle 1000 700 "solid" "green")))
 
 ;HUD HELPERS
+;Dots of the die
 (define DICECIRCLE (circle 10 "solid" "white"))
 
+;This produces a dice face dependent on the number rolled and red/black based on the type of dice rolled
+;Number (roll) String (attack/defend) -> Image (dice)
 (define (dice-face number type)
   (cond [(equal? number 1)
          (overlay
@@ -130,6 +136,9 @@
         
         ))
 
+;This assigns a designated color to each player, and is used to custom color player objects like army markers.
+;THIS SHOULD BE CHANGED TO BE DEPENDENT ON THE NUMBER, NOT THE MODEL, MY B. IT WILL BE A PROBLEM LATER ON.
+;System (the model which contains the player turn) -> String (color)
 (define (playercolor model)
   (cond [(equal? (system-player-turn model) 0)
          "red"]
@@ -144,12 +153,15 @@
         [(equal? (system-player-turn model) 5)
          "brown"]))
 
+;This shows a variable number of die on the bar.
+;Dicelist (dice structs) -> Image (die)
 (define (die-bar leest)
   (cond [(empty? leest) (square 0 "outline" "white")]
         [else (beside (dice-face (dice-number(first leest)) (dice-type (first leest)))
                       (die-bar (rest leest)))]))
 
-
+;This shows the toolbar on the bottom of the HUD.
+;System (model, used to grab info) -> Image (toolbar)
 (define (toolbar model)
   (beside
    (overlay
@@ -167,10 +179,13 @@
   ;should see at a given moment or on a given event
   ;Ex: if the screen element of the model is "splash", the "splash" screen displays.
   (cond [(equal? (system-screen model) "splash")
+         ;This is the first thing the player sees, purely asthetic.
          SPLASH]
         [(equal? (system-screen model) "playerscrn")
+         ;This screen chooses the amount of players.
          PLAYERSCRN]
         [(equal? (system-screen model) "gameplay")
+         ;This screen is where the board and toolbar are located, and is the main screen of the game.
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
                  (place-image (overlay
@@ -194,6 +209,8 @@
                              [screen "playerscrn"])]
                [else model])]
         [(equal? (system-screen model) "playerscrn")
+         ;This function checks for how many players the user selects. It is dependent on an x and y coord, along with the
+         ;button-down event.
          (cond [(equal? event "button-down")
                 
                 (cond [(and
@@ -261,6 +278,8 @@
                 ] [else model]
                   )]
         [(equal? (system-screen model) "gameplay")
+         ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
+         ;model, so render knows what and where to draw in the tooltip.
          (cond [
                  (not
                   (equal? event "button-down"))
