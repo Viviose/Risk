@@ -189,8 +189,10 @@
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
                  (place-image (overlay
-                               (text (system-territory-selected model) 16 "black")
-                               (rectangle 100 50 "solid" "white"))
+                               (above
+                                (text (system-territory-selected model) 16 "black")
+                                (text "Player who owns" 12 "black"))
+                               (rectangle 100 50 "solid" "orange"))
                               (system-x model) (system-y model)
                               
                               BOARD)]
@@ -280,28 +282,82 @@
         [(equal? (system-screen model) "gameplay")
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
+        
          (cond [
-                 (not
-                  (equal? event "button-down"))
-                 (cond [(< (distance x y 119 134) 10)
+                (not
+                 (equal? event "button-down"))
+                (tooltip x y model)
+                ])
+                                                       
+         ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
+         ;(struct-copy
+         ; system model
+          ;[debug (string-append (number->string x) " " (number->string y))])
+         ]
+        
+        [else model]))
+      
+(define (tooltip x y model)
+  (cond [(< (distance x y 119 134) 10)
                         (struct-copy
                          system model
                          [territory-selected "Alaska"]
                          [x x]
                          [y y])]
+        [(< (distance x y 232 136) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Northwest Territory"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 467 95) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Greenland"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 384 216) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Quebec"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 297 218) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Ontario"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 228 198) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Alberta"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 229 297) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Western US"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 315 315) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Eastern US"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 224 372) 20)
+                        (struct-copy
+                         system model
+                         [territory-selected "Central US"]
+                         [x x]
+                         [y y])]
+        
                        [else 
                         (struct-copy
                          system model
-                         [territory-selected "null"])])])
-                                                       
-                         
-        ; (struct-copy
-         ; system model
-         ; [debug (string-append (number->string x) " " (number->string y))])
-         ]
-        
-        [else model]))
-      
+                         [territory-selected "null"])]))
+
 (big-bang (make-system 
            ;Will be changed later
            (list)
