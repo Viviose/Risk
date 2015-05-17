@@ -1,6 +1,12 @@
 Current Version: 0.1.4.1
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 0.1.5.1 (5/16/15)
+- Moved dice struct to dice-functs.rkt, and renamed the struct with id of "die".
+- Changed provisions of dice-functs.rkt to only provide dice functions and die struct, omitting check-expects for faster operations.
+- Added in comments to show provisions of dice-functs.rkt to coders for efficient reference.
+- Abstracted some dice functions for added versatility and good programming ethics.
+
 Version 0.1.5 (5/15/15)
 - Added tooltip compatablility to more territories
 - Added in a method for constructing a die with a value of 1-6, compared to previous methods only creating die of values 1-5

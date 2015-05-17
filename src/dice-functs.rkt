@@ -1,9 +1,20 @@
+;HEADER
 #lang racket
 (require picturing-programs)
 (require test-engine/racket-tests)
 
-;All functions defined in this file can be accessed by other files upon request.
-(provide (all-defined-out))
+;All functions defined in this file and provided here can be accessed by other files upon request.
+(provide roll-die roll-dice find-sup-inf remove-max-min sort-rolls)
+
+;Dice struct is provided to other files here
+(provide (struct-out die))
+
+;__________________________________________________________________________________________________________________
+
+(define-struct die (number type)
+  ;Transparent instance call was added by Josh Sanch on 5/14/15
+  ;Didn't know if you left it out by mistake or planned on adding it later, so I left this comment for you in case you wanted to keep it opaque.
+  #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
 
@@ -30,7 +41,7 @@
         )
   )
 
-;find-sup-inf: function(comparison operator) number [Listof Numbers] -> [Listof Numbers]
+;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
 ;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
 (define (find-sup-inf operator value lon)
   (cond [(empty? lon) value]
@@ -48,27 +59,27 @@
 (check-expect (find-sup-inf > 6 '())
               6)
 
-;remove-greatest: [Listof Numbers] -> [Listof Numbers]
-;Returns the given list without the first instance of its greatest character included.
-(define (remove-greatest lon)
+;remove-max-min: function(comparison operator) [Listof Numbers] -> [Listof Numbers]
+;Returns the given list without the first instance of its greatest or least character included.
+(define (remove-max-min operator lon)
   (cond [(empty? lon) '()]
         [(equal? (first lon)
-                 (find-sup-inf > 0 lon)
+                 (find-sup-inf operator 0 lon)
                  )
          (rest lon)]
         [else (cons (first lon)
-                    (remove-greatest (rest lon))
+                    (remove-max-min operator (rest lon))
                     )]
         )
   )
 
-(check-expect (remove-greatest (list 2 3 4))
+(check-expect (remove-max-min > (list 2 3 4))
               (list 2 3)
               )
-(check-expect (remove-greatest (list 6 2 1))
+(check-expect (remove-max-min > (list 6 2 1))
               (list 2 1)
               )
-(check-expect (remove-greatest (list 2 3 5 5))
+(check-expect (remove-max-min > (list 2 3 5 5))
               (list 2 3 5)
               )
 
@@ -78,7 +89,7 @@
 (define (sort-rolls lon)
   (cond [(empty? lon) '()]
         [else (cons (find-sup-inf > 0 lon)
-                    (sort-rolls (remove-greatest lon))
+                    (sort-rolls (remove-max-min > lon))
                     )]
         )
   )

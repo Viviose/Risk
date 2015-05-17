@@ -1,6 +1,37 @@
 #lang racket
 
 (require "dice-functs.rkt")
+#|
+Provided by dice-functs.rkt:
+
+**Functions**
+- roll-die: anything -> number
+    - Returns a random value between 1-6. Used to simulate the rolling of a die.
+    - Is a dependency all further dice functions.
+- roll-dice: number(armies defending/attacking) -> [Listof Numbers]
+    - Creates a list of numbers that contains a value for each of the dice rolled. Must take in an armies value of 1, 2, or 3.
+    - The list created by this dice-roll simulates a roll of between 1-3 dice by a player.
+    - Is used in practice as the input to the dice function sort-rolls.\
+    - Dependent of roll-die function.
+- sort-rolls: [Listof Numbers] -> [Listof Numbers]
+    - Sorts a list of numbers from greatest to least.
+    - Input should be roll-dice function.
+    - Dependency on remove-max-min function and find-sup-inf function.
+- remove-max-min: Function(operator) [Listof Numbers] -> [Listof Numbers]
+    - Takes in a list of numbers and an operator and returns a list absent of either its least or greatest number, whichever is specified.
+    - Has dependency of find-sup-inf function.
+- find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number 
+    - Takes in a comparison operator, a number in which to compare numbers to, and a list of numbers to be compared to the comparison value.
+    - Returns the greatest or least (depending on the given operator) number in a list, or the comparison value given, whichever is greater/lesser.
+    - No dependencies.
+
+**Structs**
+die: number(die value) string(type of die) -> die
+  - Contains a number that is used for comparison to other die and to display the correct image to users when die are rolled.
+  - Contains a string that is used to specify whether the die is being used by an attacker or defender.
+    - This string is used in dice comparison functions and to display the correct color die in the GUI.
+
+|#
 (require "graph.rkt")
 (require picturing-programs)
 (require test-engine/racket-tests)
@@ -8,7 +39,7 @@
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
 
-;System struct (Holds a list of players and keeps tracks of whose turn it is)
+;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
 (define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected debug x y)
   #:transparent)
@@ -22,11 +53,6 @@
 ;[Card]: String (unit name) String (territory value)
 (define-struct card (unit territory)
   #:transparent)
-(define-struct dice (number type)
-  ;Transparent instance call was added by Josh Sanch on 5/14/15
-  ;Didn't know if you left it out by mistake or added it, so I left this for you in case you wanted to keep it opaque.
-  #:transparent)
-
 
 ;The number of armies per player
 ;Number -> Number
