@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 0.1.4.1
+Version 0.1.5.1 
 
 Project Name: Riskit
 A combination of Risk and Racket, yeah?
@@ -21,22 +21,29 @@ A combination of Risk and Racket, yeah?
 Included libraries are imgs and src.
 - "imgs" library contains all images used in the game.
 - "src" library contains ALL source code used in the game.
+  - "dice-functs.rkt" sub-module contains functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
+      - To require sub-module: (require "dice-functs.rkt")
+  - "graph.rkt" sub-module contains functions that are used for animation purposes such as point comparisons.
+      - To require sub-module: (require "graph.rkt")
 
 To require particular files using the Racket language follows the syntax:
 (require [String path])
 
 To require a library follows the syntax:
-(require [String lib-name])
+(require [identifier lib-name])
 
 To provide functions in Racket uses the syntax:
-(provide [function-name-1 ... function-name-x])
+(provide function-name-1 ... function-name-x)
 
-To provide all functions in a given file uses the syntax:
-(provide all-defined-out)
+To provide a struct in Racket uses the syntax:
+(provide (struct-out struct-id))
+
+To provide all identifiers in a given file uses the syntax:
+(provide (all-defined-out))
 
 Images in the "imgs" library will be utilized with the bitmap function provided by Racket, with the syntax:
 (bitmap [String path])
-- These images will be defined as global variables in the source code that they are used in.
+These images will be defined as global variables in the source code that they are used in.
 
 *** INSTALL ***
 Project is using BitBucket repository: https://TheHeroOfTimez@bitbucket.org/TheHeroOfTimez/risk.git

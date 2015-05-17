@@ -1,4 +1,5 @@
-;HEADER
+;__________________________________________________________________________________________________________________
+
 #lang racket
 (require picturing-programs)
 (require test-engine/racket-tests)
@@ -103,5 +104,17 @@
 (check-expect (sort-rolls (list 1))
               (list 1)
               )
+
+;attack-defend: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
+;Creates a list that contains two lists of attack and defense dice.
+(define (attack-defend attackers defenders)
+  (list (sort-rolls (roll-dice attackers))
+        (sort-rolls (roll-dice defenders))
+        )
+  )
+
+
+
+
 
 (test)

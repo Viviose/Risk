@@ -1,7 +1,10 @@
-#lang racket
+;__________________________________________________________________________________________________________________________________________________
 
+#lang racket
 (require "dice-functs.rkt")
 #|
+A sub-module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
+
 Provided by dice-functs.rkt:
 
 **Functions**
@@ -27,14 +30,32 @@ Provided by dice-functs.rkt:
 
 **Structs**
 die: number(die value) string(type of die) -> die
-  - Contains a number that is used for comparison to other die and to display the correct image to users when die are rolled.
-  - Contains a string that is used to specify whether the die is being used by an attacker or defender.
-    - This string is used in dice comparison functions and to display the correct color die in the GUI.
+    - Contains a number that is used for comparison to other die and to display the correct image to users when die are rolled.
+    - Contains a string that is used to specify whether the die is being used by an attacker or defender.
+        - This string is used in dice comparison functions and to display the correct color die in the GUI.
+|#
+
+(require "graph.rkt")
+#|
+A sub-module which contains functions that are used for animation purposes such as point comparisons.
+
+Provided by graph.rkt:
+**Functions**
+- distance: number(x1) number(y1) number(x2) number(y2) -> number(distance between points)
+    - Returns the distance between two points. Often used in animations to trigger events when the mouse is a certain distance from a point.
+    - No dependencies.
 
 |#
-(require "graph.rkt")
+
 (require picturing-programs)
+;Picturing-Programs library contains all functions necessary for drawing images.
+;All references can be found at this location by default: (file:///C:/Program%20Files/Racket/doc/picturing-programs/index.html)
+;It can also be found by looking up the picturing-programs module at the Racket Help Desk.
+
 (require test-engine/racket-tests)
+;test-engine/racket-tests library contains all functions necessary for testing functions, such as check-expect, test, and check-random.
+
+;__________________________________________________________________________________________________________________________________________________
 
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
@@ -220,7 +241,7 @@ die: number(die value) string(type of die) -> die
 ;Dicelist (dice structs) -> Image (die)
 (define (die-bar leest)
   (cond [(empty? leest) (square 0 "outline" "white")]
-        [else (beside (dice-face (dice-number(first leest)) (dice-type (first leest)))
+        [else (beside (dice-face (die-number (first leest)) (die-type (first leest)))
                       (die-bar (rest leest)))]))
 
 ;This shows the toolbar on the bottom of the HUD.
@@ -427,11 +448,11 @@ die: number(die value) string(type of die) -> die
            0
            "init-place"
            "splash"
-           (list (make-dice 1 "attack")
-                 (make-dice 2 "defend")
-                 (make-dice 3 "defend")
-                 (make-dice 4 "attack")
-                 (make-dice 5 "attack"))
+           (list (make-die (roll-die "die1") "attack")
+                 (make-die (roll-die "die2") "defend")
+                 (make-die (roll-die "die3") "defend")
+                 (make-die (roll-die "die4") "attack")
+                 (make-die (roll-die "die5") "attack"))
            "null"
            "0 0"
            0
