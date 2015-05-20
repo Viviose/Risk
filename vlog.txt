@@ -1,6 +1,13 @@
 Current Version: 0.1.5.2
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 0.1.6 (5/20/15)
+- Added in more dice functions to finalize the role of dice in the game. This should be the last update necessary besides efficiency updates.
+- Added latest provisions of dice-funct.rkt to header, and commented in provisions in riskFunctions.rkt
+- Added GUI element that displays turn stage
+- Added in dice functions to make functions compatable with animations functions in riskFunctions.rkt, utilizing die-struct and lists of such structs
+(Comment provisions still have to be added in, as well as extra additions to (provide) in dice-functs.rkt)
+
 Version 0.1.5.2 (5/17/15)
 - Added in comments to show provisions of all sub-modules and libraries in header of riskFunctions.rkt
 - Updated readme to include latest changes
