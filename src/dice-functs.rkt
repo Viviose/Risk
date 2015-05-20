@@ -113,8 +113,11 @@
         )
   )
 
-
-
-
+;tally-deaths: [Listof [Listof Numbers]] -> [Listof Numbers]
+;Takes in a list containing lists of numbers and returns a list of numbers that result from a comparison of the first items in each respective list.
+;The first number in the new list will represent the deaths sustained by attacking players.
+;The second number in the new list will represent the deaths sustained by defending players.
+(define (tally-deaths army-list)
+  ...)
 
 (test)
