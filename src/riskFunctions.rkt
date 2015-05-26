@@ -290,9 +290,24 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
+<<<<<<< HEAD
 #;(define (card-buncher cardleest)
   (cond [(empty? leest) (square 0)]
         [else (beside ())]))
+=======
+(define (card-create card)
+  (overlay
+   (above
+    (text (card-territory card) 16 "black")
+    (text (card-unit card) 16 "black"))
+   (rectangle 100 145 "solid" "white")))
+
+
+;Card-Buncher - Stack images of cards next to each other
+(define (card-buncher cardleest)
+  (cond [(empty? cardleest) (square 0 "solid" "white")]
+        [else (beside (card-create (first cardleest)) (square 4 "solid" (make-color 128 0 0)) (card-buncher (rest cardleest)))])) 
+>>>>>>> 92c2113187f2f3abbce6ae14fb0c97b0c6593d4b
   
 
 ;HANDLERS
@@ -326,7 +341,11 @@ Provided by graph.rkt:
         [(equal? (system-screen model) "cards")
           (overlay
            (overlay/align "right" "top" X
-            (rectangle 700 200 "solid" (make-color 128 0 0)))
+            (overlay
+             (card-buncher 
+              ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
+              (list (make-card "Test Territory" "3")))
+             (rectangle 700 200 "solid" (make-color 128 0 0))))
            (above
             
           (cond [(not (equal? (system-territory-selected model) "null"))
