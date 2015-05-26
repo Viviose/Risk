@@ -20,9 +20,9 @@ Provided by dice-functs.rkt:
     - Sorts a list of numbers from greatest to least.
     - Input should be roll-dice function.
     - Dependency on remove-max-min function and find-sup-inf function.
-- remove-max-min: Function(operator) [Listof Numbers] -> [Listof Numbers]
+- remove-[max-min]: Function(operator) [Listof Numbers] -> [Listof Numbers]
     - Takes in a list of numbers and an operator and returns a list absent of either its least or greatest number, whichever is specified.
-    - Has dependency of find-sup-inf function.
+    - Has dependency of find-sup-inf function. Removes only the largest/smallest.
 - find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number 
     - Takes in a comparison operator, a number in which to compare numbers to, and a list of numbers to be compared to the comparison value.
     - Returns the greatest or least (depending on the given operator) number in a list, or the comparison value given, whichever is greater/lesser.
@@ -249,13 +249,31 @@ Provided by graph.rkt:
 (define (toolbar model)
   (beside
    (overlay
-   (text (system-debug model) 16 "black")
-   (square 75 "solid" (playercolor model)))
+    (text (system-debug model) 16 "black")
+    (square 75 "solid" (playercolor model)
+            )
+    )
    (overlay
     (text "Roll" 16 "black")
     (square 75 "solid" "green"))
-   (die-bar (system-dicelist model))
-   ))
+   (die-bar (system-dicelist model)
+            )
+   (overlay
+    (text (system-turn-stage model) 16 "black")
+                                                      
+    (rectangle 150 75 "solid" (cond [(equal? (system-turn-stage model) "Recruit")
+                                              "blue"]
+                                             [(equal? (system-turn-stage model) "Attack")
+                                              "red"]
+                                             [(equal? (system-turn-stage model) "Fortify")
+                                              "yellow"]
+                                             [else "white"])) 
+   )
+   
+   (overlay
+    (text "Cards" 16 "white")
+    (circle 37.5 "solid" "black"))
+  ))
 
 ;HANDLERS
 (define (render model)
@@ -284,7 +302,22 @@ Provided by graph.rkt:
                               
                        
            
-          (toolbar model))]))
+          (toolbar model))]
+        [(equal? (system-screen model) "cards")
+          (overlay
+           (above
+          (cond [(not (equal? (system-territory-selected model) "null"))
+                 (place-image (overlay
+                               (above
+                                (text (system-territory-selected model) 16 "black")
+                                (text "Player who owns" 12 "black"))
+                               (rectangle 100 50 "solid" "orange"))
+                              (system-x model) (system-y model)
+                              
+                              BOARD)]
+                [else BOARD])
+          (toolbar model))
+           (rectangle 700 200 "solid" "red"))]))
 
 
 (define (mouse-handler model x y event)
@@ -371,13 +404,19 @@ Provided by graph.rkt:
                 (not
                  (equal? event "button-down"))
                 (tooltip x y model)
-                ])
+                ]
+               [else
+                (cond [(< (distance 993 910 x y) 32.5)
+                 (struct-copy
+                  system model
+                  [screen "cards"])]
+                [else model])])]
                                                        
          ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
          ;(struct-copy
-         ; system model
+          ;system model
           ;[debug (string-append (number->string x) " " (number->string y))])
-         ]
+         ;]
         
         [else model]))
       
@@ -446,7 +485,7 @@ Provided by graph.rkt:
            ;Will be changed later
            (list)
            0
-           "init-place"
+           "Recruit"
            "splash"
            (list (make-die (roll-die "die1") "attack")
                  (make-die (roll-die "die2") "defend")

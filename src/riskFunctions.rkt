@@ -75,6 +75,9 @@ Provided by graph.rkt:
 (define-struct card (unit territory)
   #:transparent)
 
+;The 'X' image for closing things
+(define X (scale .5 (bitmap "imgs/close.png")))
+
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)
@@ -275,6 +278,11 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
+(define (card-buncher cardleest)
+  (cond [(empty? leest) (square 0)]
+        [else (beside (
+  
+
 ;HANDLERS
 (define (render model)
   ;Render is the draw handler. It interprets various elements of the model, such as the screen the player
@@ -305,7 +313,10 @@ Provided by graph.rkt:
           (toolbar model))]
         [(equal? (system-screen model) "cards")
           (overlay
+           (overlay/align "right" "top" X
+            (rectangle 700 200 "solid" (make-color 128 0 0)))
            (above
+            
           (cond [(not (equal? (system-territory-selected model) "null"))
                  (place-image (overlay
                                (above
@@ -317,7 +328,7 @@ Provided by graph.rkt:
                               BOARD)]
                 [else BOARD])
           (toolbar model))
-           (rectangle 700 200 "solid" "red"))]))
+           )]))
 
 
 (define (mouse-handler model x y event)
