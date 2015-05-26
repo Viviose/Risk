@@ -290,9 +290,9 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
-(define (card-buncher cardleest)
+#;(define (card-buncher cardleest)
   (cond [(empty? leest) (square 0)]
-        [else (beside (
+        [else (beside ())]))
   
 
 ;HANDLERS
@@ -423,7 +423,7 @@ Provided by graph.rkt:
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
         
-         (cond [
+         #|(cond [
                 (not
                  (equal? event "button-down"))
                 (tooltip x y model)
@@ -434,12 +434,12 @@ Provided by graph.rkt:
                   system model
                   [screen "cards"])]
                 [else model])])]
-                                                       
+           |#                                            
          ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
-         ;(struct-copy
-          ;system model
-          ;[debug (string-append (number->string x) " " (number->string y))])
-         ;]
+         (struct-copy
+          system model
+          [debug (string-append (number->string x) " " (number->string y))])
+         ]
         
         [else model]))
       
