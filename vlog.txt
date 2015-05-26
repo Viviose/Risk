@@ -6,7 +6,6 @@ Version 0.1.6 (5/20/15)
 - Added latest provisions of dice-funct.rkt to header, and commented in provisions in riskFunctions.rkt
 - Added GUI element that displays turn stage
 - Added in dice functions to make functions compatable with animations functions in riskFunctions.rkt, utilizing die-struct and lists of such structs
-(Comment provisions still have to be added in, as well as extra additions to (provide) in dice-functs.rkt)
 
 Version 0.1.5.2 (5/17/15)
 - Added in comments to show provisions of all sub-modules and libraries in header of riskFunctions.rkt

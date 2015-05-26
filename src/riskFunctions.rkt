@@ -20,13 +20,25 @@ Provided by dice-functs.rkt:
     - Sorts a list of numbers from greatest to least.
     - Input should be roll-dice function.
     - Dependency on remove-max-min function and find-sup-inf function.
-- remove-[max-min]: Function(operator) [Listof Numbers] -> [Listof Numbers]
+- remove-max-or-min: Function(operator) [Listof Numbers] -> [Listof Numbers]
     - Takes in a list of numbers and an operator and returns a list absent of either its least or greatest number, whichever is specified.
     - Has dependency of find-sup-inf function. Removes only the largest/smallest.
 - find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number 
     - Takes in a comparison operator, a number in which to compare numbers to, and a list of numbers to be compared to the comparison value.
     - Returns the greatest or least (depending on the given operator) number in a list, or the comparison value given, whichever is greater/lesser.
     - No dependencies.
+- produce-rolls: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
+    - Creates a list that contains two lists of attack and defense dice.
+    - Dependency on sort-rolls function and roll-dice function.
+- tally-deaths: [Listof [Listof Numbers]] -> [Listof Numbers]
+    - Takes in a list containing lists of numbers and returns a list of numbers that result from a comparison of the first items in each respective list.
+    - The first number in the new list will represent the deaths sustained by attacking players.
+    - The second number in the new list will represent the deaths sustained by defending players.
+    - Dependency on unrequired functions found in dice-functs.rkt, tally-deaths-a and tally-deaths-b.
+- create-die-list: [Listof [Listof Numbers]] -> [Listof Die]
+    - Creates a list of die that represent the values of either attacking or defending die and their numerical values.
+    - Has dependency on unrequired functions found in dice-functs.rkt, create-attack-die and create-defense-die
+    - Used to create a list containing dice to be utilized in game functions.
 
 **Structs**
 die: number(die value) string(type of die) -> die
