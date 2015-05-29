@@ -90,6 +90,12 @@ Provided by graph.rkt:
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
+;List of all territories
+(define TERRITORY-LIST (list ;North America
+                             "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
+                             "Ontario" "Quebec" "Western United States")
+  )
+
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)
