@@ -290,11 +290,10 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
-<<<<<<< HEAD
-#;(define (card-buncher cardleest)
+(define (card-buncher cardleest)
   (cond [(empty? leest) (square 0)]
         [else (beside ())]))
-=======
+
 (define (card-create card)
   (overlay
    (above
@@ -306,8 +305,7 @@ Provided by graph.rkt:
 ;Card-Buncher - Stack images of cards next to each other
 (define (card-buncher cardleest)
   (cond [(empty? cardleest) (square 0 "solid" "white")]
-        [else (beside (card-create (first cardleest)) (square 4 "solid" (make-color 128 0 0)) (card-buncher (rest cardleest)))])) 
->>>>>>> 92c2113187f2f3abbce6ae14fb0c97b0c6593d4b
+        [else (beside (card-create (first cardleest)) (square 4 "solid" (make-color 128 0 0)) (card-buncher (rest cardleest)))]))
   
 
 ;HANDLERS
