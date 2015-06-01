@@ -296,10 +296,6 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
-(define (card-buncher cardleest)
-  (cond [(empty? leest) (square 0)]
-        [else (beside ())]))
-
 (define (card-create card)
   (overlay
    (above
@@ -521,6 +517,20 @@ Provided by graph.rkt:
                          [territory-selected "Central US"]
                          [x x]
                          [y y])]
+        [(< (distance x y 318 480) 10)
+                        (struct-copy
+                         system model
+                         [territory-selected "Venezuela"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 417 553) 30)
+                        (struct-copy
+                         system model
+                         [territory-selected "Brazil"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 348 598) 10)
+         "lel.rkt"]
         
                        [else 
                         (struct-copy

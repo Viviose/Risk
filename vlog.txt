@@ -1,5 +1,10 @@
-Current Version: 0.1.5.2
+Current Version: 0.1.8
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.8 (5/27/15)
+- Added more countries to tooltip functions
+- Started working on ellipse-distance function to detect whether the mouse is inside of an ellipse
+- Made progress on completing card GUI
 
 Version 0.1.7 (5/26/15)
 - Added in cards GUI

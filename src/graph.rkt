@@ -5,19 +5,19 @@
 
 ;Provides access to all defined functions and variables in this file to other files.
 ;Currently, this will include the following functions:
-#|
-
-- distance
-
-|#
+#| - distance   |#
 (provide (all-defined-out))
 
 ;distance: number(x1) number(y1) number(x2) number(y2) -> number(distance between coordinates)
 ;Takes in four numbers, which represent the x and y coordinates of two different coordinate pairs, and finds distance
-;  between them.
+;  between them. Works with circles.
 (define (distance x y static-x static-y)
   (sqrt (+ (sqr (- static-x x))
            (sqr (- static-y y))
            )
         )
   )
+
+(define (ellipse-distance x1 y1 x2 y2)
+  ...)
+
