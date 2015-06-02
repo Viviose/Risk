@@ -90,6 +90,12 @@ Provided by graph.rkt:
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
+;List of all territories
+(define TERRITORY-LIST (list ;North America
+                             "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
+                             "Ontario" "Quebec" "Western United States")
+  )
+
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)
@@ -289,6 +295,22 @@ Provided by graph.rkt:
     (text "Cards" 16 "white")
     (circle 37.5 "solid" "black"))
   ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -515,6 +537,20 @@ Provided by graph.rkt:
                          [territory-selected "Central US"]
                          [x x]
                          [y y])]
+        [(< (distance x y 318 480) 10)
+                        (struct-copy
+                         system model
+                         [territory-selected "Venezuela"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 417 553) 30)
+                        (struct-copy
+                         system model
+                         [territory-selected "Brazil"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 348 598) 10)
+         "lel.rkt"]
         
                        [else 
                         (struct-copy
