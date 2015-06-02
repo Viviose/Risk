@@ -1,5 +1,9 @@
-Current Version: 0.1.8
+Current Version: 0.1.8.1
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.8.1 (6/2/15)
+- Created function to determine angle of a right triangle angle
+- Continued ellipse-distance and changed it into boolean-returning in-ellipse?
 
 Version 0.1.8 (5/27/15)
 - Added more countries to tooltip functions
