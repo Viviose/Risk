@@ -21,3 +21,7 @@
            )
         )
   )
+
+;Ellipse distance links
+;http://math.stackexchange.com/questions/76457/check-if-a-point-is-within-an-ellipse
+;http://math.stackexchange.com/questions/108270/what-is-the-equation-of-an-ellipse-that-is-not-aligned-with-the-axis

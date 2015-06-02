@@ -1,1 +1,1 @@
-("6.1" ("a082118c2e18a4441e43329221bf2ceecb65b41f" . "90112f0b79640b7976930e78977b0686ecd370e0") (collects #"racket" #"main.rkt") (collects #"test-engine" #"racket-tests.rkt") (collects #"picturing-programs" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
+("6.1" ("67fd17725fd02ded9daa4fb7c34c89bd54986332" . "90112f0b79640b7976930e78977b0686ecd370e0") (collects #"racket" #"main.rkt") (collects #"test-engine" #"racket-tests.rkt") (collects #"picturing-programs" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
