@@ -44,55 +44,12 @@
 (check-expect (calc-angle 1 0 0 (sqrt 3))
               60)
 
-;in-ellipse?: number(x1) number(y1) number(x2) number(y2) number (rx) number (ry) -> boolean
+;in-ellipse?: number(x1) number(y1) number(x2) number(y2) number(angle-of-skew in degrees) -> boolean
 ;Determines whether 
 ;Mouse is second coordinate pair, static point is first pair.
 ;r-x and r-y are the vertical and horizontal length of the ellipse.
 ;The angle-of-skew is used to calculate points if an ellipse is not aligned within an axis.
-(define (in-ellipse? x1 y1 x2 y2  r-x r-y)
-  (<=
-   (+
-    (/
-     (sqr
-      (-
-       (+
-        (* x1
-           (cos (calc-angle x1 y1 x2 y2)
-                )
-           )
-        (* y1
-           (sin (calc-angle x1 y1 x2 y2)
-                )
-           )
-        )
-       x2
-       )
-      )
-     (sqr r-x)
-     )
-    (/
-     (sqr
-      (-
-       (-
-        (* y1
-           (cos (calc-angle x1 y1 x2 y2)
-                )
-           )
-        (* x1
-           (sin (calc-angle x1 y1 x2 y2)
-                )
-           )
-        )
-       y2
-       )
-      )
-     (sqr r-y)
-     )
-    )
-   1
-   )
-  )
-
-;Check expects are coming for this, it just needs some polishing with IRL math
+#;(define (in-ellipse? x1 y1 x2 y2 angle-of-skew r-x r-y)
+  ...)
 
 (test)

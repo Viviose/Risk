@@ -1,5 +1,10 @@
-Current Version: 0.1.8.1
+Current Version: 0.1.8.2
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.8.2
+- in-ellipse? now has all code written, and is in the testing process
+- Removed redundant angle argument from in-ellipse?, since the existing vars suffice to find the angle with helper functions
+- Polished code for other math functions
 
 Version 0.1.8.1 (6/2/15)
 - Created function to determine angle of a right triangle angle
