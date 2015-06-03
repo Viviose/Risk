@@ -33,7 +33,7 @@
   (real->int (degrees-asin (/ 
                             ;Using a right triangle of sides a, b, and c, finds ratio between length of a and c.
                             ;a  
-                            (distance x2 y2 x2 y1)
+                            (distance x2 y2 x1 y1)
                             ;c
                             (distance x1 y1 x2 y2)
                             )
@@ -49,18 +49,20 @@
 ;Mouse is second coordinate pair, static point is first pair.
 ;r-x and r-y are the vertical and horizontal length of the ellipse.
 ;The angle-of-skew is used to calculate points if an ellipse is not aligned within an axis.
-(define (in-ellipse? x1 y1 x2 y2  r-x r-y)
+
+;NOTE TO SELF: Replace h-k for x2 y2 with the top point of triangle
+(define (in-ellipse? x1 y1 x2 y2 mousex mousey r-x r-y)
   (<=
    (+
     (/
      (sqr
       (-
        (+
-        (* x1
+        (* mousex
            (cos (calc-angle x1 y1 x2 y2)
                 )
            )
-        (* y1
+        (* mousey
            (sin (calc-angle x1 y1 x2 y2)
                 )
            )
@@ -74,11 +76,11 @@
      (sqr
       (-
        (-
-        (* y1
+        (* mousey
            (cos (calc-angle x1 y1 x2 y2)
                 )
            )
-        (* x1
+        (* mousex
            (sin (calc-angle x1 y1 x2 y2)
                 )
            )
