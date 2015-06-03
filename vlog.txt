@@ -1,8 +1,8 @@
 Current Version: 0.1.8.2
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
-Version 0.1.8.2
-- in-ellipse? now has all code written, and is in the testing process
+Version 0.1.8.2 (6/2/15)
+- in-ellipse? now has all code written, test suite is under construction
 - Removed redundant angle argument from in-ellipse?, since the existing vars suffice to find the angle with helper functions
 - Polished code for other math functions
 
