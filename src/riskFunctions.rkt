@@ -20,13 +20,25 @@ Provided by dice-functs.rkt:
     - Sorts a list of numbers from greatest to least.
     - Input should be roll-dice function.
     - Dependency on remove-max-min function and find-sup-inf function.
-- remove-[max-min]: Function(operator) [Listof Numbers] -> [Listof Numbers]
+- remove-max-or-min: Function(operator) [Listof Numbers] -> [Listof Numbers]
     - Takes in a list of numbers and an operator and returns a list absent of either its least or greatest number, whichever is specified.
     - Has dependency of find-sup-inf function. Removes only the largest/smallest.
 - find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number 
     - Takes in a comparison operator, a number in which to compare numbers to, and a list of numbers to be compared to the comparison value.
     - Returns the greatest or least (depending on the given operator) number in a list, or the comparison value given, whichever is greater/lesser.
     - No dependencies.
+- produce-rolls: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
+    - Creates a list that contains two lists of attack and defense dice.
+    - Dependency on sort-rolls function and roll-dice function.
+- tally-deaths: [Listof [Listof Numbers]] -> [Listof Numbers]
+    - Takes in a list containing lists of numbers and returns a list of numbers that result from a comparison of the first items in each respective list.
+    - The first number in the new list will represent the deaths sustained by attacking players.
+    - The second number in the new list will represent the deaths sustained by defending players.
+    - Dependency on unrequired functions found in dice-functs.rkt, tally-deaths-a and tally-deaths-b.
+- create-die-list: [Listof [Listof Numbers]] -> [Listof Die]
+    - Creates a list of die that represent the values of either attacking or defending die and their numerical values.
+    - Has dependency on unrequired functions found in dice-functs.rkt, create-attack-die and create-defense-die
+    - Used to create a list containing dice to be utilized in game functions.
 
 **Structs**
 die: number(die value) string(type of die) -> die
@@ -57,6 +69,12 @@ Provided by graph.rkt:
 
 ;__________________________________________________________________________________________________________________________________________________
 
+;Debug mode variable
+;When set to 0, debug mode will not run on the draw handler in the Risk animation.
+;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
+(define DEBUG 1)
+
+;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
 
@@ -74,6 +92,28 @@ Provided by graph.rkt:
 ;[Card]: String (unit name) String (territory value)
 (define-struct card (unit territory)
   #:transparent)
+
+;The 'X' image for closing things
+(define X (scale .5 (bitmap "imgs/close.png")))
+
+;List of all territories
+(define TERRITORY-LIST (list ;North America
+                             "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
+                             "Ontario" "Quebec" "Western United States"
+                             ;South America
+                             "Argentina" "Brazil" "Peru" "Venezuela"
+                             ;Europe
+                             "Great Britain" "Iceland" "Northern Europe" "Scandinavia" "Southern Europe" "Ukraine"
+                             "Western Europe"
+                             ;Africa
+                             "Central Africa" "East Africa" "Egypt" "Madagascar" "North America" "South America"
+                             ;Asia
+                             "Afghanistan" "China" "India" "Irkutsk" "Japan" "Kamchatka" "Middle East" "Mongolia" "Siam"
+                             "Siberia" "Ural" "Yakutsk"
+                             ;Australia
+                             "Eastern Australia" "Indonesia" "New Guinea" "Western Australia"
+                             )
+  )
 
 ;The number of armies per player
 ;Number -> Number
@@ -275,6 +315,38 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(define (card-create card)
+  (overlay
+   (above
+    (text (card-territory card) 16 "black")
+    (text (card-unit card) 16 "black"))
+   (rectangle 100 145 "solid" "white")))
+
+
+;Card-Buncher - Stack images of cards next to each other
+(define (card-buncher cardleest)
+  (cond [(empty? cardleest) (square 0 "solid" "white")]
+        [else (beside (card-create (first cardleest)) (square 4 "solid" (make-color 128 0 0)) (card-buncher (rest cardleest)))]))
+  
+
 ;HANDLERS
 (define (render model)
   ;Render is the draw handler. It interprets various elements of the model, such as the screen the player
@@ -305,7 +377,14 @@ Provided by graph.rkt:
           (toolbar model))]
         [(equal? (system-screen model) "cards")
           (overlay
+           (overlay/align "right" "top" X
+            (overlay
+             (card-buncher 
+              ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
+              (list (make-card "Test Territory" "3")))
+             (rectangle 700 200 "solid" (make-color 128 0 0))))
            (above
+            
           (cond [(not (equal? (system-territory-selected model) "null"))
                  (place-image (overlay
                                (above
@@ -317,7 +396,7 @@ Provided by graph.rkt:
                               BOARD)]
                 [else BOARD])
           (toolbar model))
-           (rectangle 700 200 "solid" "red"))]))
+           )]))
 
 
 (define (mouse-handler model x y event)
@@ -400,7 +479,9 @@ Provided by graph.rkt:
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
         
-         (cond [
+         (cond
+           [(equal? DEBUG 0)
+            (cond [
                 (not
                  (equal? event "button-down"))
                 (tooltip x y model)
@@ -413,10 +494,13 @@ Provided by graph.rkt:
                 [else model])])]
                                                        
          ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
-         ;(struct-copy
-          ;system model
-          ;[debug (string-append (number->string x) " " (number->string y))])
-         ;]
+         [(equal? DEBUG 1)
+          (struct-copy
+          system model
+          [debug (string-append (number->string x) " " (number->string y))])])]
+         
+        
+        
         
         [else model]))
       
@@ -475,6 +559,20 @@ Provided by graph.rkt:
                          [territory-selected "Central US"]
                          [x x]
                          [y y])]
+        [(< (distance x y 318 480) 10)
+                        (struct-copy
+                         system model
+                         [territory-selected "Venezuela"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 417 553) 30)
+                        (struct-copy
+                         system model
+                         [territory-selected "Brazil"]
+                         [x x]
+                         [y y])]
+        [(< (distance x y 348 598) 10)
+         "lel.rkt"]
         
                        [else 
                         (struct-copy

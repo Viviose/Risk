@@ -1,12 +1,40 @@
-Current Version: 0.1.5.2
+Current Version: 0.1.8.3
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.8.4 (6/4/15)
+- Added in comments to establish how the debug variable works
+- Created testfiles folder for files containing function tests
+- Completed a list of territories for reference in-game, known as variable TERRITORY-LIST
+- Fixed bugs in ellipse function, MARKED for spacing polishes
+
+Version 0.1.8.3 (6/3/15)
+- in-ellipse? has been completely reworked using a triple coordinate-pair input system. Works for some test cases, but not all
+- Added a debug variable to simplify enabling debug code
+
+Version 0.1.8.2 (6/2/15)
+- in-ellipse? now has all code written, test suite is under construction
+- Removed redundant angle argument from in-ellipse?, since the existing vars suffice to find the angle with helper functions
+- Polished code for other math functions
+
+Version 0.1.8.1 (6/2/15)
+- Created function to determine angle of a right triangle angle
+- Continued ellipse-distance and changed it into boolean-returning in-ellipse?
+
+Version 0.1.8 (5/27/15)
+- Added more countries to tooltip functions
+- Started working on ellipse-distance function to detect whether the mouse is inside of an ellipse
+- Made progress on completing card GUI
+
+Version 0.1.7 (5/26/15)
+- Added in cards GUI
+- Added in card GUI functionality to display cards
+- Added in card GUI functionality to exit card GUI
 
 Version 0.1.6 (5/20/15)
 - Added in more dice functions to finalize the role of dice in the game. This should be the last update necessary besides efficiency updates.
 - Added latest provisions of dice-funct.rkt to header, and commented in provisions in riskFunctions.rkt
 - Added GUI element that displays turn stage
 - Added in dice functions to make functions compatable with animations functions in riskFunctions.rkt, utilizing die-struct and lists of such structs
-(Comment provisions still have to be added in, as well as extra additions to (provide) in dice-functs.rkt)
 
 Version 0.1.5.2 (5/17/15)
 - Added in comments to show provisions of all sub-modules and libraries in header of riskFunctions.rkt

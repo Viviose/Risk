@@ -2,7 +2,6 @@
 
 #lang racket
 (require "dice-functs.rkt")
-(define DEBUG 1)
 #|
 A sub-module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
 
@@ -461,9 +460,7 @@ Provided by graph.rkt:
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
         
-         (cond
-           [(equal? DEBUG 0)
-            (cond [
+         (cond [
                 (not
                  (equal? event "button-down"))
                 (tooltip x y model)
@@ -476,10 +473,9 @@ Provided by graph.rkt:
                 [else model])])]
                                                        
          ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
-         [(equal? DEBUG 1)
-          (struct-copy
-          system model
-          [debug (string-append (number->string x) " " (number->string y))])])]
+        ; (struct-copy
+         ; system model
+          ;[debug (string-append (number->string x) " " (number->string y))])]
          
         
         

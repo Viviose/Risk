@@ -63,5 +63,6 @@ Josh Sanchez
 - Phone Number: +1(773)499-5535
 
 Patty G
-- E-mail: pghahaha@gmail.com 
+- E-mail: pghahaha@cpgallagher.com
+- Phone Number: +1(312)493-5743
 
