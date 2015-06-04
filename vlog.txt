@@ -1,6 +1,11 @@
 Current Version: 0.1.8.3
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 0.1.8.4 (6/4/15)
+- Added in comments to establish how the debug variable works
+- Created testfiles folder for files containing function tests
+- Completed a list of territories for reference in-game, known as variable TERRITORY-LIST
+
 Version 0.1.8.3 (6/3/15)
 - in-ellipse? has been completely reworked using a triple coordinate-pair input system. Works for some test cases, but not all
 - Added a debug variable to simplify enabling debug code
