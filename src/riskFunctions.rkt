@@ -2,7 +2,6 @@
 
 #lang racket
 (require "dice-functs.rkt")
-(define DEBUG 1)
 #|
 A sub-module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
 
@@ -70,6 +69,12 @@ Provided by graph.rkt:
 
 ;__________________________________________________________________________________________________________________________________________________
 
+;Debug mode variable
+;When set to 0, debug mode will not run on the draw handler in the Risk animation.
+;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
+(define DEBUG 1)
+
+;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
 
