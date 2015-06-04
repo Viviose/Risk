@@ -39,13 +39,11 @@
 
 ;calc-angle: number() number() number() number() -> number(angle in degrees)
 (define (calc-angle x1 y1 x2 y2)
-  (real->int (degrees-atan 
-                            (slope x1 y1 x2 y2)
-                            
-                           )
+  (real->int (atan 
+              (slope x1 y1 x2 y2))
              )
   )
-  
+ 
 
 (check-expect (calc-angle 0 0 -7 0)
               0)
@@ -156,10 +154,11 @@
         )
       )
      ;a
-     (/
+     (sqr
+      (/
       (distance x1 y1 x2 y2)
       2
-      )
+      ))
      )
     ;The second piece for y
     (/
