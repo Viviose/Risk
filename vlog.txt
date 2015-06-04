@@ -5,6 +5,7 @@ Version 0.1.8.4 (6/4/15)
 - Added in comments to establish how the debug variable works
 - Created testfiles folder for files containing function tests
 - Completed a list of territories for reference in-game, known as variable TERRITORY-LIST
+- Fixed bugs in ellipse function, MARKED for spacing polishes
 
 Version 0.1.8.3 (6/3/15)
 - in-ellipse? has been completely reworked using a triple coordinate-pair input system. Works for some test cases, but not all
