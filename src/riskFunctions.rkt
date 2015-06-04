@@ -99,7 +99,20 @@ Provided by graph.rkt:
 ;List of all territories
 (define TERRITORY-LIST (list ;North America
                              "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
-                             "Ontario" "Quebec" "Western United States")
+                             "Ontario" "Quebec" "Western United States"
+                             ;South America
+                             "Argentina" "Brazil" "Peru" "Venezuela"
+                             ;Europe
+                             "Great Britain" "Iceland" "Northern Europe" "Scandinavia" "Southern Europe" "Ukraine"
+                             "Western Europe"
+                             ;Africa
+                             "Central Africa" "East Africa" "Egypt" "Madagascar" "North America" "South America"
+                             ;Asia
+                             "Afghanistan" "China" "India" "Irkutsk" "Japan" "Kamchatka" "Middle East" "Mongolia" "Siam"
+                             "Siberia" "Ural" "Yakutsk"
+                             ;Australia
+                             "Eastern Australia" "Indonesia" "New Guinea" "Western Australia"
+                             )
   )
 
 ;The number of armies per player
