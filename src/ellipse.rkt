@@ -4,7 +4,7 @@
 
 (define (build-ellipse x y)
   (cond [(equal?
-          (in-ellipse? 450 200 250 200 350 100 x y)
+          (in-ellipse  x y)
           #t)
          "black"]
         [else "green"]))
