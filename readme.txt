@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 0.1.5.1 
+Version 0.1.9 
 
 Project Name: Riskit
 A combination of Risk and Racket, yeah?
@@ -21,6 +21,9 @@ A combination of Risk and Racket, yeah?
 Included libraries are imgs and src.
 - "imgs" library contains all images used in the game.
 - "src" library contains ALL source code used in the game.
+  - "bkup" library contains all back-up files for program files.
+  - "compiled" library contains error-trace files used by Racket.
+  - "testfiles" library contains programs that test functions not easily tested by check-expects.
   - "dice-functs.rkt" sub-module contains functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
       - To require sub-module: (require "dice-functs.rkt")
   - "graph.rkt" sub-module contains functions that are used for animation purposes such as point comparisons.

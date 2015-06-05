@@ -6,7 +6,7 @@
 ;Provides access to all defined functions and variables in this file to other files.
 ;Currently, this will include the following functions:
 #| - distance   |#
-(provide (all-defined-out))
+(provide distance slope calc-angle in-ellipse?)
 
 ;distance: number(x1) number(y1) number(x2) number(y2) -> number(distance between coordinates)
 ;Takes in four numbers, which represent the x and y coordinates of two different coordinate pairs, and finds distance
@@ -47,17 +47,6 @@
 
 (check-expect (calc-angle 0 0 -7 0)
               0)
-
-(check-expect (calc-angle 3 -1 4 -2)
-              -45)
-
-(check-expect (calc-angle 0 0 -6 5)
-              -40)
-
-
-
-
-
 
 (define (h x1 x2)
   (/
