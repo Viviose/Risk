@@ -4,11 +4,11 @@
 
 (define (build-ellipse x y)
   (cond [(equal?
-          (in-ellipse? 450 200 250 200 350 100 x y)
+          (in-ellipse? 537 445 607 323 552 348 x y)
           #t)
          "black"]
         [else "green"]))
 
 (build-image 700
-             400
+             700
              build-ellipse)
