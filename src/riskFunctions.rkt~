@@ -72,7 +72,7 @@ Provided by graph.rkt:
 ;Debug mode variable
 ;When set to 0, debug mode will not run on the draw handler in the Risk animation.
 ;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
-(define DEBUG 0)
+(define DEBUG 1)
 
 ;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
@@ -91,11 +91,6 @@ Provided by graph.rkt:
 ;Card struct (Holds the information for each card)
 ;[Card]: String (unit name) String (territory value)
 (define-struct card (unit territory)
-  #:transparent)
-
-;Territory Struct (Holds the information of each territory)
-;[territory]: number(armies) string(owner) -> territory
-(define-struct territory (armies owner)
   #:transparent)
 
 ;The 'X' image for closing things
@@ -150,6 +145,7 @@ Provided by graph.rkt:
 ;The player selection screen with player buttons
 (define PLAYERSCRN
   (overlay
+   
    (above
     (text "How many players will be joining us?" 48 "white")
     (button "3 players" 500 100 "red")
@@ -319,6 +315,24 @@ Provided by graph.rkt:
     (circle 37.5 "solid" "black"))
   ))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (define (card-create card)
   (overlay
    (above
@@ -356,7 +370,10 @@ Provided by graph.rkt:
                               (system-x model) (system-y model)
                               
                               BOARD)]
-                [else BOARD])          
+                [else BOARD])
+                              
+                       
+           
           (toolbar model))]
         [(equal? (system-screen model) "cards")
           (overlay
@@ -367,16 +384,18 @@ Provided by graph.rkt:
               (list (make-card "Test Territory" "3")))
              (rectangle 700 200 "solid" (make-color 128 0 0))))
            (above
-            (cond [(not (equal? (system-territory-selected model) "null"))
-                   (place-image (overlay
-                                 (above
-                                  (text (system-territory-selected model) 16 "black")
-                                  (text "Player who owns" 12 "black"))
-                                 (rectangle 100 50 "solid" "orange"))
-                                (system-x model) (system-y model)
-                                BOARD)]
-                  [else BOARD])
-            (toolbar model))
+            
+          (cond [(not (equal? (system-territory-selected model) "null"))
+                 (place-image (overlay
+                               (above
+                                (text (system-territory-selected model) 16 "black")
+                                (text "Player who owns" 12 "black"))
+                               (rectangle 100 50 "solid" "orange"))
+                              (system-x model) (system-y model)
+                              
+                              BOARD)]
+                [else BOARD])
+          (toolbar model))
            )]))
 
 
@@ -459,6 +478,7 @@ Provided by graph.rkt:
         [(equal? (system-screen model) "gameplay")
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
+        
          (cond
            [(equal? DEBUG 0)
             (cond [
@@ -471,12 +491,17 @@ Provided by graph.rkt:
                  (struct-copy
                   system model
                   [screen "cards"])]
-                [else model])])]                                   
+                [else model])])]
+                                                       
          ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
          [(equal? DEBUG 1)
           (struct-copy
           system model
           [debug (string-append (number->string x) " " (number->string y))])])]
+         
+        
+        
+        
         [else model]))
       
 (define (tooltip x y model)
@@ -531,7 +556,7 @@ Provided by graph.rkt:
         [(< (distance x y 224 372) 20)
                         (struct-copy
                          system model
-                         [territory-selected "Central America"]
+                         [territory-selected "Central US"]
                          [x x]
                          [y y])]
         [(< (distance x y 318 480) 10)
@@ -546,12 +571,8 @@ Provided by graph.rkt:
                          [territory-selected "Brazil"]
                          [x x]
                          [y y])]
-        [(in-ellipse? 295 553 389 628 349 566 x y)
-                        (struct-copy
-                         system model
-                         [territory-selected "Peru"]
-                         [x x]
-                         [y y])]
+        [(< (distance x y 348 598) 10)
+         "lel.rkt"]
         
                        [else 
                         (struct-copy

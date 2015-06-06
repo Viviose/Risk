@@ -1,5 +1,17 @@
+<<<<<<< HEAD
 Current Version: 0.1.8.4
+=======
+Current Version: 0.1.9
+>>>>>>> de84f5bee53339820c91427d53950366370aa48b
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.9 (6/5/15)
+- Cleaned up spacing on ellipse function
+- Updated backups
+- Completed test cases and check-expects for ellipse function
+- Continued work on tooltip systems
+- Cleaned up spare whitespace on graph.rkt and riskFunctions.rkt
+- Added territory struct
 
 Version 0.1.8.4 (6/4/15)
 - Added in comments to establish how the debug variable works
