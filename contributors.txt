@@ -1,4 +1,3 @@
 Joshua Sanchez
 Patrick Gallagher
-
-For Doc. MO's class. Makin' some tasty board games in Racket.
+Griffin

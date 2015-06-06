@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-("6.1" ("02e5c7346d44ee5aa529f73c7fee5e1b63f78726" . "a218c030af718a1b8688e400f5933b6124717b64") (collects #"racket" #"main.rkt") (collects #"test-engine" #"racket-tests.rkt") (collects #"picturing-programs" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"errortrace" #"errortrace-key.rkt"))
-=======
-("6.1" ("02e5c7346d44ee5aa529f73c7fee5e1b63f78726" . "90112f0b79640b7976930e78977b0686ecd370e0") (collects #"racket" #"main.rkt") (collects #"test-engine" #"racket-tests.rkt") (collects #"picturing-programs" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
->>>>>>> 64b70f84bb229f185ad310dad8e3f99cade83082
+("6.1" ("13fe32d011a0d5beb61b253cc7821759e8c38904" . "90112f0b79640b7976930e78977b0686ecd370e0") (collects #"racket" #"main.rkt") (collects #"test-engine" #"racket-tests.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"picturing-programs" #"main.rkt"))

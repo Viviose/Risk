@@ -303,22 +303,23 @@ Provided by graph.rkt:
    (die-bar (system-dicelist model)
             )
    (overlay
-    (text (system-turn-stage model) 16 "black")
-                                                      
-    (rectangle 150 75 "solid" (cond [(equal? (system-turn-stage model) "Recruit")
-                                              "blue"]
-                                             [(equal? (system-turn-stage model) "Attack")
-                                              "red"]
-                                             [(equal? (system-turn-stage model) "Fortify")
-                                              "yellow"]
-                                             [else "white"])) 
-   )
-   
+    (text (system-turn-stage model) 16 "black")                                                
+    (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "Recruit")
+                                         (equal? (system-turn-stage model) "Initial Recruit")
+                                         )
+                                     "blue"]
+                                    [(equal? (system-turn-stage model) "Attack")
+                                     "red"]
+                                    [(equal? (system-turn-stage model) "Fortify")
+                                     "yellow"]
+                                    [else "white"])) 
+    )
    (overlay
     (text "Cards" 16 "white")
     (circle 37.5 "solid" "black"))
-  ))
-
+   )
+  )
+  
 (define (card-create card)
   (overlay
    (above
@@ -354,7 +355,6 @@ Provided by graph.rkt:
                                 (text "Player who owns" 12 "black"))
                                (rectangle 100 50 "solid" "orange"))
                               (system-x model) (system-y model)
-                              
                               BOARD)]
                 [else BOARD])          
           (toolbar model))]
@@ -377,8 +377,9 @@ Provided by graph.rkt:
                                 BOARD)]
                   [else BOARD])
             (toolbar model))
-           )]))
-
+           )]
+        )
+  )
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -477,7 +478,9 @@ Provided by graph.rkt:
           (struct-copy
           system model
           [debug (string-append (number->string x) " " (number->string y))])])]
-        [else model]))
+        [else model]
+        )
+  )
       
 (define (tooltip x y model)
   (cond [(< (distance x y 119 134) 10)
@@ -553,25 +556,37 @@ Provided by graph.rkt:
                          [x x]
                          [y y])]
         
-                       [else 
+        [else 
                         (struct-copy
                          system model
-                         [territory-selected "null"])]))
+                         [territory-selected "null"])]
+                       )
+  )
 
 (big-bang (make-system 
-           ;Will be changed later
+           ;No players at first, updated upon player selection
            (list)
+           ;Turn starts at 0, first player
            0
-           "Recruit"
+           ;Initial phase is Initial Recruit, changes upon completion of phases
+           "Initial Recruit"
+           ;First screen displayed is splash, changes upon events in-game
            "splash"
+           ;Initial die list is one of random rolled dice.
            (list (make-die (roll-die "die1") "attack")
                  (make-die (roll-die "die2") "defend")
                  (make-die (roll-die "die3") "defend")
                  (make-die (roll-die "die4") "attack")
-                 (make-die (roll-die "die5") "attack"))
+                 (make-die (roll-die "die5") "attack")
+                 )
+           ;Territory selected is initially null, and remains such unless a territory is selected
            "null"
+           ;Debug coordinates
            "0 0"
+           ;Mouse x coordinate
            0
+           ;Mouse y coordinate
            0)
           (to-draw render 1250 1200)
-          (on-mouse mouse-handler))
+          (on-mouse mouse-handler)
+          )
