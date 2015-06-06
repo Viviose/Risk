@@ -1,6 +1,13 @@
 Current Version: 0.1.9
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 0.1.9.2 (6/6/15)
+- Added my last name to contributors.txt
+- Rewrote functions in dice-functs.rkt
+        - roll-dice can now take an unlimited number of armies as an argument
+        - combined tally-deaths-a and tally-deaths-d by adding an operator input
+        - updated tally-deaths to use new tally-deaths-a/d function
+
 Version 0.1.9.1 (6/5/15)
 - Cleaned up more spacing in riskFunctions.rkt
 - Updated contributors.txt to include Griffin, who is working on debug functions.

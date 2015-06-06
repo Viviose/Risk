@@ -27,20 +27,18 @@
      )
   )
 
-;roll-dice: number(armies defending/attacking) -> [Listof Numbers]
+;roll-dice: number(armies defending/attackin) -> [Listof Numbers]
 ;Creates a list of numbers that contains a value for each of the dice rolled.
-;Must take in an armies value of 1, 2, or 3.
+;Can take in any number.
 (define (roll-dice armies)
-  (cond [(equal? armies 1) (list (roll-die "roll"))]
-        [(equal? armies 2) (list (roll-die "roll1")
-                                 (roll-die "roll2")
-                                 )]
-        [(equal? armies 3) (list (roll-die "roll1")
-                                 (roll-die "roll2")
-                                 (roll-die "roll3")
-                                 )]
-        )
-  )
+  (cond [(equal? 0 armies) empty]
+        [else (cons 
+               (roll-die "roll-who-cares-which") 
+               (roll-dice (- armies 1))
+               ) 
+        ]
+   )
+ )
 
 ;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
 ;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
@@ -119,114 +117,107 @@
         )
   )
 
-;tally-deaths-a: [Listof [Listof Numbers]] -> Number
+;Possible streamlining of tally-death functions
+
+;tally-deaths-a/d: [Listof [Listof Numbers]] -> Number
 ;Takes in a list of a list of numbers, particularly those put out by produce-rolls, and calculates the amount of deaths
-;sustained by the attacking force as a result of number comparisons.
-(define (tally-deaths-a army-list)
+;sustained by the force determined by an operator: 
+;                                    (> for defense, <= for attacking) 
+;as a result of number comparisons.
+;Note that the input [Listof [Listof Numbers]] must be in the format [List [Attacking] [Defending]]
+
+(define (tally-deaths-a/d army-list operator)
   (cond [(or (empty? (first army-list))
              (empty? (second army-list))
              )
          0]
-        [(>= (first (second army-list)) 
-             (first (first army-list))
-             )
-         (+ 1
-            (tally-deaths-a (list (rest (first army-list))
-                                  (rest (second army-list))
-                                  )
-                            )
-            )]
-        [else (tally-deaths-a (list (rest (first army-list))
-                                    (rest (second army-list))
-                                    )
-                              )]
-        )
-  )
-
-;Testing Suite for tally-deaths-a
-(check-expect (tally-deaths-a (list (list 4 3)
-                                    (list 5)
-                                    )
-                              )
-              1)
-(check-expect (tally-deaths-a (list (list 3)
-                                    '()
-                                    )
-                              )
-              0)
-(check-expect (tally-deaths-a (list (list 5 4 3)
-                                    (list 6 3)
-                                    )
-                              )
-              1)
-(check-expect (tally-deaths-a (list (list 6 5)
-                                    (list 6 5)
-                                    )
-                              )
-              2)
-;End Testing Suite              
-
-;tally-deaths-d: [Listof [Listof Numbers]] -> [Listof Numbers]
-;Takes in a list of a list of numbers, particularly those put out by produce-rolls, and calculates the amount of deaths
-;sustained by the defending force as a result of number comparisons.
-(define (tally-deaths-d army-list)
-  (cond [(or (empty? (first army-list))
-             (empty? (second army-list))
-             )
-         0]
-        [(> (first (first army-list)) 
+        [(operator (first (first army-list)) 
             (first (second army-list))
             )
          (+ 1
-            (tally-deaths-d (list (rest (first army-list))
+            (tally-deaths-a/d (list (rest (first army-list))
                                   (rest (second army-list))
-                                  )
+                               )
+                              operator
                             )
             )]
-        [else (tally-deaths-d (list (rest (first army-list))
+        [else (tally-deaths-a/d (list (rest (first army-list))
                                     (rest (second army-list))
                                     )
+                                operator
                               )]
         )
   )
-;Testing Suite for tally-deaths-d
-(check-expect (tally-deaths-d (list (list 4 3)
+
+;Testing Suite for tally-deaths-a/d
+
+;Subsuite for defense, denoted by the input >
+(check-expect (tally-deaths-a/d (list (list 4 3)
                                     (list 5)
-                                    )
-                              )
+                                 )
+                                >
+               )
               0)
-(check-expect (tally-deaths-d (list (list 3)
+(check-expect (tally-deaths-a/d (list (list 3)
                                     '()
-                                    )
-                              )
+                                 )
+                                >
+               )
               0)
-(check-expect (tally-deaths-d (list (list 5 4 3)
+(check-expect (tally-deaths-a/d (list (list 5 4 3)
                                     (list 6 3)
-                                    )
-                              )
+                                )
+                                >
+               )
               1)
-(check-expect (tally-deaths-d (list (list 6 5)
+(check-expect (tally-deaths-a/d (list (list 6 5)
                                     (list 6 5)
-                                    )
-                              )
+                                 )
+                                >
+               )
               0)
-;End Testing Suite 
+
+;Subsuite for attacking, denoted by the input <=
+(check-expect (tally-deaths-a/d (list (list 4 3)
+                                    (list 5)
+                                 )
+                                <=
+               )
+              1)
+(check-expect (tally-deaths-a/d (list (list 3)
+                                    '()
+                                 )
+                                <=
+               )
+              0)
+(check-expect (tally-deaths-a/d (list (list 5 4 3)
+                                    (list 6 3)
+                                 )
+                                 <=
+               )
+              1)
+(check-expect (tally-deaths-a/d (list (list 6 5)
+                                    (list 6 5)
+                                 )
+                                 <=
+               )
+              2)
+;End Testing Suite
 
 ;tally-deaths: [Listof [Listof Numbers]] -> [Listof Numbers]
 ;Takes in a list containing lists of numbers and returns a list of numbers that result from a comparison of the first items in each respective list.
 ;The first number in the new list will represent the deaths sustained by attacking players.
 ;The second number in the new list will represent the deaths sustained by defending players.
+;The only change is the use of tally-deaths-a/d
 (define (tally-deaths army-list)
-  (list (tally-deaths-a army-list)
-        (tally-deaths-d army-list)
-        )
-  )
+  (list (tally-deaths-a/d army-list <=)
+        (tally-deaths-a/d army-list >)))
 
-;Testing Suite for tally-deaths
+;Testing Suite for tally-deaths-redux
 (check-expect (tally-deaths (list (list 6 5)
-                                  (list 6 6)
+                                        (list 6 6)
+                                        )
                                   )
-                            )
               (list 2 0)
               )
 ;End Testing Suite
