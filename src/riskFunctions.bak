@@ -563,28 +563,6 @@ Provided by graph.rkt:
                        )
   )
 
-;territory-scan: Selects a territory struct based on a keyword given.
-; String (territory-name) -> Territory (of that struct)
-(define (territory-scan name leest)
-  (cond [(empty? leest) (error "Territory not found!")]
-        [(equal? (territory-name (first leest)) name)
-         (first leest)]
-        [else (territory-scan name (rest leest))]))
-
-;!!!! ---- Will add test cases when changes are pulled ---- !!!!
-
-
-;initial-recruit: Adds one army to any one territory of a specific player
-;System (model) -> System (model)
-#|
- Cannot function without territory scan
-(define (initial-recruit model)
-  (cond [(empty (system-playerlist model)) (list)]
-        [(equal? (system-turn 0))
-         (+ 1 (terriority-armies (
-        [else (struct-copy system model
-                           [playerlist (|#
-
 (big-bang (make-system 
            ;No players at first, updated upon player selection
            (list)
