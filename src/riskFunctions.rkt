@@ -80,7 +80,7 @@ Provided by graph.rkt:
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected debug x y)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -94,22 +94,37 @@ Provided by graph.rkt:
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
-;[territory]: number(armies) string(owner) -> territory
-(define-struct territory (armies owner)
+;[territory]: string(armies) number(armies) string(owner) -> territory
+(define-struct territory (name armies owner)
   #:transparent)
 
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
 ;List of all territories
-(define TERRITORY-LIST (list ;North America
-                             "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
-                             "Ontario" "Quebec" "Western United States"
+(define INITIAL-TERRITORY-LIST (list ;North America
+                             (territory "Alaska" 0 "null")
+                             (territory "Alberta" 0 "null")
+                             (territory "Central America" 0 "null")
+                             (territory "Eastern United States" 0 "null")
+                             (territory "Greenland" 0 "null")
+                             (territory "Northwest Territory" 0 "null")
+                             (territory "Ontario" 0 "null") 
+                             (territory "Quebec" 0 "null")
+                             (territory "Western United States" 0 "null")
                              ;South America
-                             "Argentina" "Brazil" "Peru" "Venezuela"
+                             (territory "Argentina" 0 "null")
+                             (territory "Brazil" 0 "null")
+                             (territory "Peru" 0 "null")
+                             (territory "Venezuela" 0 "null")
                              ;Europe
-                             "Great Britain" "Iceland" "Northern Europe" "Scandinavia" "Southern Europe" "Ukraine"
-                             "Western Europe"
+                             (territory "Great Britain" 0 "null")
+                             (territory "Iceland" 0 "null")
+                             (territory "Northern Europe" 0 "null")
+                             (territory "Scandinavia" 0 "null")
+                             (territory "Southern Europe" 0 "null")
+                             (territory "Ukraine" 0 "null")
+                             (territory "Western Europe" 0 "null")
                              ;Africa
                              "Central Africa" "East Africa" "Egypt" "Madagascar" "North America" "South America"
                              ;Asia
@@ -603,6 +618,8 @@ Provided by graph.rkt:
                  )
            ;Territory selected is initially null, and remains such unless a territory is selected
            "null"
+           ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
+           INITIAL-TERRITORY-LIST
            ;Debug coordinates
            "0 0"
            ;Mouse x coordinate
