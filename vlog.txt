@@ -1,7 +1,7 @@
-Current Version: 0.1.9
+Current Version: 0.1.9.2
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
-Version 0.1.9.2 (6/6/15)
+Version 0.1.9.2 "The Griffin Patch" (6/6/15)
 - Added my last name to contributors.txt
 - Rewrote functions in dice-functs.rkt
         - roll-dice can now take an unlimited number of armies as an argument
