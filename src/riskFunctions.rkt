@@ -586,17 +586,27 @@ Provided by graph.rkt:
          (first leest)]
         [else (territory-scan name (rest leest))]))
 
-;!!!! ---- Will add test cases when changes are pulled ---- !!!!
+(check-expect (territory-scan "Alberta" INITIAL-TERRITORY-LIST)
+              (make-territory "Alberta" 0 "null"))
 
+
+;WORKING ON THIS
+(define (territory-update f armies name tlist)
+  (cond [(empty? tlist) (error "Territory not found")]
+        [(equal? (territory-name (first tlist)) name)
+         (set-mcdr! (cdar tlist) (f armies (territory-armies (first tlist))))]
+        [else (territory-update f armies name (rest tlist))]))
+
+(check-expect (territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST)
+              (empty))
 
 ;initial-recruit: Adds one army to any one territory of a specific player
 ;System (model) -> System (model)
-#|
- Cannot function without territory scan
-(define (initial-recruit model)
+#|(define (initial-recruit model)
   (cond [(empty (system-playerlist model)) (list)]
         [(equal? (system-turn 0))
-         (+ 1 (terriority-armies (
+         (struct-copy system model
+                      [territory-
         [else (struct-copy system model
                            [playerlist (|#
 
@@ -629,3 +639,5 @@ Provided by graph.rkt:
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
           )
+
+(test)
