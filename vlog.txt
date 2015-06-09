@@ -1,5 +1,9 @@
-Current Version: 0.1.9.2
+Current Version: 0.1.9.3
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+
+Version 0.1.9.3 (6/8/15)
+- Creation of hit-box-determiner.rkt
+	- tool to be used to output a file that holds the locations of each elliptical hitbox
 
 Version 0.1.9.2 "The Griffin Patch" (6/6/15)
 - Added my last name to contributors.txt
