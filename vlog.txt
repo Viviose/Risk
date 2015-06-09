@@ -1,6 +1,10 @@
 Current Version: 0.1.9.3
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version.0.1.9.4 (6/9/15)
+//Griffin just add your stuff to this whenever
+- Completed INITIAL-TERRITORY-LIST, which contains the initial state of all territories in the game.
+
 Version 0.1.9.3 (6/8/15)
 - Creation of hit-box-determiner.rkt
 	- tool to be used to output a file that holds the locations of each elliptical hitbox
