@@ -69,6 +69,12 @@ Provided by graph.rkt:
 
 ;__________________________________________________________________________________________________________________________________________________
 
+;Debug mode variable
+;When set to 0, debug mode will not run on the draw handler in the Risk animation.
+;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
+(define DEBUG 0)
+
+;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
 
@@ -87,13 +93,31 @@ Provided by graph.rkt:
 (define-struct card (unit territory)
   #:transparent)
 
+;Territory Struct (Holds the information of each territory)
+;[territory]: number(armies) string(owner) -> territory
+(define-struct territory (armies owner)
+  #:transparent)
+
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
 ;List of all territories
 (define TERRITORY-LIST (list ;North America
                              "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
-                             "Ontario" "Quebec" "Western United States")
+                             "Ontario" "Quebec" "Western United States"
+                             ;South America
+                             "Argentina" "Brazil" "Peru" "Venezuela"
+                             ;Europe
+                             "Great Britain" "Iceland" "Northern Europe" "Scandinavia" "Southern Europe" "Ukraine"
+                             "Western Europe"
+                             ;Africa
+                             "Central Africa" "East Africa" "Egypt" "Madagascar" "North America" "South America"
+                             ;Asia
+                             "Afghanistan" "China" "India" "Irkutsk" "Japan" "Kamchatka" "Middle East" "Mongolia" "Siam"
+                             "Siberia" "Ural" "Yakutsk"
+                             ;Australia
+                             "Eastern Australia" "Indonesia" "New Guinea" "Western Australia"
+                             )
   )
 
 ;The number of armies per player
@@ -126,7 +150,6 @@ Provided by graph.rkt:
 ;The player selection screen with player buttons
 (define PLAYERSCRN
   (overlay
-   
    (above
     (text "How many players will be joining us?" 48 "white")
     (button "3 players" 500 100 "red")
@@ -280,40 +303,23 @@ Provided by graph.rkt:
    (die-bar (system-dicelist model)
             )
    (overlay
-    (text (system-turn-stage model) 16 "black")
-                                                      
-    (rectangle 150 75 "solid" (cond [(equal? (system-turn-stage model) "Recruit")
-                                              "blue"]
-                                             [(equal? (system-turn-stage model) "Attack")
-                                              "red"]
-                                             [(equal? (system-turn-stage model) "Fortify")
-                                              "yellow"]
-                                             [else "white"])) 
-   )
-   
+    (text (system-turn-stage model) 16 "black")                                                
+    (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "Recruit")
+                                         (equal? (system-turn-stage model) "Initial Recruit")
+                                         )
+                                     "blue"]
+                                    [(equal? (system-turn-stage model) "Attack")
+                                     "red"]
+                                    [(equal? (system-turn-stage model) "Fortify")
+                                     "yellow"]
+                                    [else "white"])) 
+    )
    (overlay
     (text "Cards" 16 "white")
     (circle 37.5 "solid" "black"))
-  ))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   )
+  )
+  
 (define (card-create card)
   (overlay
    (above
@@ -349,12 +355,8 @@ Provided by graph.rkt:
                                 (text "Player who owns" 12 "black"))
                                (rectangle 100 50 "solid" "orange"))
                               (system-x model) (system-y model)
-                              
                               BOARD)]
-                [else BOARD])
-                              
-                       
-           
+                [else BOARD])          
           (toolbar model))]
         [(equal? (system-screen model) "cards")
           (overlay
@@ -365,20 +367,19 @@ Provided by graph.rkt:
               (list (make-card "Test Territory" "3")))
              (rectangle 700 200 "solid" (make-color 128 0 0))))
            (above
-            
-          (cond [(not (equal? (system-territory-selected model) "null"))
-                 (place-image (overlay
-                               (above
-                                (text (system-territory-selected model) 16 "black")
-                                (text "Player who owns" 12 "black"))
-                               (rectangle 100 50 "solid" "orange"))
-                              (system-x model) (system-y model)
-                              
-                              BOARD)]
-                [else BOARD])
-          (toolbar model))
-           )]))
-
+            (cond [(not (equal? (system-territory-selected model) "null"))
+                   (place-image (overlay
+                                 (above
+                                  (text (system-territory-selected model) 16 "black")
+                                  (text "Player who owns" 12 "black"))
+                                 (rectangle 100 50 "solid" "orange"))
+                                (system-x model) (system-y model)
+                                BOARD)]
+                  [else BOARD])
+            (toolbar model))
+           )]
+        )
+  )
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -459,8 +460,9 @@ Provided by graph.rkt:
         [(equal? (system-screen model) "gameplay")
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
-        
-         (cond [
+         (cond
+           [(equal? DEBUG 0)
+            (cond [
                 (not
                  (equal? event "button-down"))
                 (tooltip x y model)
@@ -470,17 +472,15 @@ Provided by graph.rkt:
                  (struct-copy
                   system model
                   [screen "cards"])]
-                [else model])])]
-                                                       
+                [else model])])]                                   
          ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
-        ; (struct-copy
-         ; system model
-          ;[debug (string-append (number->string x) " " (number->string y))])]
-         
-        
-        
-        
-        [else model]))
+         [(equal? DEBUG 1)
+          (struct-copy
+          system model
+          [debug (string-append (number->string x) " " (number->string y))])])]
+        [else model]
+        )
+  )
       
 (define (tooltip x y model)
   (cond [(< (distance x y 119 134) 10)
@@ -534,7 +534,7 @@ Provided by graph.rkt:
         [(< (distance x y 224 372) 20)
                         (struct-copy
                          system model
-                         [territory-selected "Central US"]
+                         [territory-selected "Central America"]
                          [x x]
                          [y y])]
         [(< (distance x y 318 480) 10)
@@ -549,28 +549,44 @@ Provided by graph.rkt:
                          [territory-selected "Brazil"]
                          [x x]
                          [y y])]
-        [(< (distance x y 348 598) 10)
-         "lel.rkt"]
-        
-                       [else 
+        [(in-ellipse? 295 553 389 628 349 566 x y)
                         (struct-copy
                          system model
-                         [territory-selected "null"])]))
+                         [territory-selected "Peru"]
+                         [x x]
+                         [y y])]
+        
+        [else 
+                        (struct-copy
+                         system model
+                         [territory-selected "null"])]
+                       )
+  )
 
 (big-bang (make-system 
-           ;Will be changed later
+           ;No players at first, updated upon player selection
            (list)
+           ;Turn starts at 0, first player
            0
-           "Recruit"
+           ;Initial phase is Initial Recruit, changes upon completion of phases
+           "Initial Recruit"
+           ;First screen displayed is splash, changes upon events in-game
            "splash"
+           ;Initial die list is one of random rolled dice.
            (list (make-die (roll-die "die1") "attack")
                  (make-die (roll-die "die2") "defend")
                  (make-die (roll-die "die3") "defend")
                  (make-die (roll-die "die4") "attack")
-                 (make-die (roll-die "die5") "attack"))
+                 (make-die (roll-die "die5") "attack")
+                 )
+           ;Territory selected is initially null, and remains such unless a territory is selected
            "null"
+           ;Debug coordinates
            "0 0"
+           ;Mouse x coordinate
            0
+           ;Mouse y coordinate
            0)
           (to-draw render 1250 1200)
-          (on-mouse mouse-handler))
+          (on-mouse mouse-handler)
+          )
