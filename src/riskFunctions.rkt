@@ -589,16 +589,28 @@ Provided by graph.rkt:
 (check-expect (territory-scan "Alberta" INITIAL-TERRITORY-LIST)
               (make-territory "Alberta" 0 "null"))
 
+(define (update-t territory name f armies owner)
+  (cond [(equal? (territory-name territory) name)
+         (make-territory name (f (territory-armies territory) armies) owner)]
+        [else territory]))
+
+
 
 ;WORKING ON THIS
-(define (territory-update f armies name tlist)
-  (cond [(empty? tlist) (error "Territory not found")]
-        [(equal? (territory-name (first tlist)) name)
-         (set-mcdr! (cdar tlist) (f armies (territory-armies (first tlist))))]
-        [else (territory-update f armies name (rest tlist))]))
+(define (territory-update f armies name tlist owner)
+  ;(cond [(empty? tlist) (error "Territory not found")]
+        ;[(equal? (territory-name (first tlist)) name)
+         ;(set-mcdr! (cdar tlist) (f  (territory-armies (first tlist)) armies))]
+         (local
+           [(define
+            (change-t territory)
+            (update-t territory name f armies owner))]
+            (map change-t tlist)))
+              ;http://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Fmap..rkt%29._map%29%29
+        ;[else (territory-update f armies name (rest tlist))]))
 
-(check-expect (territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST)
-              (empty))
+(territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST 3)
+              
 
 ;initial-recruit: Adds one army to any one territory of a specific player
 ;System (model) -> System (model)
