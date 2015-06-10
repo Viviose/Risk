@@ -126,12 +126,30 @@ Provided by graph.rkt:
                              (territory "Ukraine" 0 "null")
                              (territory "Western Europe" 0 "null")
                              ;Africa
-                             "Central Africa" "East Africa" "Egypt" "Madagascar" "North America" "South America"
+                             (territory "Central Africa" 0 "null")
+                             (territory "East Africa" 0 "null")
+                             (territory "Egypt" 0 "null")
+                             (territory "Madagascar" 0 "null")
+                             (territory "North America" 0 "null")
+                             (territory "South America" 0 "null")
                              ;Asia
-                             "Afghanistan" "China" "India" "Irkutsk" "Japan" "Kamchatka" "Middle East" "Mongolia" "Siam"
-                             "Siberia" "Ural" "Yakutsk"
+                             (territory "Afghanistan" 0 "null")
+                             (territory "China" 0 "null")
+                             (territory "India" 0 "null")
+                             (territory "Irkutsk" 0 "null")
+                             (territory "Japan" 0 "null")
+                             (territory "Kamchatka" 0 "null") 
+                             (territory "Middle East" 0 "null")
+                             (territory "Mongolia" 0 "null")
+                             (territory "Siam" 0 "null")
+                             (territory "Siberia" 0 "null")
+                             (territory "Ural" 0 "null")
+                             (territory "Yakutsk" 0 "null")
                              ;Australia
-                             "Eastern Australia" "Indonesia" "New Guinea" "Western Australia"
+                             (territory "Eastern Australia" 0 "null")
+                             (territory "Indonesia" 0 "null")
+                             (territory "New Guinea" 0 "null")
+                             (territory "Western Australia" 0 "null")
                              )
   )
 
