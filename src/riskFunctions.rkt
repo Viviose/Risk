@@ -154,7 +154,7 @@ Provided by graph.rkt:
   )
 
 ;The number of armies per player
-;Number -> Number
+;Number -> Number••••••••••••
 (define (army-count players)
   (cond [(equal? players 3) 35]
         [(equal? players 4) 30]

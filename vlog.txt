@@ -1,7 +1,10 @@
 Current Version: 0.1.9.3
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
-Version.0.1.9.4 (6/9/15)
+Version 0.2 "Playabilility Patch" (6/9/10)
+- Finished territory-update function, which updates selected territories given arguments such as who is clicking on it, how many territories they're adding, etc.
+
+Version 0.1.9.4 (6/9/15)
 //Griffin just add your stuff to this whenever
 - Completed INITIAL-TERRITORY-LIST, which contains the initial state of all territories in the game.
 
