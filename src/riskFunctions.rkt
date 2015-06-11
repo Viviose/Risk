@@ -631,8 +631,23 @@ Provided by graph.rkt:
 ;System (model) -> System (model)
 (define (initial-recruit model)
   (cond [(empty (system-playerlist model)) (list)]
-        [(equal? (system-turn 0))
-         (territory-update 
+        [(equal? (territory-armies (system-territory-selected model)) 1)
+         model]
+        [else (struct-copy 
+               system model
+               [territory-list (territory-update + 1 
+                                                (territory-name (system-territory-selected model)) 
+                                                (system-territory-list model) 
+                                                (system-turn model))]
+               [player-turn (cond [(equal? (system-player-turn model) 5)
+                                   0]
+                                  [else (+ 1
+                                           (system-player-turn model)
+                                           )]
+                                  )]
+               )]
+        )
+  )
 
 (big-bang (make-system 
            ;No players at first, updated upon player selection
