@@ -7,6 +7,9 @@ Version 0.2 "Playabilility Patch" (6/9/10)
 Version 0.1.9.4 (6/9/15)
 //Griffin just add your stuff to this whenever
 - Completed INITIAL-TERRITORY-LIST, which contains the initial state of all territories in the game.
+- Mechanically finished with map tool, exports to a file in the src folder - Map_Positions/map-positions.txt
+- Should be able to create a file that holds the location of every country along with it's hitbox
+- Very very ugly export, badly written code. To be tidied.
 
 Version 0.1.9.3 (6/8/15)
 - Creation of hit-box-determiner.rkt
