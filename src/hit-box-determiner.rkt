@@ -259,16 +259,17 @@
                                                             (masterGuy-current-ellipse model)) 
                                                            (make-posn 
                                                                    x 
-                                                                   (posn-y (custom-ellipse-point-1 (masterGuy-current-ellipse model)))) 
+                                                                   y)
                                                            empty-posn)
-                                      (masterGuy-list-of-ellipses model))]
+                                      (masterGuy-list-of-ellipses model)
+                                      )]
         [(not (third-ready? model)) (make-masterGuy
                                       (masterGuy-status model)
                                       (make-custom-ellipse (custom-ellipse-point-1 
                                                             (masterGuy-current-ellipse model))
                                                            (custom-ellipse-point-2 
                                                             (masterGuy-current-ellipse model))
-                                                           (make-posn (middle-x model) y))
+                                                           (make-posn x y))
                                       (masterGuy-list-of-ellipses model))]
         [else model]))
 
