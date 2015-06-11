@@ -209,8 +209,7 @@
   (ellipse (abs (- (posn-x (custom-ellipse-point-2 (masterGuy-current-ellipse model))) (posn-x (custom-ellipse-point-1 (masterGuy-current-ellipse model)))))
                 (* 2 (- (posn-y (custom-ellipse-point-1 (masterGuy-current-ellipse model))) (posn-y (custom-ellipse-point-3 (masterGuy-current-ellipse model)))))
                 "outline"
-                "red")
-  )
+                "red"))
 
 (define (place-model-ellipse model)
   (beside (rectangle (posn-x (custom-ellipse-point-1 (masterGuy-current-ellipse model))) 0 "solid" "orange")
