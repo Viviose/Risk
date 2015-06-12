@@ -529,6 +529,12 @@ Provided by graph.rkt:
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
          (cond
+           #|[(active-near-cards? event x y)
+            #;(and (not-debugging?)
+                 (button-down? event)
+                 (hover-near-cards? x y))
+            (model-screen->cards model)]|#
+                 
            [(equal? DEBUG 0)                 
             (cond [(and 
                     (equal? event "button-down")
