@@ -638,8 +638,11 @@ Provided by graph.rkt:
                [territory-list (territory-update + 1 
                                                 (territory-name (system-territory-selected model)) 
                                                 (system-territory-list model) 
-                                                (system-turn model))]
-               [player-turn (cond [(equal? (system-player-turn model) 5)
+                                                (system-player-turn model))]
+               [player-turn (cond [(equal? (system-player-turn model) (= 1
+                                                                         (length (system-playerlist model))
+                                                                         )
+                                           )
                                    0]
                                   [else (+ 1
                                            (system-player-turn model)
