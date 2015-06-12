@@ -1,13 +1,19 @@
 Current Version: 0.2.1
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
-Version 0.2.1 (6/10/15)
+Version 0.2.2 (6/11/15)
+- Implemented initial-recruit phase
+- Moving conditionals to increase program efficiency and enable some conditionals to exist regardless of gamestate
+- Updated back-up files
+- Cleaned up terrible spacing (I'm coming after you Patrick)
+
+Version 0.2.1 (6/11/15)
 - Changing Hit-Box Determiner program to calculate ellipses with skew (IN PROGRESS)
 - Added initial-recruit function that updates the territory-list and player-turn upon selecting territories during initial-recruit phase following Risk's
   initial recruit phase rules.
 - Added more ellipse functions to ellipse.rkt
 
-Version 0.2 "Playabilility Patch" (6/10/15)
+Version 0.2 "Playability Patch" (6/10/15)
 - Finished territory-update function, which updates selected territories given arguments such as who is clicking on it, how many territories they're adding, etc.
 
 Version 0.1.9.4 (6/9/15)
