@@ -150,8 +150,6 @@ Provided by graph.rkt:
                                 (territory "Indonesia" 0 "null")
                                 (territory "New Guinea" 0 "null")
                                 (territory "Western Australia" 0 "null")
-                                ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 0 "null")
                                 )
   )
 
@@ -161,9 +159,7 @@ Provided by graph.rkt:
   (cond [(equal? players 3) 35]
         [(equal? players 4) 30]
         [(equal? players 5) 25]
-        [(equal? players 6) 20]
-        )
-  )
+        [(equal? players 6) 20]))
 
 
 ;SCREEN SECTION: Make screens here
@@ -171,20 +167,18 @@ Provided by graph.rkt:
 ;This makes a button with given parameters.
 ;String (button text) Number (x pos) Number (y pos) String (color) -> Image (button)
 (define (button string x y color)
-  (above (overlay
-          (text string (/ y 2) "white")
-          (rectangle x y "solid" color)
-          )
-         (rectangle x 2  "solid" "black")
-         )
-  )
+  (above
+   (overlay
+    (text string (/ y 2) "white")
+    (rectangle x y "solid" color))
+   (rectangle x 2  "solid" "black")))
 
 ;The splash banner
 (define SPLASH
-  (overlay (text "\n\nClick anywhere to continue" 60 "black")
-           (scale 1.8 TITLESCRN)
-           )
-  ) 
+  (overlay
+   (text "\n\nClick anywhere to continue" 60 "black")
+   (scale 1.8 TITLESCRN)
+   )) 
 
 ;The player selection screen with player buttons
 (define PLAYERSCRN
@@ -194,11 +188,8 @@ Provided by graph.rkt:
     (button "3 players" 500 100 "red")
     (button "4 players" 500 100 "red")
     (button "5 players" 500 100 "red")
-    (button "6 players" 500 100 "red")
-    )
-   (rectangle 1000 700 "solid" "green")
-   )
-  )
+    (button "6 players" 500 100 "red"))
+   (rectangle 1000 700 "solid" "green")))
 
 ;HUD HELPERS
 ;White dots used to create the faces of dice.
@@ -321,21 +312,14 @@ Provided by graph.rkt:
         [(equal? (system-player-turn model) 4)
          "purple"]
         [(equal? (system-player-turn model) 5)
-         "brown"]
-        )
-  )
+         "brown"]))
 
 ;This shows a variable number of die on the bar.
 ;Dicelist (dice structs) -> Image (die)
 (define (die-bar leest)
   (cond [(empty? leest) (square 0 "outline" "white")]
-        [else (beside (dice-face (die-number (first leest)) 
-                                 (die-type (first leest))
-                                 )
-                      (die-bar (rest leest))
-                      )]
-        )
-  )
+        [else (beside (dice-face (die-number (first leest)) (die-type (first leest)))
+                      (die-bar (rest leest)))]))
 
 ;This shows the toolbar on the bottom of the HUD.
 ;System (model, used to grab info) -> Image (toolbar)
@@ -343,34 +327,25 @@ Provided by graph.rkt:
   (beside
    (overlay
     (text (system-debug model) 16 "black")
-    (square 75 "solid" (playercolor model))
+    (square 75 "solid" (playercolor model)
+            )
     )
    (overlay
     (text "Roll" 16 "black")
     (square 75 "solid" "green"))
-   (die-bar (system-dicelist model))
+   (die-bar (system-dicelist model)
+            )
    (overlay
-    (text (cond [(equal? (system-turn-stage model) "recruit")
-                 "Recruit"]
-                [(equal? (system-turn-stage model) "attack")
-                 "Attack"]
-                [(equal? (system-turn-stage model) "fortify")
-                 "Fortify"]
-                [(equal? (system-turn-stage model) "init-recruit")
-                 "Initial Recruitment"]
-                )
-          16 "black")                                                
-    (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "recruit")
-                                         (equal? (system-turn-stage model) "init-recruit")
+    (text (system-turn-stage model) 16 "black")                                                
+    (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "Recruit")
+                                         (equal? (system-turn-stage model) "Initial Recruit")
                                          )
                                      "blue"]
-                                    [(equal? (system-turn-stage model) "attack")
+                                    [(equal? (system-turn-stage model) "Attack")
                                      "red"]
-                                    [(equal? (system-turn-stage model) "fortify")
+                                    [(equal? (system-turn-stage model) "Fortify")
                                      "yellow"]
-                                    [else "white"]
-                                    )
-               ) 
+                                    [else "white"])) 
     )
    (overlay
     (text "Cards" 16 "white")
@@ -382,22 +357,14 @@ Provided by graph.rkt:
   (overlay
    (above
     (text (card-territory card) 16 "black")
-    (text (card-unit card) 16 "black")
-    )
-   (rectangle 100 145 "solid" "white")
-   )
-  )
+    (text (card-unit card) 16 "black"))
+   (rectangle 100 145 "solid" "white")))
 
 
 ;Card-Buncher - Stack images of cards next to each other
 (define (card-buncher cardleest)
   (cond [(empty? cardleest) (square 0 "solid" "white")]
-        [else (beside (card-create (first cardleest)) 
-                      (square 4 "solid" (make-color 128 0 0)) 
-                      (card-buncher (rest cardleest))
-                      )]
-        )
-  )
+        [else (beside (card-create (first cardleest)) (square 4 "solid" (make-color 128 0 0)) (card-buncher (rest cardleest)))]))
 
 
 ;HANDLERS
@@ -460,10 +427,10 @@ Provided by graph.rkt:
          ;This function checks for how many players the user selects. It is dependent on an x and y coord, along with the
          ;button-down event.
          (cond [(equal? event "button-down")
+                
                 (cond [(and
                         (< x 750)
-                        (> x 250)
-                        )
+                        (> x 250))
                        (cond [(and
                                (<= y 274)
                                (> y 174))
@@ -535,204 +502,198 @@ Provided by graph.rkt:
                     (< (distance 993 910 x y) 32.5)
                     (struct-copy
                      system model
-                     [screen "cards"]
-                     ))]
+                     [screen "cards"]))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
-                               (initial-recruit model)]
+                               (initial-recruit model)
+                               ]
                               [else model]
                               )
                         ]
-                  )]
+                  )
+            ]
+           
+           
+           
            ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
            [(equal? DEBUG 1)
             (struct-copy
              system model
-             [debug (string-append (number->string x) " " (number->string y))]
-             )]
+             [debug (string-append (number->string x) " " (number->string y))])]
+           
            [else model]
-           )]
-        [(equal? (system-screen model) "cards")
-         (if (and (in-ellipse? 953 405 989 405 973 398 x y)
-                  (equal? event "button-down")
-                  )
-             ;Checks to see if mouse is on X and has clicked it, if so runs next function
-             (struct-copy 
-              system model
-              [screen "gameplay"]
-              )
-             ;If not true, then it returns model
-             model
-             )]
+           )
+         ]
         [else model]
         )
   )
   
-(define (tooltip x y model)
-  (cond [(< (distance x y 119 134) 10)
-         (struct-copy
-          system model
-          [territory-selected "Alaska"]
-          [x x]
-          [y y])]
-        [(< (distance x y 232 136) 20)
-         (struct-copy
-          system model
-          [territory-selected "Northwest Territory"]
-          [x x]
-          [y y])]
-        [(< (distance x y 467 95) 20)
-         (struct-copy
-          system model
-          [territory-selected "Greenland"]
-          [x x]
-          [y y])]
-        [(< (distance x y 384 216) 20)
-         (struct-copy
-          system model
-          [territory-selected "Quebec"]
-          [x x]
-          [y y])]
-        [(< (distance x y 297 218) 20)
-         (struct-copy
-          system model
-          [territory-selected "Ontario"]
-          [x x]
-          [y y])]
-        [(< (distance x y 228 198) 20)
-         (struct-copy
-          system model
-          [territory-selected "Alberta"]
-          [x x]
-          [y y])]
-        [(< (distance x y 229 297) 20)
-         (struct-copy
-          system model
-          [territory-selected "Western US"]
-          [x x]
-          [y y])]
-        [(< (distance x y 315 315) 20)
-         (struct-copy
-          system model
-          [territory-selected "Eastern US"]
-          [x x]
-          [y y])]
-        [(< (distance x y 224 372) 20)
-         (struct-copy
-          system model
-          [territory-selected "Central America"]
-          [x x]
-          [y y])]
-        [(< (distance x y 318 480) 10)
-         (struct-copy
-          system model
-          [territory-selected "Venezuela"]
-          [x x]
-          [y y])]
-        [(< (distance x y 417 553) 30)
-         (struct-copy
-          system model
-          [territory-selected "Brazil"]
-          [x x]
-          [y y])]
-        [(in-ellipse? 295 553 389 628 349 566 x y)
-         (struct-copy
-          system model
-          [territory-selected "Peru"]
-          [x x]
-          [y y])]
-        ;More countries to come
-        [else 
-         (struct-copy
-          system model
-          [territory-selected "null"])]
-        )
-  )
-  
-;territory-scan: Selects a territory struct based on a keyword given.
-;String (territory-name) -> Territory (of that struct)
-(define (territory-scan name leest)
-  (cond [(empty? leest) (error "Territory not found!")]
-        [(equal? (territory-name (first leest)) name)
-         (first leest)]
-        [else (territory-scan name (rest leest))]))
-
-(check-expect (territory-scan "Alberta" INITIAL-TERRITORY-LIST)
-              (make-territory "Alberta" 0 "null"))
-
-;Update-t is for the territory-update function. It just applies the changes
-(define (update-t territory name f armies owner)
-  (cond [(equal? (territory-name territory) name)
-         (make-territory name (f (territory-armies territory) armies) owner)]
-        [else territory]))
-
-
-
-;territory-update: Updates the territory with new owner, and adds or subtracts armies
-;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player)
-(define (territory-update f armies name tlist owner)
-  (local
-    [(define
-       (change-t territory)
-       (update-t territory name f armies owner))]
-    (map change-t tlist)
-    )
-  )
-
-;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
-;System (model) -> System (model)
-(define (initial-recruit model)
-  (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
-         model]
-        [(equal? (system-territory-selected model) "null")
-         model]
-        [else 
-         (struct-copy 
-          system model
-          [territory-list (territory-update + 1 
-                                            (territory-name (territory-scan (system-territory-selected model) (system-territory-list model))) 
-                                            (system-territory-list model) 
-                                            (system-player-turn model))]
-          [player-turn (cond [(equal? (system-player-turn model) (= 1
-                                                                    (length (system-playerlist model))
-                                                                    )
-                                      )
-                              0]
-                             [else (+ 1
-                                      (system-player-turn model)
-                                      )]
-                             )]
-          )]
-        )
-  )
-
-(big-bang (make-system 
-           ;No players at first, updated upon player selection
-           (list)
-           ;Turn starts at 0, first player
-           0
-           ;Initial phase is init-recruit, changes upon completion of phases
-           "init-recruit"
-           ;First screen displayed is splash, changes upon events in-game
-           "splash"
-           ;Initial die list is one of random rolled dice.
-           (list (make-die (roll-die "die1") "attack")
-                 (make-die (roll-die "die2") "defend")
-                 (make-die (roll-die "die3") "defend")
-                 (make-die (roll-die "die4") "attack")
-                 (make-die (roll-die "die5") "attack")
-                 )
-           ;Territory selected is initially null, and remains such unless a territory is selected
-           "null"
-           ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
-           INITIAL-TERRITORY-LIST
-           ;Debug coordinates
-           "0 0"
-           ;Mouse x coordinate
-           0
-           ;Mouse y coordinate
-           0)
-          (to-draw render 1250 1200)
-          (on-mouse mouse-handler)
+  (define (tooltip x y model)
+    (cond [(< (distance x y 119 134) 10)
+           (struct-copy
+            system model
+            [territory-selected "Alaska"]
+            [x x]
+            [y y])]
+          [(< (distance x y 232 136) 20)
+           (struct-copy
+            system model
+            [territory-selected "Northwest Territory"]
+            [x x]
+            [y y])]
+          [(< (distance x y 467 95) 20)
+           (struct-copy
+            system model
+            [territory-selected "Greenland"]
+            [x x]
+            [y y])]
+          [(< (distance x y 384 216) 20)
+           (struct-copy
+            system model
+            [territory-selected "Quebec"]
+            [x x]
+            [y y])]
+          [(< (distance x y 297 218) 20)
+           (struct-copy
+            system model
+            [territory-selected "Ontario"]
+            [x x]
+            [y y])]
+          [(< (distance x y 228 198) 20)
+           (struct-copy
+            system model
+            [territory-selected "Alberta"]
+            [x x]
+            [y y])]
+          [(< (distance x y 229 297) 20)
+           (struct-copy
+            system model
+            [territory-selected "Western US"]
+            [x x]
+            [y y])]
+          [(< (distance x y 315 315) 20)
+           (struct-copy
+            system model
+            [territory-selected "Eastern US"]
+            [x x]
+            [y y])]
+          [(< (distance x y 224 372) 20)
+           (struct-copy
+            system model
+            [territory-selected "Central America"]
+            [x x]
+            [y y])]
+          [(< (distance x y 318 480) 10)
+           (struct-copy
+            system model
+            [territory-selected "Venezuela"]
+            [x x]
+            [y y])]
+          [(< (distance x y 417 553) 30)
+           (struct-copy
+            system model
+            [territory-selected "Brazil"]
+            [x x]
+            [y y])]
+          [(in-ellipse? 295 553 389 628 349 566 x y)
+           (struct-copy
+            system model
+            [territory-selected "Peru"]
+            [x x]
+            [y y])]
+          
+          [else 
+           (struct-copy
+            system model
+            [territory-selected "null"])]
           )
-
-(test)
+    )
+  
+  ;territory-scan: Selects a territory struct based on a keyword given.
+  ; String (territory-name) -> Territory (of that struct)
+  (define (territory-scan name leest)
+    (cond [(empty? leest) (error "Territory not found!")]
+          [(equal? (territory-name (first leest)) name)
+           (first leest)]
+          [else (territory-scan name (rest leest))]))
+  
+  (check-expect (territory-scan "Alberta" INITIAL-TERRITORY-LIST)
+                (make-territory "Alberta" 0 "null"))
+  
+  ;Update-t is for the territory-update function. It just applies the changes
+  (define (update-t territory name f armies owner)
+    (cond [(equal? (territory-name territory) name)
+           (make-territory name (f (territory-armies territory) armies) owner)]
+          [else territory]))
+  
+  
+  
+  ;territory-update: Updates the territory with new owner, and adds or subtracts armies
+  ;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player)
+  (define (territory-update f armies name tlist owner)
+    (local
+      [(define
+         (change-t territory)
+         (update-t territory name f armies owner))]
+      (map change-t tlist)))
+  
+  (territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST 3)
+  
+  
+  ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
+  ;System (model) -> System (model)
+  (define (initial-recruit model)
+    (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
+           model]
+          [(equal? (system-territory-selected model) "null")
+           model]
+          [else 
+           (struct-copy 
+                 system model
+                 [territory-list (territory-update + 1 
+                                                   (territory-name (territory-scan (system-territory-selected model) (system-territory-list model))) 
+                                                   (system-territory-list model) 
+                                                   (system-player-turn model))]
+                 [player-turn (cond [(equal? (system-player-turn model) (= 1
+                                                                           (length (system-playerlist model))
+                                                                           )
+                                             )
+                                     0]
+                                    [else (+ 1
+                                             (system-player-turn model)
+                                             )]
+                                    )]
+                 )]
+          )
+    )
+  
+  (big-bang (make-system 
+             ;No players at first, updated upon player selection
+             (list)
+             ;Turn starts at 0, first player
+             0
+             ;Initial phase is Initial Recruit, changes upon completion of phases
+             "Initial Recruit"
+             ;First screen displayed is splash, changes upon events in-game
+             "splash"
+             ;Initial die list is one of random rolled dice.
+             (list (make-die (roll-die "die1") "attack")
+                   (make-die (roll-die "die2") "defend")
+                   (make-die (roll-die "die3") "defend")
+                   (make-die (roll-die "die4") "attack")
+                   (make-die (roll-die "die5") "attack")
+                   )
+             ;Territory selected is initially null, and remains such unless a territory is selected
+             "null"
+             ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
+             INITIAL-TERRITORY-LIST
+             ;Debug coordinates
+             "0 0"
+             ;Mouse x coordinate
+             0
+             ;Mouse y coordinate
+             0)
+            (to-draw render 1250 1200)
+            (on-mouse mouse-handler)
+            )
+  
+  (test)

@@ -1,6 +1,13 @@
 Current Version: 0.2.1
 BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
 
+Version 1.0a
+- Finalized Hit-Box Determiner program
+- Added null territory to INITIAL-TERRITORY-LIST in order to stop territory-checking function errors
+- Finished Cards UI
+- More code polishes
+- Made changes to mouse-handler to increase efficiency and compatability
+
 Version 0.2.2 (6/11/15)
 - Implemented initial-recruit phase
 - Moving conditionals to increase program efficiency and enable some conditionals to exist regardless of gamestate
