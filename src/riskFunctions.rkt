@@ -624,9 +624,6 @@ Provided by graph.rkt:
             (update-t territory name f armies owner))]
             (map change-t tlist)))
 
-(territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST 3)
-              
-
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
 (define (initial-recruit model)
