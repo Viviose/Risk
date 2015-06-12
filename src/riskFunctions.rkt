@@ -359,7 +359,7 @@ Provided by graph.rkt:
                 [(equal? (system-turn-stage model) "init-recruit")
                  "Initial Recruitment"]
                 )
-          16 "black")                                                
+          16 "black")                                              
     (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "recruit")
                                          (equal? (system-turn-stage model) "init-recruit")
                                          )
@@ -468,10 +468,10 @@ Provided by graph.rkt:
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist '((make-player (list) (list) (army-count 3) "alive")
-                                                         (make-player (list) (list) (army-count 3) "alive")
-                                                         (make-player (list) (list) (army-count 3) "alive")
-                                                         )
+                                           [playerlist (list (make-player (list) (list) (army-count 3) "alive")
+                                                             (make-player (list) (list) (army-count 3) "alive")
+                                                             (make-player (list) (list) (army-count 3) "alive")
+                                                             )
                                                        ]
                                            [screen "gameplay"]
                                            )
@@ -480,11 +480,11 @@ Provided by graph.rkt:
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist '((make-player (list) (list) (army-count 4) "alive")
-                                                         (make-player (list) (list) (army-count 4) "alive")
-                                                         (make-player (list) (list) (army-count 4) "alive")
-                                                         (make-player (list) (list) (army-count 4) "alive")
-                                                         )
+                                           [playerlist (list (make-player (list) (list) (army-count 4) "alive")
+                                                             (make-player (list) (list) (army-count 4) "alive")
+                                                             (make-player (list) (list) (army-count 4) "alive")
+                                                             (make-player (list) (list) (army-count 4) "alive")
+                                                             )
                                                        ]
                                            [screen "gameplay"]
                                            )
@@ -493,12 +493,12 @@ Provided by graph.rkt:
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist '((make-player (list) (list) (army-count 5) "alive")
-                                                         (make-player (list) (list) (army-count 5) "alive")
-                                                         (make-player (list) (list) (army-count 5) "alive")
-                                                         (make-player (list) (list) (army-count 5) "alive")
-                                                         (make-player (list) (list) (army-count 5) "alive")
-                                                         )
+                                           [playerlist (list (make-player (list) (list) (army-count 5) "alive")
+                                                             (make-player (list) (list) (army-count 5) "alive")
+                                                             (make-player (list) (list) (army-count 5) "alive")
+                                                             (make-player (list) (list) (army-count 5) "alive")
+                                                             (make-player (list) (list) (army-count 5) "alive")
+                                                             )
                                                        ]
                                            [screen "gameplay"]
                                            )
@@ -507,13 +507,13 @@ Provided by graph.rkt:
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist '((make-player (list) (list) (army-count 6) "alive")
-                                                         (make-player (list) (list) (army-count 6) "alive")
-                                                         (make-player (list) (list) (army-count 6) "alive")
-                                                         (make-player (list) (list) (army-count 6) "alive")
-                                                         (make-player (list) (list) (army-count 6) "alive")
-                                                         (make-player (list) (list) (army-count 6) "alive")
-                                                         )
+                                           [playerlist (list (make-player (list) (list) (army-count 6) "alive")
+                                                             (make-player (list) (list) (army-count 6) "alive")
+                                                             (make-player (list) (list) (army-count 6) "alive")
+                                                             (make-player (list) (list) (army-count 6) "alive")
+                                                             (make-player (list) (list) (army-count 6) "alive")
+                                                             (make-player (list) (list) (army-count 6) "alive")
+                                                             )
                                                        ]
                                            [screen "gameplay"]
                                            )
@@ -538,7 +538,15 @@ Provided by graph.rkt:
                      [screen "cards"]
                      ))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
-                               (initial-recruit model)]
+                              (initial-recruit model)]
+                              ;Will work when recruit phase function is created
+                              #; [(equal? (system-turn-stage model) "recruit")
+                                  (recruit-phase model)]
+                              ;Will work when attack phase function is created
+                              #; [(equal? (system-turn-stage model) "attack")
+                                  (attack-phase model)]
+                              ;Will work when fortify phase function is created
+                              #; [(equal? (system-turn-stage model) "fortify")]
                               [else model]
                               )
                         ]
@@ -644,7 +652,8 @@ Provided by graph.rkt:
         [else 
          (struct-copy
           system model
-          [territory-selected "null"])]
+          [territory-selected "null"]
+          )]
         )
   )
   
@@ -663,9 +672,8 @@ Provided by graph.rkt:
 (define (update-t territory name f armies owner)
   (cond [(equal? (territory-name territory) name)
          (make-territory name (f (territory-armies territory) armies) owner)]
-        [else territory]))
-
-
+        [else territory])
+  )
 
 ;territory-update: Updates the territory with new owner, and adds or subtracts armies
 ;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player)
@@ -680,6 +688,7 @@ Provided by graph.rkt:
 
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
+;Still requires case for when troops can no longer be placed
 (define (initial-recruit model)
   (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
          model]
