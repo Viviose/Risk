@@ -1,17 +1,13 @@
-Current Version: 0.2.1
-BUILD IS INCOMPLETE, AS IT IS CURRENTLY IN DEVELOPMENT
+Current Version: 1.0a
+BUILD IS NOW IN ALPHA
 
-<<<<<<< HEAD
-Version 1.0a
+Version 1.0a (6/12/15)
 - Finalized Hit-Box Determiner program
 - Added null territory to INITIAL-TERRITORY-LIST in order to stop territory-checking function errors
 - Finished Cards UI
 - More code polishes
 - Made changes to mouse-handler to increase efficiency and compatability
-=======
-Version 0.2.3 (6/12/15)
 - Added skewed ellipse functionality to map tool
->>>>>>> 6b40de5943e104be9cdf1ce136ef97ea53bb4f01
 
 Version 0.2.2 (6/11/15)
 - Implemented initial-recruit phase
