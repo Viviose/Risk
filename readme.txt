@@ -13,21 +13,27 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 0.1.9 
+Version 0.2.1 
 
 Project Name: Riskit
 A combination of Risk and Racket, yeah?
 
 Included libraries are imgs and src.
-- "imgs" library contains all images used in the game.
 - "src" library contains ALL source code used in the game.
+  - "imgs" library contains all images used in the game.
   - "bkup" library contains all back-up files for program files.
   - "compiled" library contains error-trace files used by Racket.
   - "testfiles" library contains programs that test functions not easily tested by check-expects.
+  - "Map-Positions" library contains files that store the equations of hitboxes used in territories in-game.
+    - "map-positions.txt" contains a list of hitboxes for all territories.
   - "dice-functs.rkt" sub-module contains functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
       - To require sub-module: (require "dice-functs.rkt")
   - "graph.rkt" sub-module contains functions that are used for animation purposes such as point comparisons.
       - To require sub-module: (require "graph.rkt")
+  - "ellipse.rkt" sub-module provides important ellipse functions used for hitboxes and math throughout programs.
+      - To require sub-module: (require "ellipse.rkt")
+  - "hit-box-determiner.rkt" program allows hitboxes to be made for all territories in the game using ellipses, and outputs results to a file inside of Map-Positions lib.
+  - "test-animations.rkt" contains tests for any animations thought to require tests outside of their host files.
 
 To require particular files using the Racket language follows the syntax:
 (require [String path])
@@ -58,7 +64,7 @@ Joshua Sanchez & Patrick "Patty G" Gallagher
 
 *** PROJECT MANAGEMENT FEATURES ***
 Bugs should be reported at the following URL: https://bitbucket.org/TheHeroOfTimez/risk/issues?status=new&status=open
-Wiki can be found at https://bitbucket.org/TheHeroOfTimez/risk/wiki/Home.
+Wiki can be found at https://bitbucket.org/TheHeroOfTimez/risk/wiki/browse/
 
 *** CONTACT ***
 Josh Sanchez 
