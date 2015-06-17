@@ -1,6 +1,12 @@
 Current Version: 1.0a
 BUILD IS NOW IN ALPHA
 
+Version 1.0.1a (6/17/15)
+- Added adjacent-territories to territory struct and updated INITIAL-TERRITORY-LIST
+- Fixed tooltips
+- Implemented hitboxes
+- Changed tooltip to display territory owners
+
 Version 1.0a (6/12/15)
 - Finalized Hit-Box Determiner program
 - Added null territory to INITIAL-TERRITORY-LIST in order to stop territory-checking function errors

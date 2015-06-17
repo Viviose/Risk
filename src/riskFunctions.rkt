@@ -95,7 +95,7 @@ Provided by graph.rkt:
 
 ;Territory Struct (Holds the information of each territory)
 ;[territory]: string(armies) number(armies) string(owner) -> territory
-(define-struct territory (name armies owner)
+(define-struct territory (name armies owner adjacent-territories)
   #:transparent)
 
 ;The 'X' image for closing things
@@ -103,35 +103,156 @@ Provided by graph.rkt:
 
 ;List of all territories
 (define INITIAL-TERRITORY-LIST (list ;North America
-                                (territory "Alaska" 0 "null")
-                                (territory "Alberta" 0 "null")
-                                (territory "Central America" 0 "null")
-                                (territory "Eastern United States" 0 "null")
-                                (territory "Greenland" 0 "null")
-                                (territory "Northwest Territory" 0 "null")
-                                (territory "Ontario" 0 "null") 
-                                (territory "Quebec" 0 "null")
-                                (territory "Western United States" 0 "null")
+                                (territory "Alaska" 0 "null" (list "Northwest Territory"
+                                                                   "Alberta"
+                                                                   "Kamchatka")
+                                           )
+                                (territory "Alberta" 0 "null"(list "Ontario"
+                                                                   "Northwest Territory"
+                                                                   "Western United States"
+                                                                   "Alaska")
+                                           )
+                                (territory "Central America" 0 "null" (list "Venezuela"
+                                                                            "Eastern United States"
+                                                                            "Western United States"
+                                                                            )
+                                           )
+                                (territory "Eastern United States" 0 "null" (list "Western United States"
+                                                                                  "Ontario"
+                                                                                  "Quebec"
+                                                                                  "Central America"
+                                                                                  )
+                                (territory "Greenland" 0 "null" (list "Northwest Territory"
+                                                                      "Ontario"
+                                                                      "Quebec"
+                                                                      "Iceland"
+                                                                      )
+                                           )
+                                (territory "Northwest Territory" 0 "null" (list "Alaska"
+                                                                                "Alberta"
+                                                                                "Ontario"
+                                                                                "Greenland"
+                                                                                )
+                                           )
+                                (territory "Ontario" 0 "null" (list "Greenland"
+                                                                    "Quebec"
+                                                                    "Northwest Territory"
+                                                                    "Alberta"
+                                                                    "Western United States"
+                                                                    "Eastern United States"
+                                                                    )
+                                           )
+                                (territory "Quebec" 0 "null" (list "Greenland"
+                                                                   "Ontario"
+                                                                   "Eastern United States"
+                                                                   )
+                                           )
+                                (territory "Western United States" 0 "null" (list "Alberta"
+                                                                                  "Eastern United States"
+                                                                                  "Central America"
+                                                                                  "Ontario"
+                                                                                  )
+                                           )
                                 ;South America
-                                (territory "Argentina" 0 "null")
-                                (territory "Brazil" 0 "null")
-                                (territory "Peru" 0 "null")
-                                (territory "Venezuela" 0 "null")
+                                (territory "Argentina" 0 "null" (list "Brazil"
+                                                                      "Peru"
+                                                                      )
+                                           )
+                                (territory "Brazil" 0 "null" (list "Peru"
+                                                                   "Venezuela"
+                                                                   "Argentina"
+                                                                   "North Africa"
+                                                                   )
+                                           )
+                                (territory "Peru" 0 "null" (list "Argentina"
+                                                                 "Venezuela"
+                                                                 "Brazil"
+                                                                 )
+                                           )
+                                (territory "Venezuela" 0 "null" (list "Brazil"
+                                                                      "Peru"
+                                                                      "Central America"
+                                                                      )
+                                           )
                                 ;Europe
-                                (territory "Great Britain" 0 "null")
-                                (territory "Iceland" 0 "null")
-                                (territory "Northern Europe" 0 "null")
-                                (territory "Scandinavia" 0 "null")
-                                (territory "Southern Europe" 0 "null")
-                                (territory "Ukraine" 0 "null")
-                                (territory "Western Europe" 0 "null")
+                                (territory "Great Britain" 0 "null" (list "Iceland"
+                                                                          "Western Europe"
+                                                                          "Scandinavia"
+                                                                          "Northern Europe"
+                                                                          )
+                                           )
+                                (territory "Iceland" 0 "null" (list "Greenland"
+                                                                    "Great Britain"
+                                                                    "Scandinavia"
+                                                                    )
+                                           )
+                                (territory "Northern Europe" 0 "null" (list "Great Britain"
+                                                                            "Western Europe"
+                                                                            "Southern Europe"
+                                                                            "Ukraine"
+                                                                            )
+                                          )
+                                (territory "Scandinavia" 0 "null" (list "Iceland"
+                                                                        "Great Britain"
+                                                                        "Ukraine"
+                                                                        )
+                                           )
+                                (territory "Southern Europe" 0 "null" (list "Northern Europe"
+                                                                            "Western Europe"
+                                                                            "North Africa"
+                                                                            "Egypt"
+                                                                            "Middle East"
+                                                                            )
+                                           )
+                                (territory "Ukraine" 0 "null" (list "Northern Europe"
+                                                                    "Scandinavia"
+                                                                    "Southern Europe"
+                                                                    "Ural"
+                                                                    "Afghanistan"
+                                                                    "Middle East"
+                                                                    )
+                                           )
+                                (territory "Western Europe" 0 "null" (list "North Africa"
+                                                                           "Great Britain"
+                                                                           "Northern Europe"
+                                                                           "Southern Europe"
+                                                                           )
+                                           )
                                 ;Africa
-                                (territory "Central Africa" 0 "null")
-                                (territory "East Africa" 0 "null")
-                                (territory "Egypt" 0 "null")
-                                (territory "Madagascar" 0 "null")
-                                (territory "North America" 0 "null")
-                                (territory "South America" 0 "null")
+                                (territory "Congo" 0 "null" (list "North Africa"
+                                                                  "East Africa"
+                                                                  "South Africa"
+                                                                  )
+                                           )
+                                (territory "East Africa" 0 "null" (list "Egypt"
+                                                                        "Congo"
+                                                                        "South Africa"
+                                                                        "Madagascar"
+                                                                        "North Africa"
+                                                                        )
+                                           )
+                                (territory "Egypt" 0 "null" (list "Southern Europe"
+                                                                  "Middle East"
+                                                                  "North Africa"
+                                                                  "East Africa"
+                                                                  )
+                                           )
+                                (territory "Madagascar" 0 "null" (list "East Africa"
+                                                                       "South Africa"
+                                                                       )
+                                           )
+                                (territory "North Africa" 0 "null" (list "Brazil"
+                                                                         "Egypt"
+                                                                         "Western Europe"
+                                                                         "Congo"
+                                                                         "East Africa"
+                                                                         )
+                                           )
+                                (territory "South Africa" 0 "null" (list "Madagascar"
+                                                                         "Congo"
+                                                                         "East Africa"
+                                                                         )
+                                           )
                                 ;Asia
                                 (territory "Afghanistan" 0 "null")
                                 (territory "China" 0 "null")
@@ -151,7 +272,7 @@ Provided by graph.rkt:
                                 (territory "New Guinea" 0 "null")
                                 (territory "Western Australia" 0 "null")
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 0 "null")
+                                (territory "null" 0 "null" '())
                                 )
   )
 
