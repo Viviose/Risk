@@ -72,7 +72,7 @@ Provided by graph.rkt:
 ;Debug mode variable
 ;When set to 0, debug mode will not run on the draw handler in the Risk animation.
 ;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
-(define DEBUG 1)
+(define DEBUG 0)
 
 ;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
@@ -80,7 +80,7 @@ Provided by graph.rkt:
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected debug x y)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -93,26 +93,64 @@ Provided by graph.rkt:
 (define-struct card (unit territory)
   #:transparent)
 
+;Territory Struct (Holds the information of each territory)
+;[territory]: string(armies) number(armies) string(owner) -> territory
+(define-struct territory (name armies owner)
+  #:transparent)
+
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
 ;List of all territories
-(define TERRITORY-LIST (list ;North America
-                             "Alaska" "Alberta" "Central America" "Eastern United States" "Greenland" "Northwest Territory"
-                             "Ontario" "Quebec" "Western United States"
-                             ;South America
-                             "Argentina" "Brazil" "Peru" "Venezuela"
-                             ;Europe
-                             "Great Britain" "Iceland" "Northern Europe" "Scandinavia" "Southern Europe" "Ukraine"
-                             "Western Europe"
-                             ;Africa
-                             "Central Africa" "East Africa" "Egypt" "Madagascar" "North America" "South America"
-                             ;Asia
-                             "Afghanistan" "China" "India" "Irkutsk" "Japan" "Kamchatka" "Middle East" "Mongolia" "Siam"
-                             "Siberia" "Ural" "Yakutsk"
-                             ;Australia
-                             "Eastern Australia" "Indonesia" "New Guinea" "Western Australia"
-                             )
+(define INITIAL-TERRITORY-LIST (list ;North America
+                                (territory "Alaska" 0 "null")
+                                (territory "Alberta" 0 "null")
+                                (territory "Central America" 0 "null")
+                                (territory "Eastern United States" 0 "null")
+                                (territory "Greenland" 0 "null")
+                                (territory "Northwest Territory" 0 "null")
+                                (territory "Ontario" 0 "null") 
+                                (territory "Quebec" 0 "null")
+                                (territory "Western United States" 0 "null")
+                                ;South America
+                                (territory "Argentina" 0 "null")
+                                (territory "Brazil" 0 "null")
+                                (territory "Peru" 0 "null")
+                                (territory "Venezuela" 0 "null")
+                                ;Europe
+                                (territory "Great Britain" 0 "null")
+                                (territory "Iceland" 0 "null")
+                                (territory "Northern Europe" 0 "null")
+                                (territory "Scandinavia" 0 "null")
+                                (territory "Southern Europe" 0 "null")
+                                (territory "Ukraine" 0 "null")
+                                (territory "Western Europe" 0 "null")
+                                ;Africa
+                                (territory "Central Africa" 0 "null")
+                                (territory "East Africa" 0 "null")
+                                (territory "Egypt" 0 "null")
+                                (territory "Madagascar" 0 "null")
+                                (territory "North America" 0 "null")
+                                (territory "South America" 0 "null")
+                                ;Asia
+                                (territory "Afghanistan" 0 "null")
+                                (territory "China" 0 "null")
+                                (territory "India" 0 "null")
+                                (territory "Irkutsk" 0 "null")
+                                (territory "Japan" 0 "null")
+                                (territory "Kamchatka" 0 "null") 
+                                (territory "Middle East" 0 "null")
+                                (territory "Mongolia" 0 "null")
+                                (territory "Siam" 0 "null")
+                                (territory "Siberia" 0 "null")
+                                (territory "Ural" 0 "null")
+                                (territory "Yakutsk" 0 "null")
+                                ;Australia
+                                (territory "Eastern Australia" 0 "null")
+                                (territory "Indonesia" 0 "null")
+                                (territory "New Guinea" 0 "null")
+                                (territory "Western Australia" 0 "null")
+                                )
   )
 
 ;The number of armies per player
@@ -145,7 +183,6 @@ Provided by graph.rkt:
 ;The player selection screen with player buttons
 (define PLAYERSCRN
   (overlay
-   
    (above
     (text "How many players will be joining us?" 48 "white")
     (button "3 players" 500 100 "red")
@@ -299,39 +336,22 @@ Provided by graph.rkt:
    (die-bar (system-dicelist model)
             )
    (overlay
-    (text (system-turn-stage model) 16 "black")
-                                                      
-    (rectangle 150 75 "solid" (cond [(equal? (system-turn-stage model) "Recruit")
-                                              "blue"]
-                                             [(equal? (system-turn-stage model) "Attack")
-                                              "red"]
-                                             [(equal? (system-turn-stage model) "Fortify")
-                                              "yellow"]
-                                             [else "white"])) 
-   )
-   
+    (text (system-turn-stage model) 16 "black")                                                
+    (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "Recruit")
+                                         (equal? (system-turn-stage model) "Initial Recruit")
+                                         )
+                                     "blue"]
+                                    [(equal? (system-turn-stage model) "Attack")
+                                     "red"]
+                                    [(equal? (system-turn-stage model) "Fortify")
+                                     "yellow"]
+                                    [else "white"])) 
+    )
    (overlay
     (text "Cards" 16 "white")
     (circle 37.5 "solid" "black"))
-  ))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   )
+  )
 
 (define (card-create card)
   (overlay
@@ -345,7 +365,7 @@ Provided by graph.rkt:
 (define (card-buncher cardleest)
   (cond [(empty? cardleest) (square 0 "solid" "white")]
         [else (beside (card-create (first cardleest)) (square 4 "solid" (make-color 128 0 0)) (card-buncher (rest cardleest)))]))
-  
+
 
 ;HANDLERS
 (define (render model)
@@ -362,42 +382,39 @@ Provided by graph.rkt:
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
+                 ;*****************************************************!!!!!!Work on null is needed.
                  (place-image (overlay
                                (above
                                 (text (system-territory-selected model) 16 "black")
                                 (text "Player who owns" 12 "black"))
                                (rectangle 100 50 "solid" "orange"))
                               (system-x model) (system-y model)
-                              
                               BOARD)]
-                [else BOARD])
-                              
-                       
-           
+                [else BOARD])          
           (toolbar model))]
         [(equal? (system-screen model) "cards")
-          (overlay
-           (overlay/align "right" "top" X
-            (overlay
-             (card-buncher 
-              ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
-              (list (make-card "Test Territory" "3")))
-             (rectangle 700 200 "solid" (make-color 128 0 0))))
-           (above
-            
-          (cond [(not (equal? (system-territory-selected model) "null"))
-                 (place-image (overlay
-                               (above
-                                (text (system-territory-selected model) 16 "black")
-                                (text "Player who owns" 12 "black"))
-                               (rectangle 100 50 "solid" "orange"))
-                              (system-x model) (system-y model)
-                              
-                              BOARD)]
-                [else BOARD])
-          (toolbar model))
-           )]))
-
+         (overlay
+          (overlay/align "right" "top" X
+                         (overlay
+                          (card-buncher 
+                           ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
+                           (list (make-card "Test Territory" "3")))
+                          (rectangle 700 200 "solid" (make-color 128 0 0))))
+          (above
+           (cond [(not (equal? (system-territory-selected model) "null"))
+                  (place-image (overlay
+                                (above
+                                 (text (system-territory-selected model) 16 "black")
+                                 (text "Player who owns" 12 "black"))
+                                (rectangle 100 50 "solid" "orange"))
+                               (system-x model) (system-y model)
+                               BOARD)]
+                 [else BOARD])
+           (toolbar model))
+          )]
+        [else model]
+        )
+  )
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -478,121 +495,205 @@ Provided by graph.rkt:
         [(equal? (system-screen model) "gameplay")
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
-        
          (cond
-           [(equal? DEBUG 0)
-            (cond [
-                (not
-                 (equal? event "button-down"))
-                (tooltip x y model)
-                ]
-               [else
-                (cond [(< (distance 993 910 x y) 32.5)
-                 (struct-copy
-                  system model
-                  [screen "cards"])]
-                [else model])])]
-                                                       
-         ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
-         [(equal? DEBUG 1)
-          (struct-copy
-          system model
-          [debug (string-append (number->string x) " " (number->string y))])])]
-         
-        
-        
-        
-        [else model]))
-      
-(define (tooltip x y model)
-  (cond [(< (distance x y 119 134) 10)
-                        (struct-copy
-                         system model
-                         [territory-selected "Alaska"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 232 136) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Northwest Territory"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 467 95) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Greenland"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 384 216) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Quebec"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 297 218) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Ontario"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 228 198) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Alberta"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 229 297) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Western US"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 315 315) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Eastern US"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 224 372) 20)
-                        (struct-copy
-                         system model
-                         [territory-selected "Central US"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 318 480) 10)
-                        (struct-copy
-                         system model
-                         [territory-selected "Venezuela"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 417 553) 30)
-                        (struct-copy
-                         system model
-                         [territory-selected "Brazil"]
-                         [x x]
-                         [y y])]
-        [(< (distance x y 348 598) 10)
-         "lel.rkt"]
-        
-                       [else 
-                        (struct-copy
-                         system model
-                         [territory-selected "null"])]))
-
-(big-bang (make-system 
-           ;Will be changed later
-           (list)
-           0
-           "Recruit"
-           "splash"
-           (list (make-die (roll-die "die1") "attack")
-                 (make-die (roll-die "die2") "defend")
-                 (make-die (roll-die "die3") "defend")
-                 (make-die (roll-die "die4") "attack")
-                 (make-die (roll-die "die5") "attack"))
-           "null"
-           "0 0"
-           0
-           0)
-          (to-draw render 1250 1200)
-          (on-mouse mouse-handler))
+           [(equal? DEBUG 0)                 
+            (cond [(and 
+                    (equal? event "button-down")
+                    (< (distance 993 910 x y) 32.5)
+                    (struct-copy
+                     system model
+                     [screen "cards"]))]
+                  [else (cond [(equal? (system-turn-stage model) "init-recruit")
+                               (initial-recruit model)
+                               ]
+                              [else model]
+                              )
+                        ]
+                  )
+            ]
+           
+           
+           
+           ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
+           [(equal? DEBUG 1)
+            (struct-copy
+             system model
+             [debug (string-append (number->string x) " " (number->string y))])]
+           
+           [else model]
+           )
+         ]
+        [else model]
+        )
+  )
+  
+  (define (tooltip x y model)
+    (cond [(< (distance x y 119 134) 10)
+           (struct-copy
+            system model
+            [territory-selected "Alaska"]
+            [x x]
+            [y y])]
+          [(< (distance x y 232 136) 20)
+           (struct-copy
+            system model
+            [territory-selected "Northwest Territory"]
+            [x x]
+            [y y])]
+          [(< (distance x y 467 95) 20)
+           (struct-copy
+            system model
+            [territory-selected "Greenland"]
+            [x x]
+            [y y])]
+          [(< (distance x y 384 216) 20)
+           (struct-copy
+            system model
+            [territory-selected "Quebec"]
+            [x x]
+            [y y])]
+          [(< (distance x y 297 218) 20)
+           (struct-copy
+            system model
+            [territory-selected "Ontario"]
+            [x x]
+            [y y])]
+          [(< (distance x y 228 198) 20)
+           (struct-copy
+            system model
+            [territory-selected "Alberta"]
+            [x x]
+            [y y])]
+          [(< (distance x y 229 297) 20)
+           (struct-copy
+            system model
+            [territory-selected "Western US"]
+            [x x]
+            [y y])]
+          [(< (distance x y 315 315) 20)
+           (struct-copy
+            system model
+            [territory-selected "Eastern US"]
+            [x x]
+            [y y])]
+          [(< (distance x y 224 372) 20)
+           (struct-copy
+            system model
+            [territory-selected "Central America"]
+            [x x]
+            [y y])]
+          [(< (distance x y 318 480) 10)
+           (struct-copy
+            system model
+            [territory-selected "Venezuela"]
+            [x x]
+            [y y])]
+          [(< (distance x y 417 553) 30)
+           (struct-copy
+            system model
+            [territory-selected "Brazil"]
+            [x x]
+            [y y])]
+          [(in-ellipse? 295 553 389 628 349 566 x y)
+           (struct-copy
+            system model
+            [territory-selected "Peru"]
+            [x x]
+            [y y])]
+          
+          [else 
+           (struct-copy
+            system model
+            [territory-selected "null"])]
+          )
+    )
+  
+  ;territory-scan: Selects a territory struct based on a keyword given.
+  ; String (territory-name) -> Territory (of that struct)
+  (define (territory-scan name leest)
+    (cond [(empty? leest) (error "Territory not found!")]
+          [(equal? (territory-name (first leest)) name)
+           (first leest)]
+          [else (territory-scan name (rest leest))]))
+  
+  (check-expect (territory-scan "Alberta" INITIAL-TERRITORY-LIST)
+                (make-territory "Alberta" 0 "null"))
+  
+  ;Update-t is for the territory-update function. It just applies the changes
+  (define (update-t territory name f armies owner)
+    (cond [(equal? (territory-name territory) name)
+           (make-territory name (f (territory-armies territory) armies) owner)]
+          [else territory]))
+  
+  
+  
+  ;territory-update: Updates the territory with new owner, and adds or subtracts armies
+  ;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player)
+  (define (territory-update f armies name tlist owner)
+    (local
+      [(define
+         (change-t territory)
+         (update-t territory name f armies owner))]
+      (map change-t tlist)))
+  
+  (territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST 3)
+  
+  
+  ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
+  ;System (model) -> System (model)
+  (define (initial-recruit model)
+    (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
+           model]
+          [(equal? (system-territory-selected model) "null")
+           model]
+          [else 
+           (struct-copy 
+                 system model
+                 [territory-list (territory-update + 1 
+                                                   (territory-name (territory-scan (system-territory-selected model) (system-territory-list model))) 
+                                                   (system-territory-list model) 
+                                                   (system-player-turn model))]
+                 [player-turn (cond [(equal? (system-player-turn model) (= 1
+                                                                           (length (system-playerlist model))
+                                                                           )
+                                             )
+                                     0]
+                                    [else (+ 1
+                                             (system-player-turn model)
+                                             )]
+                                    )]
+                 )]
+          )
+    )
+  
+  (big-bang (make-system 
+             ;No players at first, updated upon player selection
+             (list)
+             ;Turn starts at 0, first player
+             0
+             ;Initial phase is Initial Recruit, changes upon completion of phases
+             "Initial Recruit"
+             ;First screen displayed is splash, changes upon events in-game
+             "splash"
+             ;Initial die list is one of random rolled dice.
+             (list (make-die (roll-die "die1") "attack")
+                   (make-die (roll-die "die2") "defend")
+                   (make-die (roll-die "die3") "defend")
+                   (make-die (roll-die "die4") "attack")
+                   (make-die (roll-die "die5") "attack")
+                   )
+             ;Territory selected is initially null, and remains such unless a territory is selected
+             "null"
+             ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
+             INITIAL-TERRITORY-LIST
+             ;Debug coordinates
+             "0 0"
+             ;Mouse x coordinate
+             0
+             ;Mouse y coordinate
+             0)
+            (to-draw render 1250 1200)
+            (on-mouse mouse-handler)
+            )
+  
+  (test)

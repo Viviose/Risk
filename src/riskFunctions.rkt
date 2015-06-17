@@ -399,6 +399,23 @@ Provided by graph.rkt:
         )
   )
 
+(define (who-owns? model)
+  (cond
+    [(not (string->number (territory-owner
+                           (territory-scan
+                            (system-territory-selected model) (system-territory-list model)))))
+     "Unclaimed!"]
+    [else (string-append "Owned by Player " (number->string
+                                             (+ 1 
+                                                (territory-owner 
+                                                 (territory-scan 
+                                                  (system-territory-selected model) (system-territory-list model)))))
+                         )
+          ]
+    )
+  )
+
+
 
 ;HANDLERS
 (define (render model)
@@ -419,7 +436,7 @@ Provided by graph.rkt:
                  (place-image (overlay
                                (above
                                 (text (system-territory-selected model) 16 "black")
-                                (text "Player who owns" 12 "black"))
+                                (text (who-owns? model) 12 "black"))
                                (rectangle 100 50 "solid" "orange"))
                               (system-x model) (system-y model)
                               BOARD)]
@@ -544,7 +561,8 @@ Provided by graph.rkt:
                      [screen "cards"]
                      ))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
-                              (initial-recruit model)]
+                              (initial-recruit model)
+                              (tooltip x y model)]
                               ;Will work when recruit phase function is created
                               #; [(equal? (system-turn-stage model) "recruit")
                                   (recruit-phase model)]
@@ -621,13 +639,13 @@ Provided by graph.rkt:
         [(< (distance x y 229 297) 20)
          (struct-copy
           system model
-          [territory-selected "Western US"]
+          [territory-selected "Western United States"]
           [x x]
           [y y])]
         [(< (distance x y 315 315) 20)
          (struct-copy
           system model
-          [territory-selected "Eastern US"]
+          [territory-selected "Eastern United States"]
           [x x]
           [y y])]
         [(< (distance x y 224 372) 20)

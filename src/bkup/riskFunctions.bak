@@ -154,7 +154,7 @@ Provided by graph.rkt:
   )
 
 ;The number of armies per player
-;Number -> Number••••••••••••
+;Number -> Number
 (define (army-count players)
   (cond [(equal? players 3) 35]
         [(equal? players 4) 30]
@@ -494,27 +494,33 @@ Provided by graph.rkt:
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
          (cond
-           [(equal? DEBUG 0)
-            (cond [
-                (not
-                 (equal? event "button-down"))
-                (tooltip x y model)
-                ]
-               [else
-                (cond [(< (distance 993 910 x y) 32.5)
-                 (struct-copy
-                  system model
-                  [screen "cards"])]
-                [else model])])]                                   
-         ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
-         [(equal? DEBUG 1)
-          (struct-copy
-          system model
-          [debug (string-append (number->string x) " " (number->string y))])])]
+           [(equal? DEBUG 0)                  
+            (begin
+              (cond [(and 
+                      (equal? event "button-down")
+                      (< (distance 993 910 x y) 32.5)
+                      (struct-copy
+                       system model
+                       [screen "cards"]))]
+                    [else (struct-copy system model
+                                       [x x]
+                                       [y y])]))
+            
+            [(equal? (system-turn-stage model) "init-recruit")
+             (initial-recruit model)]]
+           
+           ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
+           [(equal? DEBUG 1)
+            (struct-copy
+             system model
+             [debug (string-append (number->string x) " " (number->string y))])]
+           
+           [else model]
+           )
+         ]
         [else model]
         )
-  )
-      
+  )  
 (define (tooltip x y model)
   (cond [(< (distance x y 119 134) 10)
                         (struct-copy
@@ -624,14 +630,10 @@ Provided by graph.rkt:
             (update-t territory name f armies owner))]
             (map change-t tlist)))
 
-(territory-update + 3 "Alberta" INITIAL-TERRITORY-LIST 3)
-              
-
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
 (define (initial-recruit model)
-  (cond [(empty (system-playerlist model)) (list)]
-        [(equal? (territory-armies (system-territory-selected model)) 1)
+  (cond [(equal? (territory-armies (system-territory-selected model)) 1)
          model]
         [else (struct-copy 
                system model
