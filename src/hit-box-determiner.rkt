@@ -19,15 +19,18 @@
 (define (debug-display x)
   (display x))
 
-(define-struct posn (x y))
+(define-struct posn (x y)
+  #:transparent)
 ;because apparently this wasn't already a thing
 
-(define-struct masterGuy (status current-ellipse list-of-ellipses))
+(define-struct masterGuy (status current-ellipse list-of-ellipses)
+  #:transparent)
 ;status is whether or not the current-ellipse is ready for use
 ;current-ellipse is the ellipse currently viewed on-screen
 ;list-of-ellipses holds all ellipses until it's ready to be written to a file
 
-(define-struct custom-ellipse (point-1 point-2 point-3))
+(define-struct custom-ellipse (point-1 point-2 point-3)
+  #:transparent)
 ;point-1 is the left point of an ellipse
 ;point-2 is the right point
 ;point-3 is the top center point
@@ -166,13 +169,17 @@
 
 ;Creates a single line to be written to file
 (define (location-posn-to-string loc-pos)
-  (string-append "( "
-                 (posn->string (custom-ellipse-point-1 (posn-x loc-pos)))
-                 (posn->string (custom-ellipse-point-2 (posn-x loc-pos)))  ;The location of each item
-                 (posn->string (custom-ellipse-point-3 (posn-x loc-pos)))
-                 " "
-                 (posn-y loc-pos)  ;The name of the location
-                 " )"))
+  (string-append "[(in-ellipse? "
+                 (number->string (posn-x (custom-ellipse-point-1 (posn-x loc-pos)))) " "
+                 (number->string (posn-y (custom-ellipse-point-1 (posn-x loc-pos)))) " "
+                 (number->string (posn-x (custom-ellipse-point-2 (posn-x loc-pos)))) " "
+                 (number->string (posn-y (custom-ellipse-point-2 (posn-x loc-pos)))) " ";The location of each item
+                 (number->string (posn-x (custom-ellipse-point-3 (posn-x loc-pos)))) " "
+                 (number->string (posn-y (custom-ellipse-point-3 (posn-x loc-pos)))) " "
+                 "x y)"
+                 "\"" (posn-y loc-pos) "\""  ;The name of the location
+                 "]")
+  )
 
 ;Creates a string to be put into a file
 (define (put-in-file listy)
