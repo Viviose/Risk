@@ -84,8 +84,8 @@ Provided by graph.rkt:
   #:transparent)
 
 ;Player struct (Holds the information of each player)
-;[Player] : List (card structs) List (strings) Number (armies) String (status)
-(define-struct player (cardlist territories-owned reserved-armies status)
+;[Player] : List (card structs) List (strings) Number (armies) String (status) Number (pos)
+(define-struct player (cardlist territories-owned reserved-armies status pos)
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
@@ -686,9 +686,9 @@ Provided by graph.rkt:
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 3) "alive")
-                                                             (make-player (list) (list) (army-count 3) "alive")
-                                                             (make-player (list) (list) (army-count 3) "alive")
+                                           [playerlist (list (make-player (list) (list) (army-count 3) "alive" 0)
+                                                             (make-player (list) (list) (army-count 3) "alive" 1)
+                                                             (make-player (list) (list) (army-count 3) "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -698,10 +698,10 @@ Provided by graph.rkt:
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 4) "alive")
-                                                             (make-player (list) (list) (army-count 4) "alive")
-                                                             (make-player (list) (list) (army-count 4) "alive")
-                                                             (make-player (list) (list) (army-count 4) "alive")
+                                           [playerlist (list (make-player (list) (list) (army-count 4) "alive" 0)
+                                                             (make-player (list) (list) (army-count 4) "alive" 1)
+                                                             (make-player (list) (list) (army-count 4) "alive" 2)
+                                                             (make-player (list) (list) (army-count 4) "alive" 3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -711,11 +711,11 @@ Provided by graph.rkt:
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 5) "alive")
-                                                             (make-player (list) (list) (army-count 5) "alive")
-                                                             (make-player (list) (list) (army-count 5) "alive")
-                                                             (make-player (list) (list) (army-count 5) "alive")
-                                                             (make-player (list) (list) (army-count 5) "alive")
+                                           [playerlist (list (make-player (list) (list) (army-count 5) "alive" 0)
+                                                             (make-player (list) (list) (army-count 5) "alive" 1)
+                                                             (make-player (list) (list) (army-count 5) "alive" 2)
+                                                             (make-player (list) (list) (army-count 5) "alive" 3)
+                                                             (make-player (list) (list) (army-count 5) "alive" 4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -725,12 +725,12 @@ Provided by graph.rkt:
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 6) "alive")
-                                                             (make-player (list) (list) (army-count 6) "alive")
-                                                             (make-player (list) (list) (army-count 6) "alive")
-                                                             (make-player (list) (list) (army-count 6) "alive")
-                                                             (make-player (list) (list) (army-count 6) "alive")
-                                                             (make-player (list) (list) (army-count 6) "alive")
+                                           [playerlist (list (make-player (list) (list) (army-count 6) "alive" 0)
+                                                             (make-player (list) (list) (army-count 6) "alive" 1)
+                                                             (make-player (list) (list) (army-count 6) "alive" 2)
+                                                             (make-player (list) (list) (army-count 6) "alive" 3)
+                                                             (make-player (list) (list) (army-count 6) "alive" 4)
+                                                             (make-player (list) (list) (army-count 6) "alive" 5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -874,6 +874,22 @@ Provided by graph.rkt:
     )
   )
 
+(define (update-player-armies player1 f armies playerpos)
+  (cond
+    [(equal? (player-pos player1) playerpos)
+     (struct-copy
+      player player1
+      [reserved-armies (f (player-reserved-armies player1) armies)])]
+    [else player1]))
+
+(define (player-update-armies playerlist f armies playerpos)
+  (local
+    [(define (change-p player)
+       (update-player-armies player f armies playerpos))]
+    (map change-p playerlist)))
+       
+
+
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
 ;Still requires case for when troops can no longer be placed
@@ -885,6 +901,10 @@ Provided by graph.rkt:
                       [y y]
                      )
          ]
+        [(equal? (system-player-turn model) (length (system-playerlist model)))
+         (struct-copy
+          system model
+          [player-turn 0])]
         [(equal? (system-territory-selected model) "null")
          (struct-copy system model
                       [territory-selected (tooltip x y model)]
@@ -909,6 +929,8 @@ Provided by graph.rkt:
                                       (system-player-turn model)
                                       )]
                              )]
+          [playerlist (player-update-armies (system-playerlist model) - 1 (system-player-turn model))]
+          
           )]
         [else
          (struct-copy system model
