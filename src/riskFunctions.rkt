@@ -837,6 +837,8 @@ Provided by graph.rkt:
           ]
         [(in-ellipse? 295 553 389 628 349 566 x y)
           "Peru"]
+        [(in-ellipse? 501 228 573 309 569 243 x y)
+         "Great Britain"]
           
         ;More countries to come
         [else 
@@ -939,6 +941,26 @@ Provided by graph.rkt:
                       [y y])]
         )
   )
+
+;RECRUITMENT PHASE
+
+(define (count-territories-of-player playerno tlist)
+  (cond [(empty? tlist) 0]
+        [(equal? (territory-owner (first tlist)) playerno)
+         (+ 1 (count-territories-of-player playerno (rest tlist)))]
+        [else (count-territories-of-player playerno (rest tlist))]))
+
+(check-expect (count-territories-of-player "null" INITIAL-TERRITORY-LIST)
+              43)
+
+#|(define (armies-to-add model)
+  (+
+   
+
+(define (rectuitment-phase model x y event)
+  (struct-copy
+   system model
+   [|#
 
 (big-bang (make-system 
            ;No players at first, updated upon player selection

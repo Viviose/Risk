@@ -185,7 +185,7 @@
 ;writes the current-ellipse-list to the file
 (define (write-list-to-file model)
   (begin
-    (define out (open-output-file "Map-Positions/map-positions.txt" #:exists 'update))
+    (define out (open-output-file "Map-Positions/map-positions.txt" #:replace 'update))
     (write (put-in-file (masterGuy-list-of-ellipses model)) out)
     (debug-display (put-in-file (masterGuy-list-of-ellipses model)))
     (close-output-port out)
