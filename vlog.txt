@@ -1,5 +1,11 @@
-Current Version: 1.0a
+Current Version: 1.1a
 BUILD IS NOW IN ALPHA
+
+Version 1.1a (6/18/15)
+- Completion of the inital-recruit function
+- Looped players after last player was reached in the initial set
+- Subtracts armies from the respective players' army reserve
+- Added in all hitboxes!
 
 Version 1.0.2a (6/18/15)
 - Finished adding adjacent-territories list to territories in INITIAL-TERRITORY-LIST
