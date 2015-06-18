@@ -638,7 +638,7 @@ Provided by graph.rkt:
                                (above
                                 (text (system-territory-selected model) 16 "black")
                                 (text (who-owns? model) 12 "black"))
-                               (rectangle 100 50 "solid";FIXITFIXIT
+                               (rectangle 100 50 "solid";FIXITFIXIT Josh pls and look at why recruit no worky
                                           (playercolor model)))
                               (system-x model) (system-y model)
                               BOARD)]
