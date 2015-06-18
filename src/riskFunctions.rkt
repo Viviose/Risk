@@ -255,7 +255,7 @@ Provided by graph.rkt:
                                                                          )
                                            )
                                 ;Asia
-                                (territory "Afghanistan" 0 "null" (list "Middle East"
+                                (territory "Afganistan" 0 "null" (list "Middle East"
                                                                         "India"
                                                                         "China"
                                                                         "Ural"
@@ -350,7 +350,7 @@ Provided by graph.rkt:
                                                                               )
                                            )
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 0 "null" '())
+                                (territory "null" 0 7 '())
                                 )
   )
 
@@ -762,10 +762,12 @@ Provided by graph.rkt:
                      [screen "cards"]
                      ))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
-                              (initial-recruit model x y event)
+                              
+                               (initial-recruit model x y event)
                               ]
                               ;Will work when recruit phase function is created
                               #; [(equal? (system-turn-stage model) "recruit")
+                                  ;Here is the problemo:
                                   (recruit-phase model)]
                               ;Will work when attack phase function is created
                               #; [(equal? (system-turn-stage model) "attack")
@@ -839,6 +841,36 @@ Provided by graph.rkt:
           "Peru"]
         [(in-ellipse? 501 228 573 309 569 243 x y)
          "Great Britain"]
+        [(in-ellipse? 536 425 608 326 543 341 x y)"Western Europe"]
+[(in-ellipse? 523 172 601 170 560 146 x y)"Iceland"]
+[(in-ellipse? 623 216 713 123 641 132 x y)"Scandinavia"]
+[(in-ellipse? 605 319 705 263 635 247 x y)"Northern Europe"]
+[(in-ellipse? 617 381 706 368 664 337 x y)"Southern Europe"]
+[(in-ellipse? 572 587 647 495 552 476 x y)"North Africa"]
+[(in-ellipse? 646 480 753 487 703 454 x y)"Egypt"]
+[(in-ellipse? 652 636 748 633 707 587 x y)"Congo"]
+[(in-ellipse? 669 734 761 742 718 681 x y)"South Africa"]
+[(in-ellipse? 802 779 846 694 802 733 x y)"Madagascar"]
+[(in-ellipse? 735 611 808 598 752 523 x y)"East Africa"]
+[(in-ellipse? 754 481 875 430 797 381 x y)"Middle East"]
+[(in-ellipse? 821 327 928 306 852 261 x y)"Afganistan"]
+[(in-ellipse? 906 465 995 461 934 371 x y)"India"]
+[(in-ellipse? 934 303 1074 448 1030 348 x y)"China"]
+[(in-ellipse? 986 301 1114 294 1047 258 x y)"Mongolia"]
+[(in-ellipse? 314 692 407 709 368 624 x y)"Argentina"]
+[(in-ellipse? 1157 302 1187 306 1174 224 x y)"Japan"]
+[(in-ellipse? 975 237 1086 219 1031 167 x y)"Irkutsk"]
+[(in-ellipse? 994 123 1097 122 1050 77 x y)"Yakutsk"]
+[(in-ellipse? 702 256 851 246 779 130 x y)"Ukraine"]
+[(in-ellipse? 857 217 926 204 874 125 x y)"Ural"]
+[(in-ellipse? 1089 137 1187 189 1182 93 x y)"Kamchatka"]
+[(in-ellipse? 1000 467 1076 506 1053 448 x y)"Siam"]
+[(in-ellipse? 1027 653 1105 584 1033 574 x y)"Indonesia"]
+[(in-ellipse? 1110 566 1212 611 1173 558 x y)"New Guinea"]
+[(in-ellipse? 1066 712 1180 764 1147 706 x y)"Western Australia"]
+[(in-ellipse? 1166 653 1206 806 1235 697 x y)"Eastern Australia"]
+[(in-ellipse? 922 176 1006 153 935 59 x y)"Siberia"]
+
           
         ;More countries to come
         [else 
@@ -889,6 +921,14 @@ Provided by graph.rkt:
     [(define (change-p player)
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)))
+
+(define (move-on-to-recruit? tlist)
+  (cond [(empty? tlist) #t]
+        [(equal? (territory-owner (first tlist)) "null")
+         #f]
+        [else (move-on-to-recruit? (rest tlist))]
+        )
+  )
        
 
 
@@ -897,21 +937,33 @@ Provided by graph.rkt:
 ;Still requires case for when troops can no longer be placed
 (define (initial-recruit model x y event)
   (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
-         (struct-copy system model
-                      [territory-selected (tooltip x y model)]
-                      [x x]
-                      [y y]
-                     )
-         ]
+         (cond
+           [(move-on-to-recruit? (system-territory-list model))
+                              (struct-copy
+                               system model
+                               [turn-stage "recruit"])]
+           
+           [else (struct-copy system model
+                              [territory-selected (tooltip x y model)]
+                              [x x]
+                              [y y])])
+                     ]
+         
         [(equal? (system-player-turn model) (length (system-playerlist model)))
          (struct-copy
           system model
           [player-turn 0])]
         [(equal? (system-territory-selected model) "null")
-         (struct-copy system model
-                      [territory-selected (tooltip x y model)]
-                      [x x]
-                      [y y])]
+         (cond
+           [(move-on-to-recruit? (system-territory-list model))
+                              (struct-copy
+                               system model
+                               [turn-stage "recruit"])]
+           
+           [else (struct-copy system model
+                              [territory-selected (tooltip x y model)]
+                              [x x]
+                              [y y])])]
         [(and
           (equal? event "button-down")
           (not (equal? (system-territory-selected model) "null")))
@@ -934,11 +986,18 @@ Provided by graph.rkt:
           [playerlist (player-update-armies (system-playerlist model) - 1 (system-player-turn model))]
           
           )]
+        
         [else
-         (struct-copy system model
-                      [territory-selected (tooltip x y model)]
-                      [x x]
-                      [y y])]
+         (cond
+           [(move-on-to-recruit? (system-territory-list model))
+                              (struct-copy
+                               system model
+                               [turn-stage "recruit"])]
+           
+           [else (struct-copy system model
+                              [territory-selected (tooltip x y model)]
+                              [x x]
+                              [y y])])]
         )
   )
 
@@ -950,17 +1009,23 @@ Provided by graph.rkt:
          (+ 1 (count-territories-of-player playerno (rest tlist)))]
         [else (count-territories-of-player playerno (rest tlist))]))
 
+;(define (factor-continent-bonuses tlist) *** I'm lazy, this is gonna require a lot of cases
+
 (check-expect (count-territories-of-player "null" INITIAL-TERRITORY-LIST)
               43)
 
-#|(define (armies-to-add model)
+(define (armies-to-add model)
   (+
+   (count-territories-of-player (system-player-turn model) (system-territory-list model))
+   0 ;Replaced mlater with continent bonuses!
+   )
+  )
    
 
-(define (rectuitment-phase model x y event)
+(define (recruitment-phase model x y event)
   (struct-copy
    system model
-   [|#
+   [playerlist (player-update-armies (system-playerlist model) + (armies-to-add model) (system-player-turn model))]))
 
 (big-bang (make-system 
            ;No players at first, updated upon player selection
