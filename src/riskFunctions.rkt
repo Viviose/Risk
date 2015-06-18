@@ -254,23 +254,100 @@ Provided by graph.rkt:
                                                                          )
                                            )
                                 ;Asia
-                                (territory "Afghanistan" 0 "null")
-                                (territory "China" 0 "null")
-                                (territory "India" 0 "null")
-                                (territory "Irkutsk" 0 "null")
-                                (territory "Japan" 0 "null")
-                                (territory "Kamchatka" 0 "null") 
-                                (territory "Middle East" 0 "null")
-                                (territory "Mongolia" 0 "null")
-                                (territory "Siam" 0 "null")
-                                (territory "Siberia" 0 "null")
-                                (territory "Ural" 0 "null")
-                                (territory "Yakutsk" 0 "null")
+                                (territory "Afghanistan" 0 "null" (list "Middle East"
+                                                                        "India"
+                                                                        "China"
+                                                                        "Ural"
+                                                                        "Ukraine"
+                                                                        )
+                                           )
+                                (territory "China" 0 "null" (list "India"
+                                                                  "Siam"
+                                                                  "Afghanistan"
+                                                                  "Mongolia"
+                                                                  "Siberia"
+                                                                  "Ural"
+                                                                  )
+                                           )
+                                (territory "India" 0 "null" (list "Siam"
+                                                                  "Middle East"
+                                                                  "Afghanistan"
+                                                                  "China"
+                                                                  )
+                                           )
+                                (territory "Irkutsk" 0 "null" (list "Yakutsk"
+                                                                    "Kamchatka"
+                                                                    "Siberia"
+                                                                    "Mongolia"
+                                                                    )
+                                           )
+                                (territory "Japan" 0 "null" (list "Mongolia"
+                                                                  "Kamchatka"
+                                                                  )
+                                           )
+                                (territory "Kamchatka" 0 "null" (list "Yakutsk"
+                                                                      "Alaska"
+                                                                      "Irkutsk"
+                                                                      "Mongolia"
+                                                                      )
+                                           ) 
+                                (territory "Middle East" 0 "null" (list "Egypt"
+                                                                        "India"
+                                                                        "Afghanistan"
+                                                                        "Ukraine"
+                                                                        "Southern Europe"
+                                                                        )
+                                           )
+                                (territory "Mongolia" 0 "null" (list "China"
+                                                                     "Japan"
+                                                                     "Irkutsk"
+                                                                     "Kamchatka"
+                                                                     "Siberia"
+                                                                     )
+                                           )
+                                (territory "Siam" 0 "null" (list "Indonesia"
+                                                                 "China"
+                                                                 "India"
+                                                                 )
+                                           )
+                                (territory "Siberia" 0 "null" (list "Ural"
+                                                                    "China"
+                                                                    "Mongolia"
+                                                                    "Irkutsk"
+                                                                    "Yakutsk"
+                                                                    )
+                                           )
+                                (territory "Ural" 0 "null" (list "Ukraine"
+                                                                 "Afghanistan"
+                                                                 "Siberia"
+                                                                 "China"
+                                                                 )
+                                           )
+                                (territory "Yakutsk" 0 "null" (list "Siberia"
+                                                                    "Irkutsk"
+                                                                    "Kamchatka"
+                                                                    )
+                                           )
                                 ;Australia
-                                (territory "Eastern Australia" 0 "null")
-                                (territory "Indonesia" 0 "null")
-                                (territory "New Guinea" 0 "null")
-                                (territory "Western Australia" 0 "null")
+                                (territory "Eastern Australia" 0 "null" (list "Western Australia"
+                                                                              "New Guinea"
+                                                                              )
+                                           )
+                                (territory "Indonesia" 0 "null" (list "Western Australia"
+                                                                      "New Guinea"
+                                                                      "Siam"
+                                                                      )
+                                           )
+                                (territory "New Guinea" 0 "null" (list "Eastern Australia"
+                                                                       "Western Australia"
+                                                                       "Indonesia"
+                                                                       )
+                                           )
+                                (territory "Western Australia" 0 "null" (list "Eastern Australia"
+                                                                              "Indonesia"
+                                                                              "New Guinea"
+                                                                              )
+                                           )
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
                                 (territory "null" 0 "null" '())
                                 )
