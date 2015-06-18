@@ -638,7 +638,8 @@ Provided by graph.rkt:
                                (above
                                 (text (system-territory-selected model) 16 "black")
                                 (text (who-owns? model) 12 "black"))
-                               (rectangle 100 50 "solid" "orange"))
+                               (rectangle 100 50 "solid";FIXITFIXIT
+                                          (playercolor model)))
                               (system-x model) (system-y model)
                               BOARD)]
                 [else BOARD])          
@@ -657,7 +658,7 @@ Provided by graph.rkt:
                                 (above
                                  (text (system-territory-selected model) 16 "black")
                                  (text "Player who owns" 12 "black"))
-                                (rectangle 100 50 "solid" "orange"))
+                                (rectangle 100 50 "solid" (playercolor model)))
                                (system-x model) (system-y model)
                                BOARD)]
                  [else BOARD])
@@ -766,9 +767,9 @@ Provided by graph.rkt:
                                (initial-recruit model x y event)
                               ]
                               ;Will work when recruit phase function is created
-                              #; [(equal? (system-turn-stage model) "recruit")
+                               [(equal? (system-turn-stage model) "recruit")
                                   ;Here is the problemo:
-                                  (recruit-phase model)]
+                                  (recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                               #; [(equal? (system-turn-stage model) "attack")
                                   (attack-phase model)]
@@ -1022,7 +1023,7 @@ Provided by graph.rkt:
   )
    
 
-(define (recruitment-phase model x y event)
+(define (recruit-phase model x y event)
   (struct-copy
    system model
    [playerlist (player-update-armies (system-playerlist model) + (armies-to-add model) (system-player-turn model))]))
