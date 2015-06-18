@@ -1,6 +1,11 @@
 Current Version: 1.0a
 BUILD IS NOW IN ALPHA
 
+Version 1.0.2a (6/18/15)
+- Finished adding adjacent-territories list to territories in INITIAL-TERRITORY-LIST
+- Fixed bugs in calling initial-recruit function
+- Created Engie amiibo
+
 Version 1.0.1a (6/17/15)
 - Added adjacent-territories to territory struct and updated INITIAL-TERRITORY-LIST
 - Fixed tooltips
