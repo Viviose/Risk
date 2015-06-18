@@ -122,6 +122,7 @@ Provided by graph.rkt:
                                                                                   "Quebec"
                                                                                   "Central America"
                                                                                   )
+                                           )
                                 (territory "Greenland" 0 "null" (list "Northwest Territory"
                                                                       "Ontario"
                                                                       "Quebec"
@@ -254,103 +255,27 @@ Provided by graph.rkt:
                                                                          )
                                            )
                                 ;Asia
-                                (territory "Afghanistan" 0 "null" (list "Middle East"
-                                                                        "India"
-                                                                        "China"
-                                                                        "Ural"
-                                                                        "Ukraine"
-                                                                        )
-                                           )
-                                (territory "China" 0 "null" (list "India"
-                                                                  "Siam"
-                                                                  "Afghanistan"
-                                                                  "Mongolia"
-                                                                  "Siberia"
-                                                                  "Ural"
-                                                                  )
-                                           )
-                                (territory "India" 0 "null" (list "Siam"
-                                                                  "Middle East"
-                                                                  "Afghanistan"
-                                                                  "China"
-                                                                  )
-                                           )
-                                (territory "Irkutsk" 0 "null" (list "Yakutsk"
-                                                                    "Kamchatka"
-                                                                    "Siberia"
-                                                                    "Mongolia"
-                                                                    )
-                                           )
-                                (territory "Japan" 0 "null" (list "Mongolia"
-                                                                  "Kamchatka"
-                                                                  )
-                                           )
-                                (territory "Kamchatka" 0 "null" (list "Yakutsk"
-                                                                      "Alaska"
-                                                                      "Irkutsk"
-                                                                      "Mongolia"
-                                                                      )
-                                           ) 
-                                (territory "Middle East" 0 "null" (list "Egypt"
-                                                                        "India"
-                                                                        "Afghanistan"
-                                                                        "Ukraine"
-                                                                        "Southern Europe"
-                                                                        )
-                                           )
-                                (territory "Mongolia" 0 "null" (list "China"
-                                                                     "Japan"
-                                                                     "Irkutsk"
-                                                                     "Kamchatka"
-                                                                     "Siberia"
-                                                                     )
-                                           )
-                                (territory "Siam" 0 "null" (list "Indonesia"
-                                                                 "China"
-                                                                 "India"
-                                                                 )
-                                           )
-                                (territory "Siberia" 0 "null" (list "Ural"
-                                                                    "China"
-                                                                    "Mongolia"
-                                                                    "Irkutsk"
-                                                                    "Yakutsk"
-                                                                    )
-                                           )
-                                (territory "Ural" 0 "null" (list "Ukraine"
-                                                                 "Afghanistan"
-                                                                 "Siberia"
-                                                                 "China"
-                                                                 )
-                                           )
-                                (territory "Yakutsk" 0 "null" (list "Siberia"
-                                                                    "Irkutsk"
-                                                                    "Kamchatka"
-                                                                    )
-                                           )
+                                (territory "Afghanistan" 0 "null" (list))
+                                (territory "China" 0 "null" (list))
+                                (territory "India" 0 "null" (list))
+                                (territory "Irkutsk" 0 "null" (list))
+                                (territory "Japan" 0 "null" (list))
+                                (territory "Kamchatka" 0 "null" (list)) 
+                                (territory "Middle East" 0 "null" (list))
+                                (territory "Mongolia" 0 "null" (list))
+                                (territory "Siam" 0 "null" (list))
+                                (territory "Siberia" 0 "null" (list))
+                                (territory "Ural" 0 "null" (list))
+                                (territory "Yakutsk" 0 "null" (list))
                                 ;Australia
-                                (territory "Eastern Australia" 0 "null" (list "Western Australia"
-                                                                              "New Guinea"
-                                                                              )
-                                           )
-                                (territory "Indonesia" 0 "null" (list "Western Australia"
-                                                                      "New Guinea"
-                                                                      "Siam"
-                                                                      )
-                                           )
-                                (territory "New Guinea" 0 "null" (list "Eastern Australia"
-                                                                       "Western Australia"
-                                                                       "Indonesia"
-                                                                       )
-                                           )
-                                (territory "Western Australia" 0 "null" (list "Eastern Australia"
-                                                                              "Indonesia"
-                                                                              "New Guinea"
-                                                                              )
-                                           )
+                                (territory "Eastern Australia" 0 "null" (list))
+                                (territory "Indonesia" 0 "null" (list))
+                                (territory "New Guinea" 0 "null" (list))
+                                (territory "Western Australia" 0 "null" (list))
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
                                 (territory "null" 0 "null" '())
                                 )
+                                
   )
 
 ;The number of armies per player
@@ -520,6 +445,7 @@ Provided by graph.rkt:
          "purple"]
         [(equal? (system-player-turn model) 5)
          "brown"]
+        [else "white"]
         )
   )
 
@@ -599,7 +525,7 @@ Provided by graph.rkt:
 
 (define (who-owns? model)
   (cond
-    [(not (string->number (territory-owner
+    [(not (number? (territory-owner
                            (territory-scan
                             (system-territory-selected model) (system-territory-list model)))))
      "Unclaimed!"]
@@ -759,8 +685,11 @@ Provided by graph.rkt:
                      [screen "cards"]
                      ))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
-                              (initial-recruit model)
-                              (tooltip x y model)]
+                              
+                                (initial-recruit model x y event)
+                                
+                                
+                              ]
                               ;Will work when recruit phase function is created
                               #; [(equal? (system-turn-stage model) "recruit")
                                   (recruit-phase model)]
@@ -799,83 +728,36 @@ Provided by graph.rkt:
   
 (define (tooltip x y model)
   (cond [(< (distance x y 119 134) 10)
-         (struct-copy
-          system model
-          [territory-selected "Alaska"]
-          [x x]
-          [y y])]
+         
+           "Alaska"]
         [(< (distance x y 232 136) 20)
-         (struct-copy
-          system model
-          [territory-selected "Northwest Territory"]
-          [x x]
-          [y y])]
+          "Northwest Territory"
+          ]
         [(< (distance x y 467 95) 20)
-         (struct-copy
-          system model
-          [territory-selected "Greenland"]
-          [x x]
-          [y y])]
+          "Greenland"]
+          
         [(< (distance x y 384 216) 20)
-         (struct-copy
-          system model
-          [territory-selected "Quebec"]
-          [x x]
-          [y y])]
+          "Quebec"]
+          
         [(< (distance x y 297 218) 20)
-         (struct-copy
-          system model
-          [territory-selected "Ontario"]
-          [x x]
-          [y y])]
+          "Ontario"]
         [(< (distance x y 228 198) 20)
-         (struct-copy
-          system model
-          [territory-selected "Alberta"]
-          [x x]
-          [y y])]
+          "Alberta"]
         [(< (distance x y 229 297) 20)
-         (struct-copy
-          system model
-          [territory-selected "Western United States"]
-          [x x]
-          [y y])]
+         "Western United States"]
         [(< (distance x y 315 315) 20)
-         (struct-copy
-          system model
-          [territory-selected "Eastern United States"]
-          [x x]
-          [y y])]
+         "Eastern United States"]
         [(< (distance x y 224 372) 20)
-         (struct-copy
-          system model
-          [territory-selected "Central America"]
-          [x x]
-          [y y])]
+         "Central America"]
         [(< (distance x y 318 480) 10)
-         (struct-copy
-          system model
-          [territory-selected "Venezuela"]
-          [x x]
-          [y y])]
+         "Venezuela"]
         [(< (distance x y 417 553) 30)
-         (struct-copy
-          system model
-          [territory-selected "Brazil"]
-          [x x]
-          [y y])]
+         "Brazil"]
         [(in-ellipse? 295 553 389 628 349 566 x y)
-         (struct-copy
-          system model
-          [territory-selected "Peru"]
-          [x x]
-          [y y])]
+         "Peru"]
         ;More countries to come
-        [else 
-         (struct-copy
-          system model
-          [territory-selected "null"]
-          )]
+         [else "null"]
+          
         )
   )
   
@@ -888,12 +770,12 @@ Provided by graph.rkt:
         [else (territory-scan name (rest leest))]))
 
 (check-expect (territory-scan "Alberta" INITIAL-TERRITORY-LIST)
-              (make-territory "Alberta" 0 "null"))
+              (make-territory "Alberta" 0 "null" (list)))
 
 ;Update-t is for the territory-update function. It just applies the changes
 (define (update-t territory name f armies owner)
   (cond [(equal? (territory-name territory) name)
-         (make-territory name (f (territory-armies territory) armies) owner)]
+         (make-territory name (f (territory-armies territory) armies) owner (territory-adjacent-territories territory))]
         [else territory])
   )
 
@@ -911,12 +793,25 @@ Provided by graph.rkt:
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
 ;Still requires case for when troops can no longer be placed
-(define (initial-recruit model)
+(define (initial-recruit model x y event)
+  
   (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
-         model]
+         (struct-copy system model
+                      [territory-selected (tooltip x y model)]
+                      [x x]
+                      [y y]
+                      )
+         ]
         [(equal? (system-territory-selected model) "null")
-         model]
-        [else 
+        (struct-copy system model
+                      [territory-selected (tooltip x y model)]
+                      [x x]
+                      [y y]
+                      )
+                      ]
+        [(and
+          (equal? event "button-down") 
+          (not (equal? (system-territory-selected model) "null")))
          (struct-copy 
           system model
           [territory-list (territory-update + 1 
@@ -933,6 +828,12 @@ Provided by graph.rkt:
                                       )]
                              )]
           )]
+        [else (struct-copy system model
+                      [territory-selected (tooltip x y model)]
+                      [x x]
+                      [y y]
+                      )
+              ]
         )
   )
 
@@ -957,7 +858,7 @@ Provided by graph.rkt:
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
-           "0 0"
+           "SHit's sorta broke"
            ;Mouse x coordinate
            0
            ;Mouse y coordinate
