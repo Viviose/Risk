@@ -1,6 +1,7 @@
 #lang racket/gui
 (require picturing-programs)
 (require test-engine/racket-tests)
+(require "ellipse.rkt")
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 
 ;For use: click to the left of the name, then to the right, then to the top
@@ -50,12 +51,17 @@
 (define variablecarrier empty-model)
 ;will be used later to save the model when using a gui
 (define change-to-varcarry #f)
+;will be used to check variablecarrier and whether the model should be changed to that
+(define render? #f)
+(define render-rest? #t)
+(define remember-scene "")
 
 ;BEGIN TICK HANDLER
 ;on each tick, evaluates whether the current-ellipse is ready or not for establishing, as put in status
 (define (ticker model)
   (cond [change-to-varcarry (begin
                               (set! change-to-varcarry #f)
+                              (set! render-rest? #t)
                               variablecarrier)]
         [(third-ready? model) (make-masterGuy #t (masterGuy-current-ellipse model) (masterGuy-list-of-ellipses model))]
         [else (not-ready model)]))
@@ -74,7 +80,9 @@
 ;whenever you press x, all points are reset, list is maintained
 ;whenever you press w, animation quits and a file is created with the list
 (define (keyer model key)
-  (begin  (cond [(equal? key "a") (check-readiness model)]
+  (begin  
+    (debug-display "in key handler")
+    (cond [(equal? key "a") (check-readiness model)]
                [(equal? key "x") (reset-model model)]
                [(equal? key "w") (write-list-to-file model)]
                [else model])))
@@ -144,7 +152,9 @@
 
 ;sets a model to empty
 (define (reset-model model)
-  (make-masterGuy #f empty-ellipse (masterGuy-list-of-ellipses model)))
+  (begin
+    (set! render-rest? #t)
+    (make-masterGuy #f empty-ellipse (masterGuy-list-of-ellipses model))))
 
 ;Turns a posn into a string in the format "(#, #)", or <quote><open parenthesis><number><comma><space><number><close parenthesis><quote>
 (define (posn->string posny)
@@ -175,7 +185,7 @@
 ;writes the current-ellipse-list to the file
 (define (write-list-to-file model)
   (begin
-    (define out (open-output-file "Map-Positions/map-positions.txt" #:exists 'can-update))
+    (define out (open-output-file "Map-Positions/map-positions.txt" #:replace 'update))
     (write (put-in-file (masterGuy-list-of-ellipses model)) out)
     (debug-display (put-in-file (masterGuy-list-of-ellipses model)))
     (close-output-port out)
@@ -206,33 +216,45 @@
           (text (number->string (posn-y (custom-ellipse-point-3 (masterGuy-current-ellipse model)))) 18 "black"))))
 
 (define (make-model-ellipse model)
-  (ellipse (abs (- (posn-x (custom-ellipse-point-2 (masterGuy-current-ellipse model))) (posn-x (custom-ellipse-point-1 (masterGuy-current-ellipse model)))))
-                (* 2 (- (posn-y (custom-ellipse-point-1 (masterGuy-current-ellipse model))) (posn-y (custom-ellipse-point-3 (masterGuy-current-ellipse model)))))
-                "outline"
-                "red"))
+  (ellipse-skew (posn-x (custom-ellipse-point-1 (masterGuy-current-ellipse model))) 
+                (posn-y (custom-ellipse-point-1 (masterGuy-current-ellipse model)))
+                (posn-x (custom-ellipse-point-2 (masterGuy-current-ellipse model))) 
+                (posn-y (custom-ellipse-point-2 (masterGuy-current-ellipse model)))
+                (posn-x (custom-ellipse-point-3 (masterGuy-current-ellipse model))) 
+                (posn-y (custom-ellipse-point-3 (masterGuy-current-ellipse model)))
+  ))
 
 (define (place-model-ellipse model)
   (beside (rectangle (posn-x (custom-ellipse-point-1 (masterGuy-current-ellipse model))) 0 "solid" "orange")
           (above (rectangle 0 (posn-y (custom-ellipse-point-3 (masterGuy-current-ellipse model))) "solid" "orange")
                  (make-model-ellipse model))))
 
+(define (interceptor model)
+  (cond [render-rest? (drawer model)]
+        [else remember-scene]))
+
 (define (drawer model)
-   (cond [(third-ready? model) 
-           (overlay/align "left" "top"
-           (place-model-ellipse model)
+   (cond [(and render? (third-ready? model)) 
+           (begin
+             (set! render? #f)
+             (set! render-rest? #f)
+             
+             (set! remember-scene (overlay
+           (make-model-ellipse model)
            (place-circle (custom-ellipse-point-1 (masterGuy-current-ellipse model)) rad)
            (place-circle (custom-ellipse-point-2 (masterGuy-current-ellipse model)) rad)
            (place-circle (custom-ellipse-point-3 (masterGuy-current-ellipse model)) rad)
            (above BOARD
-                  (make-text-of model)))]
+                  (make-text-of model))))
+             remember-scene)]
          [(second-ready? model)
-          (overlay/align "left" "top"     
+          (overlay/align "left" "top"    
            (place-circle (custom-ellipse-point-1 (masterGuy-current-ellipse model)) rad)
            (place-circle (custom-ellipse-point-2 (masterGuy-current-ellipse model)) rad)
            (above BOARD
                   (make-text-of model)))]
          [(first-ready? model)
-          (overlay/align "left" "top"    
+          (overlay/align "left" "top"
            (place-circle (custom-ellipse-point-1 (masterGuy-current-ellipse model)) rad)
            (above BOARD
                   (make-text-of model)))]
@@ -258,17 +280,21 @@
                                                             (masterGuy-current-ellipse model)) 
                                                            (make-posn 
                                                                    x 
-                                                                   (posn-y (custom-ellipse-point-1 (masterGuy-current-ellipse model)))) 
+                                                                   y)
                                                            empty-posn)
-                                      (masterGuy-list-of-ellipses model))]
-        [(not (third-ready? model)) (make-masterGuy
+                                      (masterGuy-list-of-ellipses model)
+                                      )]
+        [(not (third-ready? model)) (begin
+                                      (set! render? #t)
+                                      
+                                      (make-masterGuy
                                       (masterGuy-status model)
                                       (make-custom-ellipse (custom-ellipse-point-1 
                                                             (masterGuy-current-ellipse model))
                                                            (custom-ellipse-point-2 
                                                             (masterGuy-current-ellipse model))
-                                                           (make-posn (middle-x model) y))
-                                      (masterGuy-list-of-ellipses model))]
+                                                           (make-posn x y))
+                                      (masterGuy-list-of-ellipses model)))]
         [else model]))
 
 (define (middle-x model)
@@ -278,7 +304,7 @@
 
 (big-bang empty-model
           (on-tick ticker)
-          (on-draw drawer)
+          (on-draw interceptor)
           (on-mouse mousey)
           (on-key keyer))
 

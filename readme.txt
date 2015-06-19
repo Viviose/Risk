@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 1.0a
+Version 1.1a
 
 Project Name: Riskit
 A combination of Risk and Racket, yeah?
@@ -24,7 +24,7 @@ Included libraries are imgs and src.
   - "bkup" library contains all back-up files for program files.
   - "compiled" library contains error-trace files used by Racket.
   - "testfiles" library contains programs that test functions not easily tested by check-expects.
-  - "Map-Positions" library contains files that store the equations of hitboxes used in territories in-game.
+  - "Map-Positions" library contains files that store the information of hitboxes used in territories in-game.
     - "map-positions.txt" contains a list of hitboxes for all territories.
   - "dice-functs.rkt" sub-module contains functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
       - To require sub-module: (require "dice-functs.rkt")

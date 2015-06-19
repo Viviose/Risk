@@ -56,6 +56,15 @@ Provided by graph.rkt:
 - distance: number(x1) number(y1) number(x2) number(y2) -> number(distance between points)
     - Returns the distance between two points. Often used in animations to trigger events when the mouse is a certain distance from a point.
     - No dependencies.
+- slope: number(x1) number (y1) number(x2) number(y2) -> number(slope)
+    - Calculates the change in y over change in x of a line given two points.
+    - No dependencies.
+- calc-angle: number(x1) number(y1) number(x2) number(y2) -> number(angle in degrees)
+    - Calculates an angle in degrees given two points are used to determine a right triangle of such points.
+    - Dependency on slope function of found within sub-module.
+- in-ellipse?: number(x1) number(y1) number(x2) number(y2) number(x3) number(y3) number(x) number(y) -> boolean
+    - Given the left, right, and top points of an ellipse, as well as a point to compare, checks to see if the point is inside of the given ellipse.
+    - Dependencies on calc-angle and distance, both of which are local to sub-module.
 
 |#
 
