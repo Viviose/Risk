@@ -570,6 +570,7 @@ Provided by graph.rkt:
   )
 
 ;Defines player turn box's color by turn
+
 (define (turncolor model)
   (cond [(equal? (system-player-turn model) 0)
          "red"]
@@ -863,6 +864,8 @@ Provided by graph.rkt:
         )
   )
   
+;tooltip: a central function to risk that determines what territory is selected given coords
+;Number (x) Number (y) System (model) -> String (territory selected)
 (define (tooltip x y model)
   (cond [(< (distance x y 119 134) 10)
          "Alaska"]
@@ -903,36 +906,36 @@ Provided by graph.rkt:
         [(in-ellipse? 501 228 573 309 569 243 x y)
          "Great Britain"]
         [(in-ellipse? 536 425 608 326 543 341 x y)"Western Europe"]
-[(in-ellipse? 523 172 601 170 560 146 x y)"Iceland"]
-[(in-ellipse? 623 216 713 123 641 132 x y)"Scandinavia"]
-[(in-ellipse? 605 319 705 263 635 247 x y)"Northern Europe"]
-[(in-ellipse? 617 381 706 368 664 337 x y)"Southern Europe"]
-[(in-ellipse? 572 587 647 495 552 476 x y)"North Africa"]
-[(in-ellipse? 646 480 753 487 703 454 x y)"Egypt"]
-[(in-ellipse? 652 636 748 633 707 587 x y)"Congo"]
-[(in-ellipse? 669 734 761 742 718 681 x y)"South Africa"]
-[(in-ellipse? 802 779 846 694 802 733 x y)"Madagascar"]
-[(in-ellipse? 735 611 808 598 752 523 x y)"East Africa"]
-[(in-ellipse? 754 481 875 430 797 381 x y)"Middle East"]
-[(in-ellipse? 821 327 928 306 852 261 x y)"Afganistan"]
-[(in-ellipse? 906 465 995 461 934 371 x y)"India"]
-[(in-ellipse? 934 303 1074 448 1030 348 x y)"China"]
-[(in-ellipse? 986 301 1114 294 1047 258 x y)"Mongolia"]
-[(in-ellipse? 314 692 407 709 368 624 x y)"Argentina"]
-[(in-ellipse? 1157 302 1187 306 1174 224 x y)"Japan"]
-[(in-ellipse? 975 237 1086 219 1031 167 x y)"Irkutsk"]
-[(in-ellipse? 994 123 1097 122 1050 77 x y)"Yakutsk"]
-[(in-ellipse? 702 256 851 246 779 130 x y)"Ukraine"]
-[(in-ellipse? 857 217 926 204 874 125 x y)"Ural"]
-[(in-ellipse? 1089 137 1187 189 1182 93 x y)"Kamchatka"]
-[(in-ellipse? 1000 467 1076 506 1053 448 x y)"Siam"]
-[(in-ellipse? 1027 653 1105 584 1033 574 x y)"Indonesia"]
-[(in-ellipse? 1110 566 1212 611 1173 558 x y)"New Guinea"]
-[(in-ellipse? 1066 712 1180 764 1147 706 x y)"Western Australia"]
-[(in-ellipse? 1166 653 1206 806 1235 697 x y)"Eastern Australia"]
-[(in-ellipse? 922 176 1006 153 935 59 x y)"Siberia"]
-
-          
+        [(in-ellipse? 523 172 601 170 560 146 x y)"Iceland"]
+        [(in-ellipse? 623 216 713 123 641 132 x y)"Scandinavia"]
+        [(in-ellipse? 605 319 705 263 635 247 x y)"Northern Europe"]
+        [(in-ellipse? 617 381 706 368 664 337 x y)"Southern Europe"]
+        [(in-ellipse? 572 587 647 495 552 476 x y)"North Africa"]
+        [(in-ellipse? 646 480 753 487 703 454 x y)"Egypt"]
+        [(in-ellipse? 652 636 748 633 707 587 x y)"Congo"]
+        [(in-ellipse? 669 734 761 742 718 681 x y)"South Africa"]
+        [(in-ellipse? 802 779 846 694 802 733 x y)"Madagascar"]
+        [(in-ellipse? 735 611 808 598 752 523 x y)"East Africa"]
+        [(in-ellipse? 754 481 875 430 797 381 x y)"Middle East"]
+        [(in-ellipse? 821 327 928 306 852 261 x y)"Afganistan"]
+        [(in-ellipse? 906 465 995 461 934 371 x y)"India"]
+        [(in-ellipse? 934 303 1074 448 1030 348 x y)"China"]
+        [(in-ellipse? 986 301 1114 294 1047 258 x y)"Mongolia"]
+        [(in-ellipse? 314 692 407 709 368 624 x y)"Argentina"]
+        [(in-ellipse? 1157 302 1187 306 1174 224 x y)"Japan"]
+        [(in-ellipse? 975 237 1086 219 1031 167 x y)"Irkutsk"]
+        [(in-ellipse? 994 123 1097 122 1050 77 x y)"Yakutsk"]
+        [(in-ellipse? 702 256 851 246 779 130 x y)"Ukraine"]
+        [(in-ellipse? 857 217 926 204 874 125 x y)"Ural"]
+        [(in-ellipse? 1089 137 1187 189 1182 93 x y)"Kamchatka"]
+        [(in-ellipse? 1000 467 1076 506 1053 448 x y)"Siam"]
+        [(in-ellipse? 1027 653 1105 584 1033 574 x y)"Indonesia"]
+        [(in-ellipse? 1110 566 1212 611 1173 558 x y)"New Guinea"]
+        [(in-ellipse? 1066 712 1180 764 1147 706 x y)"Western Australia"]
+        [(in-ellipse? 1166 653 1206 806 1235 697 x y)"Eastern Australia"]
+        [(in-ellipse? 922 176 1006 153 935 59 x y)"Siberia"]
+        
+        
         ;More countries to come
         [else 
          "null"]
@@ -969,6 +972,8 @@ Provided by graph.rkt:
     )
   )
 
+;update-player-armies: Helper function to player-update-armies that adds/subtracts armies to a player
+; Player (player1) Function + or - (f) Number (armies) Number (playerpos) -> Player
 (define (update-player-armies player1 f armies playerpos)
   (cond
     [(equal? (player-pos player1) playerpos)
@@ -977,15 +982,21 @@ Provided by graph.rkt:
       [reserved-armies (f (player-reserved-armies player1) armies)])]
     [else player1]))
 
+;player-update-armies: Function that adds or subtracts armies from a specified player reserve.
+;List [Players] (playerlist) Function (f) Number (armies) Number (playerpos) -> List [Players]
 (define (player-update-armies playerlist f armies playerpos)
   (local
     [(define (change-p player)
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)))
 
+;WILL BE DEPRECATED BY JOSH'S FUNCTION. PLEASE DELETE THIS WHEN IMPLEMENTED
 (define (move-on-to-recruit? plist)
   (equal? (player-reserved-armies (last plist)) 0))
-       
+ ;-------------------------------------------------------------------------
+
+;any-unclaimed-terrs?: Checks to see if there are any territories laft to claim in the init phase.
+; List [Territories] -> Boolean
 (define (any-unclaimed-terrs? tlist)
   (cond [(empty? tlist) #f]
         [(equal? (territory-armies (first tlist)) 0)
@@ -998,42 +1009,50 @@ Provided by graph.rkt:
 (define (initial-recruit model x y event)
   (cond [(not (any-unclaimed-terrs? (system-territory-list model)))
          (cond
+           ;This clause checks to see if the armies are at 0 of all players (or it should, in the future)
            [(move-on-to-recruit? (system-playerlist model))
+            ;If so, we move on to the recruit phase
                               (struct-copy
                                system model
                                [turn-stage "recruit"])]
-           
+           ;Otherwise, it just places the tooltip. {?}
            [else (struct-copy system model
                               [territory-selected (tooltip x y model)]
                               [x x]
                               [y y])])
                      ]
-         
+         ;This clause checks to see if the player turn has reached the end
         [(equal? (system-player-turn model) (length (system-playerlist model)))
+         ;if to, we cycle back
          (struct-copy
           system model
           [player-turn 0]
           )]
+        ;This clause checks to see if there is no territory selected
         [(equal? (system-territory-selected model) "null")
          (cond
+           ;If so, we check again to see if we need to move on to the recruit phase
            [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
                                [turn-stage "recruit"])]
-           
+           ;If not, just show the tooltip
            [else (struct-copy system model
                               [territory-selected (tooltip x y model)]
                               [x x]
                               [y y])])]
+        ;If a territory is clicked, this clause is activated
         [(and
           (equal? event "button-down")
           (not (equal? (system-territory-selected model) "null")))
           
+         ;This conditional checks to see if the territory owner matches the player who is clicking
          (cond [(not
                 (equal? (territory-owner (territory-scan
                                          (system-territory-selected model)
                                          (system-territory-list model)))
                        (system-player-turn model)))
+                ;If so, he/she can add an army during this stage.
          (struct-copy 
           system model
           [territory-list (territory-update + 1 
@@ -1052,19 +1071,20 @@ Provided by graph.rkt:
           [playerlist (player-update-armies (system-playerlist model) - 1 (system-player-turn model))]
           
           )]
+               ;If not, we just see the tooltip
                [else (struct-copy
                       system model
                       [x x]
                       [y y]
                       [territory-selected (tooltip x y model)])])]
-        
+        ;If none of those apply, then we check once again for the recruit phase
         [else
          (cond
            [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
                                [turn-stage "recruit"])]
-           
+           ;And if nothing else applies, then we go ahead and just show the tooltip.
            [else (struct-copy system model
                               [territory-selected (tooltip x y model)]
                               [x x]

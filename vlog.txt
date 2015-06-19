@@ -1,10 +1,14 @@
-Current Version: 1.1a
+Current Version: 1.2a
 BUILD IS NOW IN ALPHA
 
-Version 1.1.1a (6/19/15)
+Version 1.2a (6/19/15)
 - Fixed bug concerning updating of player colors in draw handler for tooltip and toolbar debug square
 - Fixed more spacing
 - Changed null territory player owner to 404
+- Added army count to the tooltip
+- Changed the condition of completion for init-recruit from no territories left to no armies left
+- Added in function contracts to functions that needed them.
+- Fixed the end inital-recruit turn recursion
 
 Version 1.1a (6/18/15)
 - Completion of the inital-recruit function
