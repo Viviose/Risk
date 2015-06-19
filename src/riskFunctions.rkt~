@@ -93,7 +93,7 @@ Provided by graph.rkt:
   #:transparent)
 
 ;Player struct (Holds the information of each player)
-;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
+;[Player] : List (card structs) List (strings) Number (armies) String (status) Number (pos)
 (define-struct player (cardlist territories-owned reserved-armies status pos)
   #:transparent) 
 
@@ -359,7 +359,7 @@ Provided by graph.rkt:
                                                                               )
                                            )
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 0 404 '())
+                                (territory "null" 0 7 '())
                                 )
   )
 
@@ -515,45 +515,23 @@ Provided by graph.rkt:
   )
 
 ;This assigns a designated color to each player, and is used to custom color player objects like army markers.
+;THIS SHOULD BE CHANGED TO BE DEPENDENT ON THE NUMBER, NOT THE MODEL, MY B. IT WILL BE A PROBLEM LATER ON.
 ;System (the model which contains the player turn) -> String (color)
 (define (playercolor model)
-  (cond [(equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                  (system-territory-list model)
-                                                  )
-                                  )
-                 0)
+  (cond [(equal? (system-player-turn model) 0)
          "red"]
-        [(equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                  (system-territory-list model)
-                                                  )
-                                  )
-                 1)
+        [(equal? (system-player-turn model) 1)
          "yellow"]
-        [(equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                  (system-territory-list model)
-                                                  )
-                                  )
-                 2)
+        [(equal? (system-player-turn model) 2)
          "blue"]
-        [(equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                  (system-territory-list model)
-                                                  )
-                                  )
-                 3)
+        [(equal? (system-player-turn model) 3)
          "green"]
-        [(equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                  (system-territory-list model)
-                                                  )
-                                  )
-                 4)
+        [(equal? (system-player-turn model) 4)
          "purple"]
-        [(equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                  (system-territory-list model)
-                                                  )
-                                  )
-                 5)
+        [(equal? (system-player-turn model) 5)
          "brown"]
-        [else "white"]
+        [else "white"
+              ]
         )
   )
 
@@ -569,30 +547,13 @@ Provided by graph.rkt:
         )
   )
 
-;Defines player turn box's color by turn
-(define (turncolor model)
-  (cond [(equal? (system-player-turn model) 0)
-         "red"]
-        [(equal? (system-player-turn model) 1)
-         "yellow"]
-        [(equal? (system-player-turn model) 2)
-         "blue"]
-        [(equal? (system-player-turn model) 3)
-         "green"]
-        [(equal? (system-player-turn model) 4)
-         "purple"]
-        [(equal? (system-player-turn model) 5)
-         "brown"]
-        [else "white"]
-        )
-  )
 ;This shows the toolbar on the bottom of the HUD.
 ;System (model, used to grab info) -> Image (toolbar)
 (define (toolbar model)
   (beside
    (overlay
     (text (system-debug model) 16 "black")
-    (square 75 "solid" (turncolor model))
+    (square 75 "solid" (playercolor model))
     )
    (overlay
     (text "Roll" 16 "black")
@@ -686,12 +647,11 @@ Provided by graph.rkt:
                                (above
                                 (text (system-territory-selected model) 16 "black")
                                 (text (who-owns? model) 12 "black"))
-                               (rectangle 100 50 "solid" (playercolor model))
-                               )
+                               (rectangle 100 50 "solid";FIXITFIXIT Josh pls and look at why recruit no worky
+                                          (playercolor model)))
                               (system-x model) (system-y model)
                               BOARD)]
-                [else BOARD]
-                )          
+                [else BOARD])          
           (toolbar model))]
         [(equal? (system-screen model) "cards")
          (overlay
@@ -1002,8 +962,7 @@ Provided by graph.rkt:
         [(equal? (system-player-turn model) (length (system-playerlist model)))
          (struct-copy
           system model
-          [player-turn 0]
-          )]
+          [player-turn 0])]
         [(equal? (system-territory-selected model) "null")
          (cond
            [(move-on-to-recruit? (system-territory-list model))
