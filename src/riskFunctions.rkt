@@ -685,7 +685,18 @@ Provided by graph.rkt:
                  (place-image (overlay
                                (above
                                 (text (system-territory-selected model) 16 "black")
-                                (text (who-owns? model) 12 "black"))
+                                (text (who-owns? model) 12 "black")
+                                (text (string-append
+                                       (number->string
+                                        (territory-armies
+                                         (territory-scan
+                                          (system-territory-selected model)
+                                          (system-territory-list model))))
+                                       " Armies")
+                                      12
+                                      "black"
+                                      )    
+                                )
                                (rectangle 100 50 "solid" (playercolor model))
                                )
                               (system-x model) (system-y model)
@@ -699,7 +710,7 @@ Provided by graph.rkt:
                          (overlay
                           (card-buncher 
                            ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
-                           (list (make-card "Test Territory" "3")))
+                           (list (make-card "Rachel is nub" "3")))
                           (rectangle 700 200 "solid" (make-color 128 0 0))))
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
@@ -972,23 +983,22 @@ Provided by graph.rkt:
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)))
 
-(define (move-on-to-recruit? tlist)
-  (cond [(empty? tlist) #t]
-        [(equal? (territory-owner (first tlist)) "null")
-         #f]
-        [else (move-on-to-recruit? (rest tlist))]
-        )
-  )
+(define (move-on-to-recruit? plist)
+  (equal? (player-reserved-armies (last plist)) 0))
        
-
+(define (any-unclaimed-terrs? tlist)
+  (cond [(empty? tlist) #f]
+        [(equal? (territory-armies (first tlist)) 0)
+         #t]
+        [else (any-unclaimed-terrs? (rest tlist))]))
 
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
 ;Still requires case for when troops can no longer be placed
 (define (initial-recruit model x y event)
-  (cond [(equal? (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model))) 1)
+  (cond [(not (any-unclaimed-terrs? (system-territory-list model)))
          (cond
-           [(move-on-to-recruit? (system-territory-list model))
+           [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
                                [turn-stage "recruit"])]
@@ -1006,7 +1016,7 @@ Provided by graph.rkt:
           )]
         [(equal? (system-territory-selected model) "null")
          (cond
-           [(move-on-to-recruit? (system-territory-list model))
+           [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
                                [turn-stage "recruit"])]
@@ -1019,6 +1029,11 @@ Provided by graph.rkt:
           (equal? event "button-down")
           (not (equal? (system-territory-selected model) "null")))
           
+         (cond [(not
+                (equal? (territory-owner (territory-scan
+                                         (system-territory-selected model)
+                                         (system-territory-list model)))
+                       (system-player-turn model)))
          (struct-copy 
           system model
           [territory-list (territory-update + 1 
@@ -1037,10 +1052,15 @@ Provided by graph.rkt:
           [playerlist (player-update-armies (system-playerlist model) - 1 (system-player-turn model))]
           
           )]
+               [else (struct-copy
+                      system model
+                      [x x]
+                      [y y]
+                      [territory-selected (tooltip x y model)])])]
         
         [else
          (cond
-           [(move-on-to-recruit? (system-territory-list model))
+           [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
                                [turn-stage "recruit"])]
@@ -1049,8 +1069,8 @@ Provided by graph.rkt:
                               [territory-selected (tooltip x y model)]
                               [x x]
                               [y y])])]
-        )
-  )
+        ))
+  
 
 ;RECRUITMENT PHASE
 
