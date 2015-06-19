@@ -823,9 +823,7 @@ Provided by graph.rkt:
                      [screen "cards"]
                      ))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
-                              
-                               (initial-recruit model x y event)
-                              ]
+                               (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
                                [(equal? (system-turn-stage model) "recruit")
                                   ;Here is the problemo:
@@ -983,14 +981,53 @@ Provided by graph.rkt:
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)))
 
+(define (make-boolean-list plist)
+   (cond [(empty? plist) '()]
+         [(equal? (player-reserved-armies (first plist)) 0)
+         (append (list true) (make-boolean-list (rest plist))  
+               
+               )]
+         [else (append (list false)
+                     (make-boolean-list (rest plist))
+                     )]
+         )
+   )
+
+(check-expect (make-boolean-list (list (make-player '() '() 0 "alive" 0)))
+              (list true)
+              )
+
 (define (move-on-to-recruit? plist)
-  (equal? (player-reserved-armies (last plist)) 0))
-       
+  (cond [(empty? plist) true]
+        [(equal? (first plist) true)
+         (move-on-to-recruit? (rest plist))]
+        [else false]
+        )
+  )
+
+(check-expect (move-on-to-recruit? (make-boolean-list (list (make-player '() '() 0 "alive" 0)
+                                                            (make-player '() '() 0 "alive" 1)
+                                                            (make-player '() '() 0 "alive" 2)
+                                                            )
+                                                      )
+                                   )
+              true)
+
+(check-expect (move-on-to-recruit? (make-boolean-list (list (make-player '() '() 0 "alive" 0)
+                                                            (make-player '() '() 1 "alive" 1)
+                                                            (make-player '() '() 0 "alive" 2)
+                                                            )
+                                                      )
+                                   )
+              false)
+
 (define (any-unclaimed-terrs? tlist)
   (cond [(empty? tlist) #f]
         [(equal? (territory-armies (first tlist)) 0)
          #t]
-        [else (any-unclaimed-terrs? (rest tlist))]))
+        [else (any-unclaimed-terrs? (rest tlist))]
+        )
+  )
 
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
@@ -999,16 +1036,14 @@ Provided by graph.rkt:
   (cond [(not (any-unclaimed-terrs? (system-territory-list model)))
          (cond
            [(move-on-to-recruit? (system-playerlist model))
-                              (struct-copy
-                               system model
-                               [turn-stage "recruit"])]
-           
+            (struct-copy
+             system model
+             [turn-stage "recruit"])]
            [else (struct-copy system model
                               [territory-selected (tooltip x y model)]
                               [x x]
-                              [y y])])
-                     ]
-         
+                              [y y])]
+           )]
         [(equal? (system-player-turn model) (length (system-playerlist model)))
          (struct-copy
           system model
@@ -1019,16 +1054,18 @@ Provided by graph.rkt:
            [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
-                               [turn-stage "recruit"])]
-           
+                               [turn-stage "recruit"]
+                               )]
            [else (struct-copy system model
                               [territory-selected (tooltip x y model)]
                               [x x]
-                              [y y])])]
+                              [y y])]
+           )]
         [(and
           (equal? event "button-down")
-          (not (equal? (system-territory-selected model) "null")))
-          
+          (not (equal? (system-territory-selected model) "null")
+               )
+          )
          (cond [(not
                 (equal? (territory-owner (territory-scan
                                          (system-territory-selected model)
@@ -1078,12 +1115,14 @@ Provided by graph.rkt:
   (cond [(empty? tlist) 0]
         [(equal? (territory-owner (first tlist)) playerno)
          (+ 1 (count-territories-of-player playerno (rest tlist)))]
-        [else (count-territories-of-player playerno (rest tlist))]))
+        [else (count-territories-of-player playerno (rest tlist))]
+        )
+  )
 
 ;(define (factor-continent-bonuses tlist) *** I'm lazy, this is gonna require a lot of cases
 
 (check-expect (count-territories-of-player "null" INITIAL-TERRITORY-LIST)
-              43)
+              42)
 
 (define (armies-to-add model)
   (+
