@@ -988,7 +988,6 @@ Provided by graph.rkt:
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)))
 
-<<<<<<< HEAD
 (define (make-boolean-list plist)
    (cond [(empty? plist) '()]
          [(equal? (player-reserved-armies (first plist)) 0)
@@ -1029,15 +1028,15 @@ Provided by graph.rkt:
                                    )
               false)
 
-=======
+
 ;WILL BE DEPRECATED BY JOSH'S FUNCTION. PLEASE DELETE THIS WHEN IMPLEMENTED
-(define (move-on-to-recruit? plist)
-  (equal? (player-reserved-armies (last plist)) 0))
+;(define (move-on-to-recruit? plist)
+  ;(equal? (player-reserved-armies (last plist)) 0))
  ;-------------------------------------------------------------------------
 
 ;any-unclaimed-terrs?: Checks to see if there are any territories laft to claim in the init phase.
 ; List [Territories] -> Boolean
->>>>>>> fbe8b1e9a6629ae81b9b569bb5c3a2323653fe4f
+
 (define (any-unclaimed-terrs? tlist)
   (cond [(empty? tlist) #f]
         [(equal? (territory-armies (first tlist)) 0)
@@ -1054,16 +1053,7 @@ Provided by graph.rkt:
          (cond
            ;This clause checks to see if the armies are at 0 of all players (or it should, in the future)
            [(move-on-to-recruit? (system-playerlist model))
-<<<<<<< HEAD
-            (struct-copy
-             system model
-             [turn-stage "recruit"])]
-           [else (struct-copy system model
-                              [territory-selected (tooltip x y model)]
-                              [x x]
-                              [y y])]
-           )]
-=======
+
             ;If so, we move on to the recruit phase
                               (struct-copy
                                system model
@@ -1075,9 +1065,9 @@ Provided by graph.rkt:
                               [y y])])
                      ]
          ;This clause checks to see if the player turn has reached the end
->>>>>>> fbe8b1e9a6629ae81b9b569bb5c3a2323653fe4f
+
         [(equal? (system-player-turn model) (length (system-playerlist model)))
-         ;if to, we cycle back
+         ;if so, we cycle back
          (struct-copy
           system model
           [player-turn 0]
@@ -1089,7 +1079,7 @@ Provided by graph.rkt:
            [(move-on-to-recruit? (system-playerlist model))
                               (struct-copy
                                system model
-<<<<<<< HEAD
+
                                [turn-stage "recruit"]
                                )]
            [else (struct-copy system model
@@ -1097,25 +1087,14 @@ Provided by graph.rkt:
                               [x x]
                               [y y])]
            )]
-        [(and
-          (equal? event "button-down")
-          (not (equal? (system-territory-selected model) "null")
-               )
-          )
-=======
-                               [turn-stage "recruit"])]
-           ;If not, just show the tooltip
-           [else (struct-copy system model
-                              [territory-selected (tooltip x y model)]
-                              [x x]
-                              [y y])])]
+        
         ;If a territory is clicked, this clause is activated
         [(and
           (equal? event "button-down")
           (not (equal? (system-territory-selected model) "null")))
           
          ;This conditional checks to see if the territory owner matches the player who is clicking
->>>>>>> fbe8b1e9a6629ae81b9b569bb5c3a2323653fe4f
+
          (cond [(not
                 (equal? (territory-owner (territory-scan
                                          (system-territory-selected model)
