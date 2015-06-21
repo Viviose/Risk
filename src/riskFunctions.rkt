@@ -359,7 +359,7 @@ Provided by graph.rkt:
                                                                               )
                                            )
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 0 404 '())
+                                (territory "null" 9001 404 '())
                                 )
   )
 
@@ -944,12 +944,13 @@ Provided by graph.rkt:
 ;update-player-armies: Helper function to player-update-armies that adds/subtracts armies to a player
 ; Player (player1) Function + or - (f) Number (armies) Number (playerpos) -> Player
 (define (update-player-armies player1 f armies playerpos)
-  (cond
-    [(equal? (player-pos player1) playerpos)
-     (struct-copy
-      player player1
-      [reserved-armies (f (player-reserved-armies player1) armies)])]
-    [else player1]))
+  (cond [(equal? (player-pos player1) playerpos)
+         (struct-copy
+          player player1
+          [reserved-armies (f (player-reserved-armies player1) armies)])]
+        [else player1]
+        )
+  )
 
 ;player-update-armies: Function that adds or subtracts armies from a specified player reserve.
 ;List [Players] (playerlist) Function (f) Number (armies) Number (playerpos) -> List [Players]
@@ -957,7 +958,9 @@ Provided by graph.rkt:
   (local
     [(define (change-p player)
        (update-player-armies player f armies playerpos))]
-    (map change-p playerlist)))
+    (map change-p playerlist)
+    )
+  )
 
 ;***Initial Recruitment Phase***
 
@@ -966,12 +969,12 @@ Provided by graph.rkt:
 (define (make-boolean-list plist)
    (cond [(empty? plist) '()]
          [(equal? (player-reserved-armies (first plist)) 0)
-         (append (list true) (make-boolean-list (rest plist))  
-               
-               )]
+         (append (list true) 
+                 (make-boolean-list (rest plist))
+                 )]
          [else (append (list false)
-                     (make-boolean-list (rest plist))
-                     )]
+                       (make-boolean-list (rest plist))
+                       )]
          )
    )
 
@@ -1025,6 +1028,27 @@ Provided by graph.rkt:
         )
   )
 
+;select-player: [List player] number -> player
+;Returns a player with a pos attribute equal to that of the given number, given a list of players.
+(define (select-player playerlist pos)
+  (cond [(equal? (player-pos (first playerlist))
+                 pos)
+         (first playerlist)]
+        [else (select-player (rest playerlist) pos)]
+        )
+  )
+
+;troops-to-allocate?: system -> boolean
+;Checks to see if the current player has any troops in their reserves, defined as having an amount of armies greater than 0.
+;True if they do, else false.
+(define (troops-to-allocate? model)
+  (> (player-reserved-armies (select-player (system-playerlist model) 
+                                            (system-player-turn model)
+                                            )
+                             )
+     0)
+  )
+     
 ;turn-update: system -> number
 ;If the current player is the last, then play will continue with the first player.
 ;Else, the next player is up.
@@ -1054,10 +1078,12 @@ The list of conditions for moving on to the next phase is as follows:
 
 The conditions for adding troops to territories already claimed are as follows:
 - All other territories must have been claimed.
+- The player must have troops to allocate.
 - The player must own the territory he/she is trying to fortify.
 
 The conditions to claim a territory are as follows:
 - The territory must have no troops inside of it.
+- The player must have troops to allocate.
 
 The conditions to move on to the next player are as follows:
 - The current player has claimed a territory.
@@ -1071,12 +1097,21 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
   ;Further clauses will ensure that the turn flows as it should in gameplay.
   (cond [(move-on-to-recruit? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to recruit.
-         ;The turn state will also be changed so that it is currently player 1's turn once recruit is started.
+         ;The turn state will also be changed so that it is player 1's turn once recruit is started.
          (struct-copy system model
                       [turn-stage "recruit"]
                       [player-turn 0]
                       [x x]
                       [y y]
+                      )]
+        ;This clause checks to see if the current player has any troops to allocate.
+        ;If they do not, then play will pass to the next player.
+        [(not (troops-to-allocate? model))
+         (struct-copy system model
+                      [x x]
+                      [y y]
+                      [territory-selected (tooltip x y model)]
+                      [player-turn (turn-update model)]
                       )]
         ;This clause will check to see if the player is not currrently hovering over a territory.
         ;If they are not (this conditional will return true in this case), then the model will simply be returned with updated default attributes.
@@ -1093,14 +1128,17 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
               )
          ;This conditional checks to see if the player selecting the territory is the owner of that territory or can claim it.
          ;If they are, they are able to fortify/claim. If not, the model is simply updated with new x and y coordinates, as well as the territory selected.
-         ;The first clause checks to see if the territory is up for claim.
-         (cond [(equal? (territory-armies (territory-scan (system-territory-selected model)
-                                                          (system-territory-list model)
-                                                          )
-                                          )
-                        0)
-                ;If this clause is true, the player will now be claim the territory.
-                ;The player will place one troop inside of the territory, and default attributes will be updated.
+         ;The first clause checks to see if the territory is up for claim, which require the territory to be empty and the player to have troops
+         ;available for allocation.
+         (cond [(and (equal? (territory-armies (territory-scan (system-territory-selected model)
+                                                               (system-territory-list model)
+                                                               )
+                                               )
+                             0)
+                     )
+                ;If this clause is true, the player will now claim the territory.
+                ;The player will place one troop inside of the territory (meaning the territory gains an army and the player loses one),
+                ;and default attributes will be updated.
                 ;The turn will be changed to that of the next player using turn-update, and the player's list of claimed territories is updated.
                 (struct-copy system model
                              [territory-list (territory-update + 1
@@ -1114,13 +1152,16 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                              [territory-selected (tooltip x y model)]
                              [x x]
                              [y y]
-                             ;If the current player-turn value is equal to the length of the player-list - 1, then the turn state will be reset to 0.
-                             ;Else, then it will become the current value + 1.
+                             [playerlist (player-update-armies (system-playerlist model)
+                                                               - 1
+                                                               (system-player-turn model)
+                                                               )]
                              [player-turn (turn-update model)]
                              )]
                ;This second clause checks to see if a player can fortify a territory.
                #| In order to be able to fortify a territory:
                     - All other territories must have been claimed.
+                    - The player must have troops to allocate.
                     - The player must own the territory. |#
                [(and (equal? (territory-owner (territory-scan (system-territory-selected model)
                                                               (system-territory-list model)
@@ -1139,6 +1180,10 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                                                                                                )
                                                                                )
                                                                (system-territory-list model)
+                                                               (system-player-turn model)
+                                                               )]
+                             [playerlist (player-update-armies (system-playerlist model)
+                                                               - 1
                                                                (system-player-turn model)
                                                                )]
                              [player-turn (turn-update model)]
@@ -1188,9 +1233,8 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
    
 ;da recruit phase m8
 (define (recruit-phase model x y event)
-  (struct-copy
-   system model
-   [playerlist (player-update-armies (system-playerlist model) + (armies-to-add model) (system-player-turn model))]))
+  model
+  )
 
 (big-bang (make-system 
            ;No players at first, updated upon player selection
