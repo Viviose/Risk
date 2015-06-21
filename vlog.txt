@@ -1,6 +1,11 @@
 Current Version: 1.2a
 BUILD IS NOW IN ALPHA
 
+Version 1.3a "Initial Recruit Patch" 6/21/15)
+- Totally completed initial recruit phase by patching bugs and creating new conditionals
+- Created helper functions to aid in initial recruit
+- Added in comments to show process that initial recruit follows.
+
 Version 1.2a (6/19/15)
 - Fixed bug concerning updating of player colors in draw handler for tooltip and toolbar debug square
 - Fixed more spacing

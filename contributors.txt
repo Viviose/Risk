@@ -4,4 +4,5 @@ Griffin Lynch
 
 Special Thanks to:
 Mr. Dr. Professor Andrew Mauer-Oats - For making us do huge projects and not giving us extra credit.
-Megan Poulosophos - For the inspirational naps and keeping Joshua from going insane.
+Megan Poulosophos - For the inspirational naps and keeping Joshua from going insane, as well as 
+					some legitimate small coding contributions. 
