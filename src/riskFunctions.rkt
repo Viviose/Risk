@@ -110,6 +110,19 @@ Provided by graph.rkt:
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
+;The custom roboto fonted text function:
+;textc: Prints a text image with the defined font below
+;String (text to disp.) Number (height of text) String/Color (color of text) -> Image (text)
+(define (textc string size color)
+  (text/font string
+             size
+             color
+             "Roboto Light"
+             'default
+             'normal
+             'normal
+             #f))
+
 ;List of all territories
 (define INITIAL-TERRITORY-LIST (list ;North America
                                 (territory "Alaska" 0 "null" (list "Northwest Territory"
@@ -380,7 +393,7 @@ Provided by graph.rkt:
 ;String (button text) Number (x pos) Number (y pos) String (color) -> Image (button)
 (define (button string x y color)
   (above (overlay
-          (text string (/ y 2) "white")
+          (textc string (/ y 2) "black")
           (rectangle x y "solid" color)
           )
          (rectangle x 2  "solid" "black")
@@ -389,7 +402,7 @@ Provided by graph.rkt:
 
 ;The splash banner
 (define SPLASH
-  (overlay (text "\n\nClick anywhere to continue" 60 "black")
+  (overlay (textc "\n\nClick anywhere to continue" 60 "black")
            (scale 1.8 TITLESCRN)
            )
   ) 
@@ -398,13 +411,13 @@ Provided by graph.rkt:
 (define PLAYERSCRN
   (overlay
    (above
-    (text "How many players will be joining us?" 48 "white")
-    (button "3 players" 500 100 "red")
-    (button "4 players" 500 100 "red")
-    (button "5 players" 500 100 "red")
-    (button "6 players" 500 100 "red")
+    (textc "How many players will be joining us?" 48 "white")
+    (button "3 players" 500 100 (make-color 255 235 59))
+    (button "4 players" 500 100 (make-color 255 235 59))
+    (button "5 players" 500 100 (make-color 255 235 59))
+    (button "6 players" 500 100 (make-color 255 235 59))
     )
-   (rectangle 1000 700 "solid" "green")
+   (rectangle 1000 700 "solid" (make-color 27 94 32))
    )
   )
 
@@ -522,37 +535,37 @@ Provided by graph.rkt:
                                                   )
                                   )
                  0)
-         "red"]
+         (make-color 198 40 40)]
         [(equal? (territory-owner (territory-scan (system-territory-selected model)
                                                   (system-territory-list model)
                                                   )
                                   )
                  1)
-         "yellow"]
+         (make-color 253 216 53)]
         [(equal? (territory-owner (territory-scan (system-territory-selected model)
                                                   (system-territory-list model)
                                                   )
                                   )
                  2)
-         "blue"]
+         (make-color 0 131 143)]
         [(equal? (territory-owner (territory-scan (system-territory-selected model)
                                                   (system-territory-list model)
                                                   )
                                   )
                  3)
-         "green"]
+         (make-color 56 142 60)]
         [(equal? (territory-owner (territory-scan (system-territory-selected model)
                                                   (system-territory-list model)
                                                   )
                                   )
                  4)
-         "purple"]
+         (make-color 69 39 160)]
         [(equal? (territory-owner (territory-scan (system-territory-selected model)
                                                   (system-territory-list model)
                                                   )
                                   )
                  5)
-         "brown"]
+         (make-color 121 85 72)]
         [else "white"]
         )
   )
@@ -572,17 +585,17 @@ Provided by graph.rkt:
 ;Defines player turn box's color by turn
 (define (turncolor model)
   (cond [(equal? (system-player-turn model) 0)
-         "red"]
+         (make-color 244 67 54)]
         [(equal? (system-player-turn model) 1)
-         "yellow"]
+         (make-color 255 235 59)]
         [(equal? (system-player-turn model) 2)
-         "blue"]
+         (make-color 33 150 243)]
         [(equal? (system-player-turn model) 3)
-         "green"]
+         (make-color 0 230 118)]
         [(equal? (system-player-turn model) 4)
-         "purple"]
+         (make-color 123 31 162)]
         [(equal? (system-player-turn model) 5)
-         "brown"]
+         (make-color 255 145 0)]
         [else "white"]
         )
   )
@@ -591,15 +604,15 @@ Provided by graph.rkt:
 (define (toolbar model)
   (beside
    (overlay
-    (text (system-debug model) 16 "black")
+    (textc (system-debug model) 16 "black")
     (square 75 "solid" (turncolor model))
     )
    (overlay
-    (text "Roll" 16 "black")
-    (square 75 "solid" "green"))
+    (textc "Roll" 16 "black")
+    (square 75 "solid" (make-color 76 175 80)))
    (die-bar (system-dicelist model))
    (overlay
-    (text (cond [(equal? (system-turn-stage model) "recruit")
+    (textc (cond [(equal? (system-turn-stage model) "recruit")
                  "Recruit"]
                 [(equal? (system-turn-stage model) "attack")
                  "Attack"]
@@ -622,10 +635,10 @@ Provided by graph.rkt:
                ) 
     )
    (overlay
-    (text "Cards" 16 "white")
+    (textc "Cards" 16 "white")
     (circle 37.5 "solid" "black"))
    (overlay
-    (text (string-append
+    (textc (string-append
            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
            " armies in reserves.")
            
@@ -638,8 +651,8 @@ Provided by graph.rkt:
 (define (card-create card)
   (overlay
    (above
-    (text (card-territory card) 16 "black")
-    (text (card-unit card) 16 "black")
+    (textc (card-territory card) 16 "black")
+    (textc (card-unit card) 16 "black")
     )
    (rectangle 100 145 "solid" "white")
    )
@@ -678,9 +691,12 @@ Provided by graph.rkt:
 ;tooltip-width: Determines how wide the tooltip should be in px based off of a string
 ;String (name of territory) -> Number (tooltip width)
 (define (tooltip-width name)
-  (+
-   (* 8 (string-length name))
-   25))
+  (max
+   (+
+    (* 8 (string-length name))
+    25)
+  131)
+  )
 
 ;HANDLERS
 (define (render model)
@@ -700,9 +716,9 @@ Provided by graph.rkt:
                  ;*****************************************************!!!!!!Work on null is needed.
                  (place-image (overlay
                                (above
-                                (text (system-territory-selected model) 16 "black")
-                                (text (who-owns? model) 12 "black")
-                                (text (string-append
+                                (textc (system-territory-selected model) 16 "black")
+                                (textc (who-owns? model) 12 "black")
+                                (textc (string-append
                                        (number->string
                                         (territory-armies
                                          (territory-scan
@@ -732,8 +748,8 @@ Provided by graph.rkt:
            (cond [(not (equal? (system-territory-selected model) "null"))
                   (place-image (overlay
                                 (above
-                                 (text (system-territory-selected model) 16 "black")
-                                 (text "Player who owns" 12 "black"))
+                                 (textc (system-territory-selected model) 16 "black")
+                                 (textc "Player who owns" 12 "black"))
                                 (rectangle 100 50 "solid" (playercolor model)))
                                (system-x model) (system-y model)
                                BOARD)]
