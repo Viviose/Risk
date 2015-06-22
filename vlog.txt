@@ -5,6 +5,8 @@ Version 1.3a "Initial Recruit Patch" 6/21/15)
 - Totally completed initial recruit phase by patching bugs and creating new conditionals
 - Created helper functions to aid in initial recruit
 - Added in comments to show process that initial recruit follows.
+- Fixed the overflow of text
+- Added the army count to the toolbar
 
 Version 1.2a (6/19/15)
 - Fixed bug concerning updating of player colors in draw handler for tooltip and toolbar debug square

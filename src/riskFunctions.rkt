@@ -675,7 +675,12 @@ Provided by graph.rkt:
     )
   )
 
-
+;tooltip-width: Determines how wide the tooltip should be in px based off of a string
+;String (name of territory) -> Number (tooltip width)
+(define (tooltip-width name)
+  (+
+   (* 8 (string-length name))
+   25))
 
 ;HANDLERS
 (define (render model)
@@ -708,7 +713,7 @@ Provided by graph.rkt:
                                       "black"
                                       )    
                                 )
-                               (rectangle 100 50 "solid" (playercolor model))
+                               (rectangle (tooltip-width (system-territory-selected model)) 50 "solid" (playercolor model))
                                )
                               (system-x model) (system-y model)
                               BOARD)]
