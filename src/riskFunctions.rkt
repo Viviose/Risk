@@ -85,7 +85,7 @@ Provided by graph.rkt:
 
 ;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
-(define TITLESCRN (bitmap "imgs/titlescreen.jpg"))
+(define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
@@ -402,7 +402,9 @@ Provided by graph.rkt:
 
 ;The splash banner
 (define SPLASH
-  (overlay (textc "\n\nClick anywhere to continue" 60 "black")
+  (overlay (overlay
+            (textc "Click anywhere to continue" 60 "white")
+            (rectangle 700 100 "solid" (make-color 26 35 126 150)))
            (scale 1.8 TITLESCRN)
            )
   ) 
