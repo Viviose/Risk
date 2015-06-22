@@ -624,14 +624,6 @@ Provided by graph.rkt:
    (overlay
     (text "Cards" 16 "white")
     (circle 37.5 "solid" "black"))
-   (overlay
-    (text (string-append
-           (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
-           " armies in reserves.")
-           
-          16 "white")
-          
-    (rectangle 160 75 "solid" "purple"))
    )
   )
 
