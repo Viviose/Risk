@@ -863,7 +863,7 @@ Provided by matdes.rkt:
            [(equal? DEBUG 0)                 
             (cond [(and 
                     (equal? event "button-down")
-                    (< (distance 993 910 x y) 32.5)
+                    (< (distance 923 925 x y) 37.5)
                     (struct-copy
                      system model
                      [screen "cards"]
@@ -1300,7 +1300,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
-           "null state"
+           "0 0"
            ;Mouse x coordinate
            0
            ;Mouse y coordinate
