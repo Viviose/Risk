@@ -137,7 +137,8 @@ Provided by matdes.rkt:
              'default
              'normal
              'normal
-             #f))
+             #f)
+  )
 
 ;List of all territories
 (define INITIAL-TERRITORY-LIST (list ;North America
