@@ -68,6 +68,22 @@ Provided by graph.rkt:
 
 |#
 
+(require "matdes.rkt")
+#|
+A sub-module for graphic design purposes that align with Material Design.
+
+Provided by matdes.rkt:
+**Functions**
+- shadow-circle: Number (radius)
+    - Builds a gradient shadow in a circular shape.
+    - Dependent on color functions in the module.
+**Objects**
+- DICE-BUTTON
+    - A new, material inspired button for rolling the dice.
+- CARD-BUTTON
+    - The same as above, only for cards.
+|#
+
 (require picturing-programs)
 ;Picturing-Programs library contains all functions necessary for drawing images.
 ;All references can be found at this location by default: (file:///C:/Program%20Files/Racket/doc/picturing-programs/index.html)
@@ -609,9 +625,7 @@ Provided by graph.rkt:
     (textc (system-debug model) 16 "black")
     (square 75 "solid" (turncolor model))
     )
-   (overlay
-    (textc "Roll" 16 "black")
-    (square 75 "solid" (make-color 76 175 80)))
+   DICE-BUTTON
    (die-bar (system-dicelist model))
    (overlay
     (textc (cond [(equal? (system-turn-stage model) "recruit")
@@ -636,9 +650,7 @@ Provided by graph.rkt:
                                     )
                ) 
     )
-   (overlay
-    (textc "Cards" 16 "white")
-    (circle 37.5 "solid" "black"))
+   CARD-BUTTON
    (overlay
     (textc (string-append
            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))

@@ -1,0 +1,34 @@
+#lang racket
+(require picturing-programs)
+(require "graph.rkt")
+
+
+;(define DICE-ICO (bitmap "src/imgs/diceico.png"))
+
+
+
+(define (r x y)
+  128)
+(define (g x y)
+  128)
+(define (b x y)
+  128)
+(define (alph x y radius)
+  (cond [(<= (distance x y radius radius) radius)]
+        [else 0]))
+         
+  
+(define (shadow-circle circ-radius)
+  (local [
+    (define (a x y)
+      (alph x y radius))]
+    (build4-image
+   circ-radius
+   circ-radius
+   r g b a)))
+
+(shadow-circle 60)
+
+
+
+   
