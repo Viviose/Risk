@@ -1,5 +1,9 @@
-Current Version: 1.3a
+Current Version: 1.3.1a
 BUILD IS NOW IN ALPHA
+
+Version 1.3.1a (6/23/15)
+- Added in title music
+- Fixed 'X' hotbox in cardui
 
 Version 1.3a "Initial Recruit and Graphical Polish Patch" 6/21/15)
 - Totally completed initial recruit phase by patching bugs and creating new conditionals

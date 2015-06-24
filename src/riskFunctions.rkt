@@ -623,7 +623,7 @@ Provided by matdes.rkt:
 (define (toolbar model)
   (beside
    (overlay
-    (textc (system-debug model) 16 "black")
+    (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")
     (square 75 "solid" (turncolor model))
     )
    DICE-BUTTON
@@ -774,6 +774,8 @@ Provided by matdes.rkt:
         [else model]
         )
   )
+(require rsound)
+(define TSOUND (rs-read "sounds/title.wav"))
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -868,6 +870,7 @@ Provided by matdes.rkt:
                     (struct-copy
                      system model
                      [screen "cards"]
+                     [debug (stop)]
                      ))]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
                                (initial-recruit model x y event)]
@@ -893,7 +896,7 @@ Provided by matdes.rkt:
            [else model]
            )]
         [(equal? (system-screen model) "cards")
-         (if (and (in-ellipse? 953 405 989 405 973 398 x y)
+         (if (and (<= (distance 959 418 x y) 20)
                   (equal? event "button-down")
                   )
              ;Checks to see if mouse is on X and has clicked it, if so runs next function
@@ -908,6 +911,18 @@ Provided by matdes.rkt:
         )
   )
 
+(define (ticker model)
+  (cond [(equal? (system-screen model)"splash")
+         (cond [(equal? (system-debug model) "nothing")
+                (struct-copy
+                 system model
+                 [debug (play TSOUND)])]
+               [else model])]
+        [(equal? (system-screen model) "gameplay")
+         (struct-copy
+          system model
+          [debug (stop)])]
+        [else model]))
 ;tooltip: a central function to risk that determines what territory is selected given coords
 ;Number (x) Number (y) System (model) -> String (territory selected)
 (define (tooltip x y model)
@@ -1301,13 +1316,14 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
-           "0 0"
+           "nothing"
            ;Mouse x coordinate
            0
            ;Mouse y coordinate
            0)
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
+          (on-tick ticker)
           )
 
 (test)
