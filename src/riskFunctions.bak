@@ -105,7 +105,7 @@ Provided by matdes.rkt:
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -713,8 +713,6 @@ Provided by matdes.rkt:
   131)
   )
 
-(define (recruit-slider 
-
 ;HANDLERS
 (define (render model)
   ;Render is the draw handler. It interprets various elements of the model, such as the screen the player
@@ -1261,37 +1259,30 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
 
 ;***RECRUITMENT PHASE***
 
-;count-territories: number(playerpos) [List territory] -> number
-;Checks a given territory list to see how many territories
-(define (count-territories playerpos tlist)
+(define (count-territories-of-player playerno tlist)
   (cond [(empty? tlist) 0]
-        [(equal? (territory-owner (first tlist)) playerpos)
-         (+ 1 
-            (count-territories playerpos (rest tlist))
-            )]
-        [else (count-territories playerpos (rest tlist))]
+        [(equal? (territory-owner (first tlist)) playerno)
+         (+ 1 (count-territories-of-player playerno (rest tlist)))]
+        [else (count-territories-of-player playerno (rest tlist))]
         )
   )
 
-;continent-bonus-calc: number(playerpos) [List territory]
-;Calculates any territory bonuses given to a player.
-(define (continent-bonus-calc playerpos tlist)
-  (cond [
+;(define (factor-continent-bonuses tlist) *** I'm lazy, this is gonna require a lot of cases
+
+(check-expect (count-territories-of-player "null" INITIAL-TERRITORY-LIST)
+              42)
+
+(define (armies-to-add model)
+  (+
+   (count-territories-of-player (system-player-turn model) (system-territory-list model))
+   0 ;Replaced mlater with continent bonuses!
+   )
+  )
+   
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
   )
-
-;ATTACK PHASE
-
-;can-attack?: Checks to see if the player can attack a selected territory by being next to it
-;
-(define (can-attack? attacking target)
-  (if (equal?
-       (
-
-(define (attack-phase model x y event)
-  
 
 (big-bang (make-system 
            ;No players at first, updated upon player selection
@@ -1314,7 +1305,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
-           "LMAOBOX"
+           "nothing"
            ;Mouse x coordinate
            0
            ;Mouse y coordinate
