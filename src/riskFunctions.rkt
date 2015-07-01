@@ -1259,26 +1259,22 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
 
 ;***RECRUITMENT PHASE***
 
-(define (count-territories-of-player playerno tlist)
+;count-territories: number(playerpos) [List territory] -> number
+;Checks a given territory list to see how many territories
+(define (count-territories playerpos tlist)
   (cond [(empty? tlist) 0]
-        [(equal? (territory-owner (first tlist)) playerno)
-         (+ 1 (count-territories-of-player playerno (rest tlist)))]
-        [else (count-territories-of-player playerno (rest tlist))]
+        [(equal? (territory-owner (first tlist)) playerpos)
+         (+ 1 
+            (count-territories playerpos (rest tlist))
+            )]
+        [else (count-territories playerpos (rest tlist))]
         )
   )
 
-;(define (factor-continent-bonuses tlist) *** I'm lazy, this is gonna require a lot of cases
-
-(check-expect (count-territories-of-player "null" INITIAL-TERRITORY-LIST)
-              42)
-
-(define (armies-to-add model)
-  (+
-   (count-territories-of-player (system-player-turn model) (system-territory-list model))
-   0 ;Replaced mlater with continent bonuses!
-   )
-  )
-   
+;continent-bonus-calc: number(playerpos) [List territory]
+;Calculates any territory bonuses given to a player.
+(define (continent-bonus-calc playerpos tlist)
+  (cond [
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
@@ -1305,7 +1301,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
-           "nothing"
+           "LMAOBOX"
            ;Mouse x coordinate
            0
            ;Mouse y coordinate
