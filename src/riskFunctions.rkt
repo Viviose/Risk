@@ -141,7 +141,8 @@ Provided by matdes.rkt:
   )
 
 ;List of all territories
-(define INITIAL-TERRITORY-LIST (list ;North America
+(define INITIAL-TERRITORY-LIST (list 
+                                ;North America
                                 (territory "Alaska" 0 "null" (list "Northwest Territory"
                                                                    "Alberta"
                                                                    "Kamchatka")
@@ -1273,10 +1274,188 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         )
   )
 
-;continent-bonus-calc: number(playerpos) [List territory]
-;Calculates any territory bonuses given to a player.
+;Begin continent bonus functions.
+
+;owns-asia?: number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Asia.
+#|
+These include:
+- Afghanistan
+- China
+- India
+- Irkutsk
+- Japan
+- Kamchatka
+- Middle East
+- Mongolia
+- Siam
+- Siberia
+- Ural
+- Yakutsk
+|#
+(define (owns-asia? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Afghanistan" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "China" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "India" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Irkutsk" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Japan" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Kamchatka" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Middle East" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Mongolia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Siam" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Siberia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Ural" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Yakutsk" tlist)) playerpos)
+       )
+  )
+
+;owns-north-america? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of North America.
+#|
+These include:
+- Alaska
+- Alberta
+- Central America
+- Eastern United States
+- Greenland
+- Northwest Territory
+- Ontario
+- Quebec
+- Western United States
+|#
+(define (owns-north-america? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Alaska" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Alberta" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Central America" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Eastern United States" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Greenland" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Northwest Territory" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Ontario" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Quebec" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Western United States" tlist)) playerpos)
+       )
+  )
+
+;owns-europe? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Europe.
+#|
+These include:
+- Great Britain
+- Iceland
+- Northern Europe
+- Scandinavia
+- Southern Europe
+- Ukraine
+- Western Europe
+|#
+(define (owns-europe? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Great Britain" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Iceland" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Northern Europe" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Scandinavia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Southern Europe" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Ukraine" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Western Europe" tlist)) playerpos)
+       )
+  )
+
+;owns-africa? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Africa.
+#|
+These include:
+- Congo
+- East Africa
+- Egypt
+- Madagascar
+- North Africa
+- South Africa
+|#
+(define (owns-africa? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Congo" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "East Africa" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Egypt" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Madagascar" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "North Africa" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "South Africa" tlist)) playerpos)
+       )
+  )
+
+;owns-australia? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Africa.
+#|
+These include:
+- Eastern Australia
+- Western Australia
+- Indonesia
+- New Guinea
+|#
+(define (owns-africa? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Eastern Australia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Western Australia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Indonesia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "New Guinea" tlist)) playerpos)
+       )
+  )
+
+;owns-south-america?: number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Africa.
+#|
+These include:
+- Argentina
+- Brazil
+- Peru
+- Venezuela
+|#
+(define (owns-south-america? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Argentina" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Brazil" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Peru" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Venezuela" tlist)) playerpos)
+       )
+  )
+
+;continent-bonus-calc: number(playerpos) [List(system-territory-list territory] -> number
+;Calculates any territory bonuses given to a player. In all cases, if a player doesn't own a continent, the bonus provided from that continent = 0.
+;Continent	Bonus Armies
+;Asia	           7
+;North America	   5
+;Europe	           5
+;Africa	           3
+;Australia     	   2
+;South America	   2
 (define (continent-bonus-calc playerpos tlist)
-  (cond [
+  ;Asia bonus is worth 7 troops if a player owns the continent.
+  (+ (cond [(owns-asia? playerpos tlist)
+            7]
+           [else 0]
+           )
+     ;North America bonus is worth 5 troops if a player owns the continent.
+     (cond [(owns-north-america? playerpos tlist)
+            5]
+           [else 0]
+           )
+     ;Europe bonus is worth 5 troops if a player owns the continent.
+     (cond [(owns-europe? playerpos tlist)
+            5]
+           [else 0]
+           )
+     ;Africa bonus is worth 3 troops if a player owns the continent.
+     (cond [(owns-africa? playerpos tlist)
+            3]
+           [else 0]
+           )
+     (cond [(owns-australia? playerpos tlist)
+            2]
+           [else 0]
+           )
+     ;South America bonus is worth 2 troops if a player owns the continent.
+     (cond [(owns-south-america? playerpos tlist)
+            2]
+           [else 0]
+           )
+     )
+  )
+         
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
