@@ -1,8 +1,6 @@
 #lang racket
 
 (require picturing-programs)
-
-(provide create-slider)
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
 (define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked)
@@ -81,12 +79,11 @@ SAMPLE IMPLEMENTATION!
 
 
 (define (calc-armies bar-width max-armies x)
-  (round 
-   (*
-    (/
-     x
-     bar-width)
-    max-armies)))
+  (*
+   (/
+    x
+    bar-width)
+   max-armies))
     
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
