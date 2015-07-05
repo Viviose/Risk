@@ -1,6 +1,13 @@
 Current Version: 1.3.1a
 BUILD IS NOW IN ALPHA
 
+Version 1.4a (7/4/15)
+- Added continent bonuses
+- Began work on the recruitment and attack phases
+- Built a slider element
+- Implemented slider into the attack phase
+- Small bugfixes
+
 Version 1.3.1a (6/23/15)
 - Added in title music
 - Fixed 'X' hotbox in cardui

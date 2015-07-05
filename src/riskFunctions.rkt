@@ -599,7 +599,8 @@ Provided by matdes.rkt:
   )
 
 ;SLIDER.RKT FUNCTIONS MOVED HERE
-(define SLIDER-WIDTH 100)
+;_________________________________________________________________________________________________________________
+(define SLIDER-WIDTH 210)
 
 (define SLIDER-BAR
   (rectangle SLIDER-WIDTH 10 "solid" "green"))
@@ -636,13 +637,13 @@ SAMPLE IMPLEMENTATION!
     (text "0" 12  "black")
     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
    (overlay 
-    (text (number->string (/ armies 4)) 12 "black")
+    (text (number->string (round (/ armies 4))) 12 "black")
     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
    (overlay
-    (text (number->string (/ armies 2)) 12 "black")
+    (text (number->string (round (/ armies 2))) 12 "black")
     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
    (overlay
-    (text (number->string (/ (* 3 armies) 4)) 12 "black")
+    (text (number->string (round (/ (* 3 armies) 4))) 12 "black")
     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
    (overlay
     (text (number->string armies) 12 "black")
@@ -661,15 +662,15 @@ SAMPLE IMPLEMENTATION!
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
 ;the number of armies it's on with (slider-armies ...)
-(define (create-slider armies model)
+(define (create-slider armies x y)
   (make-slider
    (above
     (place-image SLIDER-HEAD
-                (system-x model)
-                (system-y model)
+                x
+                y
                 SLIDER-BAR)
     (numberbar armies))
-    (calc-armies SLIDER-WIDTH armies (system-x model))))
+    (calc-armies SLIDER-WIDTH armies x)))
 ;_____________________________________________________________________________________________________
 
 ;This shows a variable number of die on the bar.
@@ -706,7 +707,9 @@ SAMPLE IMPLEMENTATION!
 (define (toolbar model)
   (beside
    (overlay
-    (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")
+    (cond [(equal? DEBUG 0)
+           (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")]
+          [else (textc (system-debug model) 16 "black")])
     (square 75 "solid" (turncolor model))
     )
    DICE-BUTTON
@@ -744,8 +747,9 @@ SAMPLE IMPLEMENTATION!
           
     (rectangle 160 75 "solid" "purple"))
    (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
+          (slider-image (system-slider-store model))
+          ]
           
-          (slider-image (create-slider (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))) model))]
          [else empty-image])
    )
   )
@@ -970,8 +974,9 @@ SAMPLE IMPLEMENTATION!
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
-                                  (struct-copy system model
-                                               [slider-store (create-slider 25 model)])]
+                                
+                                (attack-phase model x y event)
+                                ]
                               ;Will work when fortify phase function is created
                               #; [(equal? (system-turn-stage model) "fortify")]
                               [else model]
@@ -1549,6 +1554,11 @@ These include:
   model
   )
 
+(define (between? query min max)
+  (and
+   (< query max)
+   (> query min)))
+
 ;ATTACK PHASE
 
 ;can-attack?: Checks to see if the player can attack a selected territory by being next to it
@@ -1557,7 +1567,22 @@ These include:
   ;(if (equal?
       ; (
 
-;(define (attack-phase model x y event)
+(define (attack-phase model x y event)
+  (cond [(and
+(equal? event "drag")
+          (between? x 1027 1236)
+          (between? y 911 923))
+        (struct-copy system model
+                     [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                         (system-player-turn model)))
+                                                  (- x 1027)
+                                                  0) ]
+                     [debug "Workin"])]
+        [else (struct-copy system model
+                           [territory-selected (tooltip x y model)]
+                           [x x]
+                           [y y])]))
+  
   
 
 (big-bang (make-system 
@@ -1587,7 +1612,7 @@ These include:
            ;Mouse y coordinate
            0
            "null"
-           (make-slider empty-image 0))
+           (create-slider 100 0 0))
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
           )

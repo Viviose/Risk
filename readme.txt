@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 1.3a
+Version 1.4a
 
 Project Name: Riskit
 A combination of Risk and Racket, yeah?
