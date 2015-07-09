@@ -1,6 +1,12 @@
 Current Version: 1.3.1a
 BUILD IS NOW IN ALPHA
 
+Version 1.4.1a(7/8/15)
+- Added in base territory army recruitment calculator
+- Moved cardlist variable from player struct to system struct
+- Added INITIAL-CARD-LIST to store all card info, including Territory, Owner, and Unit Type
+- Started Card redemption functions
+
 Version 1.4a (7/4/15)
 - Added continent bonuses
 - Began work on the recruitment and attack phases

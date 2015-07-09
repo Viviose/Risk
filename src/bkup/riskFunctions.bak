@@ -84,6 +84,8 @@ Provided by matdes.rkt:
     - The same as above, only for cards.
 |#
 
+
+
 (require picturing-programs)
 ;Picturing-Programs library contains all functions necessary for drawing images.
 ;All references can be found at this location by default: (file:///C:/Program%20Files/Racket/doc/picturing-programs/index.html)
@@ -105,7 +107,7 @@ Provided by matdes.rkt:
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -115,12 +117,18 @@ Provided by matdes.rkt:
 
 ;Card struct (Holds the information for each card)
 ;[Card]: String (unit name) String (territory value)
-(define-struct card (unit territory)
+(define-struct card (unit territory owner)
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
 ;[territory]: string(armies) number(armies) string(owner) -> territory
 (define-struct territory (name armies owner adjacent-territories)
+  #:transparent)
+
+(define-struct slider (image armies)
+  #:transparent)
+
+(define-struct posn (x y)
   #:transparent)
 
 ;The 'X' image for closing things
@@ -141,7 +149,8 @@ Provided by matdes.rkt:
   )
 
 ;List of all territories
-(define INITIAL-TERRITORY-LIST (list ;North America
+(define INITIAL-TERRITORY-LIST (list 
+                                ;North America
                                 (territory "Alaska" 0 "null" (list "Northwest Territory"
                                                                    "Alberta"
                                                                    "Kamchatka")
@@ -393,6 +402,55 @@ Provided by matdes.rkt:
                                 )
   )
 
+;Initial list of all cards and their values in the game.
+(define INITIAL-CARD-LIST (list
+                           (card "infantry" "Afghanistan" "null")
+                           (card "infantry" "Alaska" "null")
+                           (card "infantry" "Alberta" "null")
+                           (card "infantry" "Argentina" "null")
+                           (card "artillery" "Brazil" "null")
+                           (card "calvary" "Central America" "null")
+                           (card "calvary" "China" "null")
+                           (card "calvary" "Congo" "null")
+                           (card "artillery" "East Africa" "null")
+                           (card "infantry" "Eastern Australia" "null")
+                           (card "artillery" "Eastern United States" "null")
+                           (card "infantry" "Egypt" "null")
+                           (card "calvary" "Great Britain" "null")
+                           (card "calvary" "Greenland" "null")
+                           (card "infantry" "India" "null")
+                           (card "calvary" "Indonesia" "null")
+                           (card "infantry" "Irkutsk" "null")
+                           (card "infantry" "Japan" "null")
+                           (card "calvary" "Kamchatka" "null")
+                           (card "infantry" "Madagascar" "null")
+                           (card "artillery" "Middle East" "null")
+                           (card "artillery" "Mongolia" "null")
+                           (card "calvary" "New Guinea" "null")
+                           (card "infantry" "North Africa" "null")
+                           (card "calvary" "Northern Europe" "null")
+                           (card "artillery" "Northwest Territory" "null")
+                           (card "calvary" "Ontario" "null")
+                           (card "calvary" "Peru" "null")
+                           (card "artillery" "Quebec" "null")
+                           (card "artillery" "Scandinavia" "null")
+                           (card "artillery" "Siam" "null")
+                           (card "artillery" "Siberia" "null")
+                           (card "artillery" "South Africa" "null")
+                           (card "calvary" "Southern Europe" "null")
+                           (card "artillery" "Ukraine" "null")
+                           (card "calvary" "Ural" "null")
+                           (card "artillery" "Venezuela" "null")
+                           (card "artillery" "Western Australia" "null")
+                           (card "infantry" "Western Europe" "null")
+                           (card "infantry" "Western United States" "null")
+                           (card "calvary" "Yakutsk" "null")
+                           ;Two Wild Cards
+                           (card "wild" "Wild Card 1" "null")
+                           (card "wild" "Wild Card 2" "null")
+                           )
+  )
+
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)
@@ -589,6 +647,81 @@ Provided by matdes.rkt:
         )
   )
 
+;SLIDER.RKT FUNCTIONS MOVED HERE
+;_________________________________________________________________________________________________________________
+(define SLIDER-WIDTH 210)
+
+(define SLIDER-BAR
+  (rectangle SLIDER-WIDTH 10 "solid" "green"))
+
+(define SLIDER-HEAD
+  (flip-vertical (triangle 20 "solid" "red")))
+
+#|
+SAMPLE IMPLEMENTATION!
+(define (render model)
+  (place-image
+   SLIDER-HEAD
+   (posn-x model)
+   (posn-y model)
+   SLIDER-BAR)
+  )
+
+(define (mousey model x y event)
+  (cond [(equal? event "drag")
+         (struct-copy
+          posn model
+          [x x]
+          [y 5])]
+        [else model]))
+
+(big-bang (posn 0 0)
+          (to-draw render)
+          (on-mouse mousey))
+|#
+
+(define (numberbar armies)
+  (beside
+   (overlay
+    (text "0" 12  "black")
+    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+   (overlay 
+    (text (number->string (round (/ armies 4))) 12 "black")
+    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+   (overlay
+    (text (number->string (round (/ armies 2))) 12 "black")
+    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+   (overlay
+    (text (number->string (round (/ (* 3 armies) 4))) 12 "black")
+    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
+   (overlay
+    (text (number->string armies) 12 "black")
+    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))))
+
+
+
+(define (calc-armies bar-width max-armies x)
+  (round 
+   (*
+    (/
+     x
+     bar-width)
+    max-armies)))
+    
+;This is what you call to implement the slider. It returns a slider
+;struct. You get the image from calling (slider-image ...) and
+;the number of armies it's on with (slider-armies ...)
+(define (create-slider armies x y)
+  (make-slider
+   (above
+    (place-image SLIDER-HEAD
+                x
+                y
+                SLIDER-BAR)
+    (numberbar armies))
+    (calc-armies SLIDER-WIDTH armies x)))
+;_____________________________________________________________________________________________________
+
 ;This shows a variable number of die on the bar.
 ;Dicelist (dice structs) -> Image (die)
 (define (die-bar leest)
@@ -623,7 +756,9 @@ Provided by matdes.rkt:
 (define (toolbar model)
   (beside
    (overlay
-    (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")
+    (cond [(equal? DEBUG 0)
+           (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")]
+          [else (textc (system-debug model) 16 "black")])
     (square 75 "solid" (turncolor model))
     )
    DICE-BUTTON
@@ -660,6 +795,11 @@ Provided by matdes.rkt:
           16 "white")
           
     (rectangle 160 75 "solid" "purple"))
+   (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
+          (slider-image (system-slider-store model))
+          ]
+          
+         [else empty-image])
    )
   )
 
@@ -713,7 +853,7 @@ Provided by matdes.rkt:
   131)
   )
 
-(define (recruit-slider 
+ 
 
 ;HANDLERS
 (define (render model)
@@ -881,8 +1021,11 @@ Provided by matdes.rkt:
                                   ;Here is the problemo:
                                   (recruit-phase model x y event)]
                               ;Will work when attack phase function is created
-                              #; [(equal? (system-turn-stage model) "attack")
-                                  (attack-phase model)]
+                               [(equal? (system-turn-stage model) "attack")
+                                  ;This will obviously be implemented into the attack function overall later
+                                
+                                (attack-phase model x y event)
+                                ]
                               ;Will work when fortify phase function is created
                               #; [(equal? (system-turn-stage model) "fortify")]
                               [else model]
@@ -1273,24 +1416,222 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         )
   )
 
-;continent-bonus-calc: number(playerpos) [List territory]
-;Calculates any territory bonuses given to a player.
+;Begin continent bonus functions.
+
+;owns-asia?: number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Asia.
+#|
+These include:
+- Afghanistan
+- China
+- India
+- Irkutsk
+- Japan
+- Kamchatka
+- Middle East
+- Mongolia
+- Siam
+- Siberia
+- Ural
+- Yakutsk
+|#
+(define (owns-asia? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Afghanistan" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "China" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "India" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Irkutsk" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Japan" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Kamchatka" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Middle East" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Mongolia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Siam" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Siberia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Ural" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Yakutsk" tlist)) playerpos)
+       )
+  )
+
+;owns-north-america? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of North America.
+#|
+These include:
+- Alaska
+- Alberta
+- Central America
+- Eastern United States
+- Greenland
+- Northwest Territory
+- Ontario
+- Quebec
+- Western United States
+|#
+(define (owns-north-america? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Alaska" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Alberta" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Central America" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Eastern United States" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Greenland" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Northwest Territory" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Ontario" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Quebec" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Western United States" tlist)) playerpos)
+       )
+  )
+
+;owns-europe? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Europe.
+#|
+These include:
+- Great Britain
+- Iceland
+- Northern Europe
+- Scandinavia
+- Southern Europe
+- Ukraine
+- Western Europe
+|#
+(define (owns-europe? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Great Britain" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Iceland" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Northern Europe" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Scandinavia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Southern Europe" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Ukraine" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Western Europe" tlist)) playerpos)
+       )
+  )
+
+;owns-africa? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Africa.
+#|
+These include:
+- Congo
+- East Africa
+- Egypt
+- Madagascar
+- North Africa
+- South Africa
+|#
+(define (owns-africa? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Congo" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "East Africa" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Egypt" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Madagascar" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "North Africa" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "South Africa" tlist)) playerpos)
+       )
+  )
+
+;owns-australia? number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Africa.
+#|
+These include:
+- Eastern Australia
+- Western Australia
+- Indonesia
+- New Guinea
+|#
+(define (owns-australia? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Eastern Australia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Western Australia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Indonesia" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "New Guinea" tlist)) playerpos)
+       )
+  )
+
+;owns-south-america?: number(playerpos) [List(system-territory-list) territory] -> boolean
+;Checks to see if the player of given playerpos owns territories that are contained in the continent of Africa.
+#|
+These include:
+- Argentina
+- Brazil
+- Peru
+- Venezuela
+|#
+(define (owns-south-america? playerpos tlist)
+  (and (equal? (territory-owner (territory-scan "Argentina" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Brazil" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Peru" tlist)) playerpos)
+       (equal? (territory-owner (territory-scan "Venezuela" tlist)) playerpos)
+       )
+  )
+
+;continent-bonus-calc: number(playerpos) [List(system-territory-list territory] -> number
+;Calculates any territory bonuses given to a player. In all cases, if a player doesn't own a continent, the bonus provided from that continent = 0.
+;Continent	Bonus Armies
+;Asia	           7
+;North America	   5
+;Europe	           5
+;Africa	           3
+;Australia     	   2
+;South America	   2
 (define (continent-bonus-calc playerpos tlist)
-  (cond [
+  ;Asia bonus is worth 7 troops if a player owns the continent.
+  (+ (cond [(owns-asia? playerpos tlist)
+            7]
+           [else 0]
+           )
+     ;North America bonus is worth 5 troops if a player owns the continent.
+     (cond [(owns-north-america? playerpos tlist)
+            5]
+           [else 0]
+           )
+     ;Europe bonus is worth 5 troops if a player owns the continent.
+     (cond [(owns-europe? playerpos tlist)
+            5]
+           [else 0]
+           )
+     ;Africa bonus is worth 3 troops if a player owns the continent.
+     (cond [(owns-africa? playerpos tlist)
+            3]
+           [else 0]
+           )
+     (cond [(owns-australia? playerpos tlist)
+            2]
+           [else 0]
+           )
+     ;South America bonus is worth 2 troops if a player owns the continent.
+     (cond [(owns-south-america? playerpos tlist)
+            2]
+           [else 0]
+           )
+     )
+  )
+
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
   )
 
+(define (between? query min max)
+  (and
+   (< query max)
+   (> query min)))
+
 ;ATTACK PHASE
 
 ;can-attack?: Checks to see if the player can attack a selected territory by being next to it
 ;
-(define (can-attack? attacking target)
-  (if (equal?
-       (
+;(define (can-attack? attacking target)
+  ;(if (equal?
+      ; (
 
 (define (attack-phase model x y event)
+  (cond [(and
+(equal? event "drag")
+          (between? x 1027 1236)
+          (between? y 911 923))
+        (struct-copy system model
+                     [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                         (system-player-turn model)))
+                                                  (- x 1027)
+                                                  0) ]
+                     [debug "Workin"])]
+        [else (struct-copy system model
+                           [territory-selected (tooltip x y model)]
+                           [x x]
+                           [y y])]))
+  
   
 
 (big-bang (make-system 
@@ -1299,7 +1640,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
            ;Turn starts at 0, first player
            0
            ;Initial phase is init-recruit, changes upon completion of phases
-           "init-recruit"
+           "attack"
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.
@@ -1318,7 +1659,9 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
            ;Mouse x coordinate
            0
            ;Mouse y coordinate
-           0)
+           0
+           "null"
+           (create-slider 100 0 0))
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
           )

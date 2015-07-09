@@ -107,17 +107,17 @@ Provided by matdes.rkt:
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list territory-attacked slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
 ;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (cardlist territories-owned reserved-armies status pos)
+(define-struct player (territories-owned reserved-armies status pos)
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
 ;[Card]: String (unit name) String (territory value)
-(define-struct card (unit territory)
+(define-struct card (unit territory owner)
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
@@ -400,6 +400,55 @@ Provided by matdes.rkt:
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
                                 (territory "null" 9001 404 '())
                                 )
+  )
+
+;Initial list of all cards and their values in the game.
+(define INITIAL-CARD-LIST (list
+                           (card "infantry" "Afghanistan" "null")
+                           (card "infantry" "Alaska" "null")
+                           (card "infantry" "Alberta" "null")
+                           (card "infantry" "Argentina" "null")
+                           (card "artillery" "Brazil" "null")
+                           (card "calvary" "Central America" "null")
+                           (card "calvary" "China" "null")
+                           (card "calvary" "Congo" "null")
+                           (card "artillery" "East Africa" "null")
+                           (card "infantry" "Eastern Australia" "null")
+                           (card "artillery" "Eastern United States" "null")
+                           (card "infantry" "Egypt" "null")
+                           (card "calvary" "Great Britain" "null")
+                           (card "calvary" "Greenland" "null")
+                           (card "infantry" "India" "null")
+                           (card "calvary" "Indonesia" "null")
+                           (card "infantry" "Irkutsk" "null")
+                           (card "infantry" "Japan" "null")
+                           (card "calvary" "Kamchatka" "null")
+                           (card "infantry" "Madagascar" "null")
+                           (card "artillery" "Middle East" "null")
+                           (card "artillery" "Mongolia" "null")
+                           (card "calvary" "New Guinea" "null")
+                           (card "infantry" "North Africa" "null")
+                           (card "calvary" "Northern Europe" "null")
+                           (card "artillery" "Northwest Territory" "null")
+                           (card "calvary" "Ontario" "null")
+                           (card "calvary" "Peru" "null")
+                           (card "artillery" "Quebec" "null")
+                           (card "artillery" "Scandinavia" "null")
+                           (card "artillery" "Siam" "null")
+                           (card "artillery" "Siberia" "null")
+                           (card "artillery" "South Africa" "null")
+                           (card "calvary" "Southern Europe" "null")
+                           (card "artillery" "Ukraine" "null")
+                           (card "calvary" "Ural" "null")
+                           (card "artillery" "Venezuela" "null")
+                           (card "artillery" "Western Australia" "null")
+                           (card "infantry" "Western Europe" "null")
+                           (card "infantry" "Western United States" "null")
+                           (card "calvary" "Yakutsk" "null")
+                           ;Two Wild Cards
+                           (card "wild" "Wild Card 1" "null")
+                           (card "wild" "Wild Card 2" "null")
+                           )
   )
 
 ;The number of armies per player
@@ -1352,8 +1401,14 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         )
   )
   
-
 ;***RECRUITMENT PHASE***
+
+#|
+The following factor into the amount of armies given to players:
+- Territories(# of territories / 3, where f(t) is at minimum 3 and t is the amount of territories a player owns.) **COMPLETED**
+- Continent Bonuses. **COMPLETED**
+- Cards
+|#
 
 ;count-territories: number(playerpos) [List territory] -> number
 ;Checks a given territory list to see how many territories
@@ -1366,6 +1421,27 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         [else (count-territories playerpos (rest tlist))]
         )
   )
+
+;base-armycount: number(territories owned) -> number(army)
+;Takes in a number of territories owned (most likely result of count-territories function) and returns the amount of troops yielded.
+(define (base-armycount num-territories-owned)
+  (cond [(< (floor (/ num-territories-owned
+                        3)
+                   )
+            3)
+         3]
+        [else (floor (/ num-territories-owned
+                        3)
+                     )]
+        )
+  )
+
+(check-expect (base-armycount 8)
+              3)
+(check-expect (base-armycount 12)
+              4)
+(check-expect (base-armycount 21)
+              7)
 
 ;Begin continent bonus functions.
 
@@ -1548,7 +1624,12 @@ These include:
            )
      )
   )
-         
+
+;Card Redemption Functions
+ 
+;can-turn-in?: system(model) -> boolean
+;Checks to see if a player has 3 cards available and eligible to be traded in.
+
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
@@ -1611,8 +1692,13 @@ These include:
            0
            ;Mouse y coordinate
            0
+           ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
+           INITIAL-CARD-LIST
+           ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
-           (create-slider 100 0 0))
+           ;Slider used in attributing armies
+           (create-slider 100 0 0)
+           )
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
           )
