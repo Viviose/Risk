@@ -1,2 +1,0 @@
-riskFunctions.exe
-pause

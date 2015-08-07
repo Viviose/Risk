@@ -1,7 +1,0 @@
-all : callbacks.so
-
-callbacks.so : callbacks.o
-	raco ctool --ld callbacks.so callbacks.o
-
-callbacks.o : callbacks.c
-	raco ctool --cc callbacks.c

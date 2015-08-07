@@ -107,12 +107,12 @@ Provided by matdes.rkt:
 
 ;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
 ;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list territory-attacked slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
 ;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (cardlist territories-owned reserved-armies status pos)
+(define-struct player (territories-owned reserved-armies status pos)
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
@@ -1401,8 +1401,14 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         )
   )
   
-
 ;***RECRUITMENT PHASE***
+
+#|
+The following factor into the amount of armies given to players:
+- Territories(# of territories / 3, where f(t) is at minimum 3 and t is the amount of territories a player owns.) **COMPLETED**
+- Continent Bonuses. **COMPLETED**
+- Cards
+|#
 
 ;count-territories: number(playerpos) [List territory] -> number
 ;Checks a given territory list to see how many territories
@@ -1415,6 +1421,27 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         [else (count-territories playerpos (rest tlist))]
         )
   )
+
+;base-armycount: number(territories owned) -> number(army)
+;Takes in a number of territories owned (most likely result of count-territories function) and returns the amount of troops yielded.
+(define (base-armycount num-territories-owned)
+  (cond [(< (floor (/ num-territories-owned
+                        3)
+                   )
+            3)
+         3]
+        [else (floor (/ num-territories-owned
+                        3)
+                     )]
+        )
+  )
+
+(check-expect (base-armycount 8)
+              3)
+(check-expect (base-armycount 12)
+              4)
+(check-expect (base-armycount 21)
+              7)
 
 ;Begin continent bonus functions.
 
@@ -1598,6 +1625,11 @@ These include:
      )
   )
 
+;Card Redemption Functions
+ 
+;can-turn-in?: system(model) -> boolean
+;Checks to see if a player has 3 cards available and eligible to be traded in.
+
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
@@ -1660,8 +1692,13 @@ These include:
            0
            ;Mouse y coordinate
            0
+           ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
+           INITIAL-CARD-LIST
+           ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
-           (create-slider 100 0 0))
+           ;Slider used in attributing armies
+           (create-slider 100 0 0)
+           )
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
           )

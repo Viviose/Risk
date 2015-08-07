@@ -105,9 +105,8 @@ Provided by matdes.rkt:
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
-;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
-;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list territory-attacked slider-store)
+;System struct (Holds all game information and statuses)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -1627,8 +1626,38 @@ These include:
 
 ;Card Redemption Functions
  
+;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
+;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
+(define (num-cards-owned card-list playerpos)
+  (cond [(empty? card-list) 0]
+        [(equal? (card-owner (first card-list)
+                             playerpos)
+                 )
+         (+ 1
+            (num-cards-owned (rest card-list) playerpos)
+            )]
+        [else (num-cards-owned (rest card-list) playerpos)]
+        )
+  )
+
 ;can-turn-in?: system(model) -> boolean
 ;Checks to see if a player has 3 cards available and eligible to be traded in.
+#|
+Players CAN'T turn in cards if they don't have a set of 3 to turn in.
+
+Players can turn in cards if one of these three cases is true:
+- The player has any 2 cards and a wild card
+- The player owns 3 cards of each unit type.
+- The player owns 3 cards of the same unit type.
+|#
+
+(define (can-turn-in? system)
+  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
+            3)
+         false]
+        []
+        )
+  )
 
 ;da recruit phase m8
 (define (recruit-phase model x y event)
@@ -1694,6 +1723,8 @@ These include:
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
            INITIAL-CARD-LIST
+           ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
+           0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
            ;Slider used in attributing armies
