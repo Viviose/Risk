@@ -1,7 +1,12 @@
-Current Version: 1.3.1a
+Current Version: 1.4.1a
 BUILD IS NOW IN ALPHA
 
-Version 1.4.1a(7/8/15)
+Version 1.4.2a (7/11/15)
+- Added in id parameter to card struct for use in randomly attributing cards to players after finishing recruit phase.
+- Updated INITIAL-CARD-LIST to include ID parameters for each card, ranging from 0-42.
+- Created function that allows for the program to create list of cards a player owns.
+
+Version 1.4.1a (7/8/15)
 - Added in base territory army recruitment calculator
 - Moved cardlist variable from player struct to system struct
 - Added INITIAL-CARD-LIST to store all card info, including Territory, Owner, and Unit Type
