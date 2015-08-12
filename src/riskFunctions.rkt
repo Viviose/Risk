@@ -1630,6 +1630,10 @@ These include:
   )
 
 ;Card Redemption Functions
+;Cards will work as a tandem of front-end and back-end.
+;A card menu will be drawn when clicked by the player, and hitboxes will become available when the menu is pulled up.
+;The screen parameter of the system struct will be string "cards".
+;I.E. (equal? (system-screen system) "cards") returns true.
  
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
