@@ -1684,7 +1684,9 @@ Players can turn in cards if one of these three cases is true:
 (define (between? query min max)
   (and
    (< query max)
-   (> query min)))
+   (> query min)
+   )
+  )
 
 ;ATTACK PHASE
 
@@ -1696,19 +1698,22 @@ Players can turn in cards if one of these three cases is true:
 
 (define (attack-phase model x y event)
   (cond [(and
-(equal? event "drag")
+          (equal? event "drag")
           (between? x 1027 1236)
           (between? y 911 923))
-        (struct-copy system model
-                     [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
-                                                                                         (system-player-turn model)))
-                                                  (- x 1027)
-                                                  0) ]
-                     [debug "Workin"])]
+         (struct-copy system model
+                      [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                          (system-player-turn model)))
+                                                   (- x 1027)
+                                                   0) ]
+                      [debug "Workin"])]
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
-                           [y y])]))
+                           [y y]
+                           )]
+        )
+  )
   
   
 
