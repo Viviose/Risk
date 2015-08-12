@@ -105,19 +105,18 @@ Provided by matdes.rkt:
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
-;System struct (Holds a list of players and kee  ps tracks of whose turn it is)
-;[System] : List (player structs) Number (0-5, depending on the player), String (what screen to show)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y territory-attacked slider-store)
+;System struct (Holds all game information and statuses)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
 ;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (cardlist territories-owned reserved-armies status pos)
+(define-struct player (territories-owned reserved-armies status pos)
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
-;[Card]: String (unit name) String (territory value)
-(define-struct card (unit territory)
+;[Card]: String(unit-name) String(territory-name) number(card-id) [Maybe number(owner-id)] -> card
+(define-struct card (unit territory id owner)
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
@@ -400,6 +399,55 @@ Provided by matdes.rkt:
                                 ;Null territory: For when territory scanning functions do not have a valid territory.
                                 (territory "null" 9001 404 '())
                                 )
+  )
+
+;Initial list of all cards and their values in the game.
+(define INITIAL-CARD-LIST (list
+                           (card "infantry" "Afghanistan" 0 "null")
+                           (card "infantry" "Alaska" 1 "null")
+                           (card "infantry" "Alberta" 2 "null")
+                           (card "infantry" "Argentina" 3 "null")
+                           (card "artillery" "Brazil" 4 "null")
+                           (card "calvary" "Central America" 5 "null")
+                           (card "calvary" "China" 6 "null")
+                           (card "calvary" "Congo" 7 "null")
+                           (card "artillery" "East Africa" 8 "null")
+                           (card "infantry" "Eastern Australia" 9 "null")
+                           (card "artillery" "Eastern United States" 10 "null")
+                           (card "infantry" "Egypt" 11 "null")
+                           (card "calvary" "Great Britain" 12 "null")
+                           (card "calvary" "Greenland" 13 "null")
+                           (card "infantry" "India" 14 "null")
+                           (card "calvary" "Indonesia" 15 "null")
+                           (card "infantry" "Irkutsk" 16 "null")
+                           (card "infantry" "Japan" 17 "null")
+                           (card "calvary" "Kamchatka" 18 "null")
+                           (card "infantry" "Madagascar" 19 "null")
+                           (card "artillery" "Middle East" 20 "null")
+                           (card "artillery" "Mongolia" 21 "null")
+                           (card "calvary" "New Guinea" 22 "null")
+                           (card "infantry" "North Africa" 23 "null")
+                           (card "calvary" "Northern Europe" 24 "null")
+                           (card "artillery" "Northwest Territory" 25 "null")
+                           (card "calvary" "Ontario" 26 "null")
+                           (card "calvary" "Peru" 27 "null")
+                           (card "artillery" "Quebec" 28 "null")
+                           (card "artillery" "Scandinavia" 29 "null")
+                           (card "artillery" "Siam" 30 "null")
+                           (card "artillery" "Siberia" 31 "null")
+                           (card "artillery" "South Africa" 32 "null")
+                           (card "calvary" "Southern Europe" 33 "null")
+                           (card "artillery" "Ukraine" 34 "null")
+                           (card "calvary" "Ural" 35 "null")
+                           (card "artillery" "Venezuela" 36 "null")
+                           (card "artillery" "Western Australia" 37 "null")
+                           (card "infantry" "Western Europe" 38 "null")
+                           (card "infantry" "Western United States" 39 "null")
+                           (card "calvary" "Yakutsk" 40 "null")
+                           ;Two Wild Cards
+                           (card "wild" "Wild Card 1" 41 "null")
+                           (card "wild" "Wild Card 2" 42 "null")
+                           )
   )
 
 ;The number of armies per player
@@ -1352,8 +1400,14 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         )
   )
   
-
 ;***RECRUITMENT PHASE***
+
+#|
+The following factor into the amount of armies given to players:
+- Territories(# of territories / 3, where f(t) is at minimum 3 and t is the amount of territories a player owns.) **COMPLETED**
+- Continent Bonuses. **COMPLETED**
+- Cards
+|#
 
 ;count-territories: number(playerpos) [List territory] -> number
 ;Checks a given territory list to see how many territories
@@ -1366,6 +1420,27 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
         [else (count-territories playerpos (rest tlist))]
         )
   )
+
+;base-armycount: number(territories owned) -> number(army)
+;Takes in a number of territories owned (most likely result of count-territories function) and returns the amount of troops yielded.
+(define (base-armycount num-territories-owned)
+  (cond [(< (floor (/ num-territories-owned
+                        3)
+                   )
+            3)
+         3]
+        [else (floor (/ num-territories-owned
+                        3)
+                     )]
+        )
+  )
+
+(check-expect (base-armycount 8)
+              3)
+(check-expect (base-armycount 12)
+              4)
+(check-expect (base-armycount 21)
+              7)
 
 ;Begin continent bonus functions.
 
@@ -1548,7 +1623,54 @@ These include:
            )
      )
   )
-         
+
+;Card Redemption Functions
+ 
+;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
+;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
+(define (num-cards-owned card-list playerpos)
+  (cond [(empty? card-list) 0]
+        [(equal? (card-owner (first card-list)
+                             playerpos)
+                 )
+         (+ 1
+            (num-cards-owned (rest card-list) playerpos)
+            )]
+        [else (num-cards-owned (rest card-list) playerpos)]
+        )
+  )
+
+;player-card-list: [List card] number(playerpos) -> [List card]
+;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
+(define (player-card-list card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list)) player-pos)
+         (cons (first card-list)
+               (player-card-list (rest card-list) playerpos)
+               )]
+        [else (player-card-list (rest card-list) playerpos)]
+        )
+  )
+
+;can-turn-in?: system(model) -> boolean
+;Checks to see if a player has 3 cards available and eligible to be traded in.
+#|
+Players CAN'T turn in cards if they don't have a set of 3 to turn in.
+
+Players can turn in cards if one of these three cases is true:
+- The player has any 2 cards and a wild card
+- The player owns 3 cards of each unit type.
+- The player owns 3 cards of the same unit type.
+|#
+
+(define (can-turn-in? system)
+  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
+            3)
+         false]
+        []
+        )
+  )
+
 ;da recruit phase m8
 (define (recruit-phase model x y event)
   model
@@ -1591,7 +1713,12 @@ These include:
            ;Turn starts at 0, first player
            0
            ;Initial phase is init-recruit, changes upon completion of phases
+<<<<<<< HEAD
            "init-recruit"
+=======
+           ;Will sometimes be changed for debug purposes, should be set to init-recruit before release.
+           "attack"
+>>>>>>> e9c5985ebb1524974ead4c8da3a77bd508f089b7
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.
@@ -1611,8 +1738,15 @@ These include:
            0
            ;Mouse y coordinate
            0
+           ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
+           INITIAL-CARD-LIST
+           ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
+           0
+           ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
-           (create-slider 100 0 0))
+           ;Slider used in attributing armies
+           (create-slider 100 0 0)
+           )
           (to-draw render 1250 1200)
           (on-mouse mouse-handler)
           )
