@@ -1273,7 +1273,7 @@ SAMPLE IMPLEMENTATION!
 ;System (model) -> System (model)
 #|
 The initial recruitment phase is relatively simple, but programming it can become complicated if one loses track of what must be updated and when.
-Here is a list of conditions that covers most of the occurences of things in intial-recruit.
+Here is a list of conditions that covers most of the occurences of things in initial-recruit.
 
 The list of conditions for moving on to the next phase is as follows:
 - All of the troops of each player have been placed.
@@ -1293,7 +1293,7 @@ The conditions to move on to the next player are as follows:
 OR
 - The current player has fortified a claimed territory (only possible once all territories have been claimed).
 
-ALL clauses should update the x and y coordinates, as well as territory-selected with th
+ALL clauses should update the x and y coordinates, as well as territory-selected using the tooltip function.
 |#
 (define (initial-recruit model x y event)
   ;The first clause of this conditional will check to see if it is time to move on to the next phase.
