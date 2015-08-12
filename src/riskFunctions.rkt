@@ -1591,7 +1591,7 @@ These include:
            ;Turn starts at 0, first player
            0
            ;Initial phase is init-recruit, changes upon completion of phases
-           "attack"
+           "init-recruit"
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.
