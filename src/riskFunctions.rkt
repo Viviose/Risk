@@ -898,7 +898,12 @@ SAMPLE IMPLEMENTATION!
                          (overlay
                           (card-buncher 
                            ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
-                           (list (make-card "Rachel is nub" "3")))
+                           (list (make-card "unit" "Rachel is nub" 55 "3")
+                                 (make-card "unit" "oaml yyA" 56 "4")
+                                 (make-card "unit" "BAGEL" 56 "6")
+                                 (make-card "unit" "ur mum" 56 "7")
+                                 (make-card "unit" "#lang rakt" 56 "5")
+                                 (make-card "unit" "no rugrats" 56 "8")))
                           (rectangle 700 200 "solid" (make-color 128 0 0))))
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
@@ -937,9 +942,9 @@ SAMPLE IMPLEMENTATION!
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 3) "alive" 0)
-                                                             (make-player (list) (list) (army-count 3) "alive" 1)
-                                                             (make-player (list) (list) (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (list)  (army-count 3) "alive" 0)
+                                                             (make-player (list)  (army-count 3) "alive" 1)
+                                                             (make-player (list)  (army-count 3) "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -949,10 +954,10 @@ SAMPLE IMPLEMENTATION!
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 4) "alive" 0)
-                                                             (make-player (list) (list) (army-count 4) "alive" 1)
-                                                             (make-player (list) (list) (army-count 4) "alive" 2)
-                                                             (make-player (list) (list) (army-count 4) "alive" 3)
+                                           [playerlist (list (make-player (list)  (army-count 4) "alive" 0)
+                                                             (make-player (list)  (army-count 4) "alive" 1)
+                                                             (make-player (list)  (army-count 4) "alive" 2)
+                                                             (make-player (list)  (army-count 4) "alive" 3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -962,11 +967,11 @@ SAMPLE IMPLEMENTATION!
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 5) "alive" 0)
-                                                             (make-player (list) (list) (army-count 5) "alive" 1)
-                                                             (make-player (list) (list) (army-count 5) "alive" 2)
-                                                             (make-player (list) (list) (army-count 5) "alive" 3)
-                                                             (make-player (list) (list) (army-count 5) "alive" 4)
+                                           [playerlist (list (make-player (list)  (army-count 5) "alive" 0)
+                                                             (make-player (list)  (army-count 5) "alive" 1)
+                                                             (make-player (list)  (army-count 5) "alive" 2)
+                                                             (make-player (list)  (army-count 5) "alive" 3)
+                                                             (make-player (list)  (army-count 5) "alive" 4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -976,12 +981,12 @@ SAMPLE IMPLEMENTATION!
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list) (list) (army-count 6) "alive" 0)
-                                                             (make-player (list) (list) (army-count 6) "alive" 1)
-                                                             (make-player (list) (list) (army-count 6) "alive" 2)
-                                                             (make-player (list) (list) (army-count 6) "alive" 3)
-                                                             (make-player (list) (list) (army-count 6) "alive" 4)
-                                                             (make-player (list) (list) (army-count 6) "alive" 5)
+                                           [playerlist (list (make-player (list)  (army-count 6) "alive" 0)
+                                                             (make-player (list)  (army-count 6) "alive" 1)
+                                                             (make-player (list)  (army-count 6) "alive" 2)
+                                                             (make-player (list)  (army-count 6) "alive" 3)
+                                                             (make-player (list)  (army-count 6) "alive" 4)
+                                                             (make-player (list)  (army-count 6) "alive" 5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1663,13 +1668,13 @@ Players can turn in cards if one of these three cases is true:
 - The player owns 3 cards of the same unit type.
 |#
 
-(define (can-turn-in? system)
-  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
-            3)
-         false]
-        []
-        )
-  )
+;(define (can-turn-in? system)
+;  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
+;            3)
+;         false]
+;        []
+;        )
+;  )
 
 ;da recruit phase m8
 (define (recruit-phase model x y event)
