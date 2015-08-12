@@ -99,7 +99,6 @@ Provided by matdes.rkt:
 ;Debug mode variable
 ;When set to 0, debug mode will not run on the draw handler in the Risk animation.
 ;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
-;DEPRECATED: MAP-POSITIONS.TXT CONTAINS THIS INFORMATION, ACQUIRED USING HIT-BOX-DETERMINER.RKT
 (define DEBUG 0)
 
 ;__________________________________________________________________________________________________________________________________________________
