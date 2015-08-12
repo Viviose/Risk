@@ -1713,12 +1713,10 @@ Players can turn in cards if one of these three cases is true:
            ;Turn starts at 0, first player
            0
            ;Initial phase is init-recruit, changes upon completion of phases
-<<<<<<< HEAD
+
            "init-recruit"
-=======
-           ;Will sometimes be changed for debug purposes, should be set to init-recruit before release.
-           "attack"
->>>>>>> e9c5985ebb1524974ead4c8da3a77bd508f089b7
+
+
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.

@@ -110,7 +110,7 @@ Provided by matdes.rkt:
   #:transparent)
 
 ;Player struct (Holds the information of each player)
-;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
+;[Player]: List(strings) Number(armies) String (status) Number(pos)
 (define-struct player (territories-owned reserved-armies status pos)
   #:transparent) 
 
@@ -1193,11 +1193,11 @@ SAMPLE IMPLEMENTATION!
               true)
 
 (check-expect (move-on-to-recruit-main (make-boolean-list (list (make-player '() '() 0 "alive" 0)
-                                                            (make-player '() '() 1 "alive" 1)
-                                                            (make-player '() '() 0 "alive" 2)
-                                                            )
-                                                      )
-                                   )
+                                                                (make-player '() '() 1 "alive" 1)
+                                                                (make-player '() '() 0 "alive" 2)
+                                                                )
+                                                          )
+                                       )
               false)
 
 ;Takes helper functions move-on-to-recruit-main and make-boolean-list and returns a boolean depending on whether or not all armies have been used 
