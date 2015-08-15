@@ -1726,7 +1726,7 @@ Players can turn in cards if one of these three cases is true:
   )
   
   
-
+;Animation includes a mouse and draw handler, as well as an initial system model.
 (big-bang (make-system 
            ;No players at first, updated upon player selection
            (list)
@@ -1763,7 +1763,9 @@ Players can turn in cards if one of these three cases is true:
            ;Slider used in attributing armies
            (create-slider 100 0 0)
            )
+          ;Draw Handler
           (to-draw render 1250 1200)
+          ;Mouse Handler
           (on-mouse mouse-handler)
           )
 
