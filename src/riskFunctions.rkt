@@ -450,6 +450,21 @@ Provided by matdes.rkt:
                            )
   )
 
+;Front-End card functions
+
+;player-card-list: [List card] number(playerpos) -> [List card]
+;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
+;Used in both front and back-end, but must be defined here for the program to work correctly.
+(define (player-card-list card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list)) player-pos)
+         (cons (first card-list)
+               (player-card-list (rest card-list) playerpos)
+               )]
+        [else (player-card-list (rest card-list) playerpos)]
+        )
+  )
+
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)
@@ -815,7 +830,7 @@ SAMPLE IMPLEMENTATION!
 
 ;Card-Buncher - Stack images of cards next to each other
 (define (card-buncher cardleest)
-  (cond [(empty? cardleest) (square 0 "solid" "white")]
+  (cond [(empty? cardleest) (empty-scene 0 0)]
         [else (beside (card-create (first cardleest)) 
                       (square 4 "solid" (make-color 128 0 0)) 
                       (card-buncher (rest cardleest))
@@ -900,15 +915,10 @@ SAMPLE IMPLEMENTATION!
          (overlay
           (overlay/align "right" "top" X
                          (overlay
-                          (card-buncher 
-                           ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
-                           (list (make-card "unit" "Rachel is nub" 55 "3")
-                                 (make-card "unit" "oaml yyA" 56 "4")
-                                 (make-card "unit" "BAGEL" 56 "6")
-                                 (make-card "unit" "ur mum" 56 "7")
-                                 (make-card "unit" "#lang rakt" 56 "5")
-                                 (make-card "unit" "no rugrats" 56 "8")))
-                          (rectangle 700 200 "solid" (make-color 128 0 0))))
+                          (card-buncher (player-card-list system))
+                          (rectangle 700 200 "solid" (make-color 128 0 0))
+                          )
+                         )
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
                   (place-image (overlay
@@ -1641,6 +1651,8 @@ These include:
 ;The screen parameter of the system struct will be string "cards".
 ;I.E. (equal? (system-screen system) "cards") returns true.
  
+;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
+
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
 (define (num-cards-owned card-list playerpos)
@@ -1652,18 +1664,6 @@ These include:
             (num-cards-owned (rest card-list) playerpos)
             )]
         [else (num-cards-owned (rest card-list) playerpos)]
-        )
-  )
-
-;player-card-list: [List card] number(playerpos) -> [List card]
-;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-(define (player-card-list card-list playerpos)
-  (cond [(empty? card-list) '()]
-        [(equal? (card-owner (first card-list)) player-pos)
-         (cons (first card-list)
-               (player-card-list (rest card-list) playerpos)
-               )]
-        [else (player-card-list (rest card-list) playerpos)]
         )
   )
 
