@@ -457,7 +457,7 @@ Provided by matdes.rkt:
 ;Used in both front and back-end, but must be defined here for the program to work correctly.
 (define (player-card-list card-list playerpos)
   (cond [(empty? card-list) '()]
-        [(equal? (card-owner (first card-list)) player-pos)
+        [(equal? (card-owner (first card-list)) playerpos)
          (cons (first card-list)
                (player-card-list (rest card-list) playerpos)
                )]
@@ -806,7 +806,7 @@ SAMPLE IMPLEMENTATION!
            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
            " armies in reserves.")
            
-          16 "white")
+          16 "orange")
           
     (rectangle 160 75 "solid" "purple"))
    (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
@@ -915,7 +915,10 @@ SAMPLE IMPLEMENTATION!
          (overlay
           (overlay/align "right" "top" X
                          (overlay
-                          (card-buncher (player-card-list system))
+                          (card-buncher (player-card-list (system-card-list model) 
+                                                          (system-player-turn model)
+                                                          )
+                                        )
                           (rectangle 700 200 "solid" (make-color 128 0 0))
                           )
                          )
@@ -1755,7 +1758,52 @@ Players can turn in cards if one of these three cases is true:
            ;Mouse y coordinate
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
-           INITIAL-CARD-LIST
+           ;May be changed for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
+           (list (card "infantry" "Afghanistan" 0 0)
+                 (card "infantry" "Alaska" 1 0)
+                 (card "infantry" "Alberta" 2 "null")
+                 (card "infantry" "Argentina" 3 "null")
+                 (card "artillery" "Brazil" 4 "null")
+                 (card "calvary" "Central America" 5 "null")
+                 (card "calvary" "China" 6 "null")
+                 (card "calvary" "Congo" 7 "null")
+                 (card "artillery" "East Africa" 8 "null")
+                 (card "infantry" "Eastern Australia" 9 "null")
+                 (card "artillery" "Eastern United States" 10 "null")
+                 (card "infantry" "Egypt" 11 "null")
+                 (card "calvary" "Great Britain" 12 "null")
+                 (card "calvary" "Greenland" 13 "null")
+                 (card "infantry" "India" 14 "null")
+                 (card "calvary" "Indonesia" 15 "null")
+                 (card "infantry" "Irkutsk" 16 "null")
+                 (card "infantry" "Japan" 17 "null")
+                 (card "calvary" "Kamchatka" 18 "null")
+                 (card "infantry" "Madagascar" 19 "null")
+                 (card "artillery" "Middle East" 20 "null")
+                 (card "artillery" "Mongolia" 21 "null")
+                 (card "calvary" "New Guinea" 22 "null")
+                 (card "infantry" "North Africa" 23 "null")
+                 (card "calvary" "Northern Europe" 24 "null")
+                 (card "artillery" "Northwest Territory" 25 "null")
+                 (card "calvary" "Ontario" 26 "null")
+                 (card "calvary" "Peru" 27 "null")
+                 (card "artillery" "Quebec" 28 "null")
+                 (card "artillery" "Scandinavia" 29 "null")
+                 (card "artillery" "Siam" 30 "null")
+                 (card "artillery" "Siberia" 31 "null")
+                 (card "artillery" "South Africa" 32 "null")
+                 (card "calvary" "Southern Europe" 33 "null")
+                 (card "artillery" "Ukraine" 34 "null")
+                 (card "calvary" "Ural" 35 "null")
+                 (card "artillery" "Venezuela" 36 "null")
+                 (card "artillery" "Western Australia" 37 "null")
+                 (card "infantry" "Western Europe" 38 "null")
+                 (card "infantry" "Western United States" 39 "null")
+                 (card "calvary" "Yakutsk" 40 "null")
+                 ;Two Wild Cards
+                 (card "wild" "Wild Card 1" 41 "null")
+                 (card "wild" "Wild Card 2" 42 "null")
+                 )
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
