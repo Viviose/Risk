@@ -803,8 +803,13 @@ SAMPLE IMPLEMENTATION!
    CARD-BUTTON
    (overlay
     (textc (string-append
-           (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
-           " armies in reserves.")
+            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
+            (cond [(equal? (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model)))
+                           1)
+                   " army in reserves."]
+                  [else " armies in reserves."]
+                  )
+            )
            
           16 "orange")
           
@@ -917,15 +922,13 @@ SAMPLE IMPLEMENTATION!
 
                          (overlay/align "left" "center"
                           (beside (rectangle 10 0 "solid" "black") 
-                          (card-buncher 
-                           ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
-                           (list (make-card "unit" "Rachel is nub" 55 "3")
-                                 (make-card "unit" "oaml yyA" 56 "4")
-                                 (make-card "unit" "BAGEL" 56 "6")
-                                 (make-card "unit" "ur mum" 56 "7")
-                                 (make-card "unit" "#lang rakt" 56 "5")
-                                 (make-card "unit" "no rugrats" 56 "8"))))
-                          (rectangle 700 200 "solid" (make-color 128 0 0))))
+                                  (card-buncher 
+                                   (player-card-list (system-card-list model) (system-player-turn model))
+                                   )
+                                  )
+                          (rectangle 700 200 "solid" (make-color 128 0 0))
+                          )
+                         )
 
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
@@ -1660,6 +1663,7 @@ These include:
 ;I.E. (equal? (system-screen system) "cards") returns true.
  
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
+;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
 
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
