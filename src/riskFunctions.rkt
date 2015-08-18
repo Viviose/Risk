@@ -450,6 +450,21 @@ Provided by matdes.rkt:
                            )
   )
 
+;Front-End card functions
+
+;player-card-list: [List card] number(playerpos) -> [List card]
+;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
+;Used in both front and back-end, but must be defined here for the program to work correctly.
+(define (player-card-list card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list)) playerpos)
+         (cons (first card-list)
+               (player-card-list (rest card-list) playerpos)
+               )]
+        [else (player-card-list (rest card-list) playerpos)]
+        )
+  )
+
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)
@@ -791,7 +806,7 @@ SAMPLE IMPLEMENTATION!
            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
            " armies in reserves.")
            
-          16 "white")
+          16 "orange")
           
     (rectangle 160 75 "solid" "purple"))
    (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
@@ -815,7 +830,7 @@ SAMPLE IMPLEMENTATION!
 
 ;Card-Buncher - Stack images of cards next to each other
 (define (card-buncher cardleest)
-  (cond [(empty? cardleest) (square 0 "solid" "white")]
+  (cond [(empty? cardleest) (empty-scene 0 0)]
         [else (beside (card-create (first cardleest)) 
                       (square 4 "solid" (make-color 128 0 0)) 
                       (card-buncher (rest cardleest))
@@ -899,6 +914,7 @@ SAMPLE IMPLEMENTATION!
         [(equal? (system-screen model) "cards")
          (overlay
           (overlay/align "right" "top" X
+
                          (overlay/align "left" "center"
                           (beside (rectangle 10 0 "solid" "black") 
                           (card-buncher 
@@ -910,6 +926,7 @@ SAMPLE IMPLEMENTATION!
                                  (make-card "unit" "#lang rakt" 56 "5")
                                  (make-card "unit" "no rugrats" 56 "8"))))
                           (rectangle 700 200 "solid" (make-color 128 0 0))))
+
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
                   (place-image (overlay
@@ -1274,7 +1291,7 @@ SAMPLE IMPLEMENTATION!
 ;System (model) -> System (model)
 #|
 The initial recruitment phase is relatively simple, but programming it can become complicated if one loses track of what must be updated and when.
-Here is a list of conditions that covers most of the occurences of things in intial-recruit.
+Here is a list of conditions that covers most of the occurences of things in initial-recruit.
 
 The list of conditions for moving on to the next phase is as follows:
 - All of the troops of each player have been placed.
@@ -1294,7 +1311,7 @@ The conditions to move on to the next player are as follows:
 OR
 - The current player has fortified a claimed territory (only possible once all territories have been claimed).
 
-ALL clauses should update the x and y coordinates, as well as territory-selected with th
+ALL clauses should update the x and y coordinates, as well as territory-selected using the tooltip function.
 |#
 (define (initial-recruit model x y event)
   ;The first clause of this conditional will check to see if it is time to move on to the next phase.
@@ -1637,7 +1654,13 @@ These include:
   )
 
 ;Card Redemption Functions
+;Cards will work as a tandem of front-end and back-end.
+;A card menu will be drawn when clicked by the player, and hitboxes will become available when the menu is pulled up.
+;The screen parameter of the system struct will be string "cards".
+;I.E. (equal? (system-screen system) "cards") returns true.
  
+;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
+
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
 (define (num-cards-owned card-list playerpos)
@@ -1649,18 +1672,6 @@ These include:
             (num-cards-owned (rest card-list) playerpos)
             )]
         [else (num-cards-owned (rest card-list) playerpos)]
-        )
-  )
-
-;player-card-list: [List card] number(playerpos) -> [List card]
-;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-(define (player-card-list card-list playerpos)
-  (cond [(empty? card-list) '()]
-        [(equal? (card-owner (first card-list)) player-pos)
-         (cons (first card-list)
-               (player-card-list (rest card-list) playerpos)
-               )]
-        [else (player-card-list (rest card-list) playerpos)]
         )
   )
 
@@ -1723,7 +1734,7 @@ Players can turn in cards if one of these three cases is true:
   )
   
   
-
+;Animation includes a mouse and draw handler, as well as an initial system model.
 (big-bang (make-system 
            ;No players at first, updated upon player selection
            (list)
@@ -1752,7 +1763,52 @@ Players can turn in cards if one of these three cases is true:
            ;Mouse y coordinate
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
-           INITIAL-CARD-LIST
+           ;May be changed for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
+           (list (card "infantry" "Afghanistan" 0 0)
+                 (card "infantry" "Alaska" 1 0)
+                 (card "infantry" "Alberta" 2 "null")
+                 (card "infantry" "Argentina" 3 "null")
+                 (card "artillery" "Brazil" 4 "null")
+                 (card "calvary" "Central America" 5 "null")
+                 (card "calvary" "China" 6 "null")
+                 (card "calvary" "Congo" 7 "null")
+                 (card "artillery" "East Africa" 8 "null")
+                 (card "infantry" "Eastern Australia" 9 "null")
+                 (card "artillery" "Eastern United States" 10 "null")
+                 (card "infantry" "Egypt" 11 "null")
+                 (card "calvary" "Great Britain" 12 "null")
+                 (card "calvary" "Greenland" 13 "null")
+                 (card "infantry" "India" 14 "null")
+                 (card "calvary" "Indonesia" 15 "null")
+                 (card "infantry" "Irkutsk" 16 "null")
+                 (card "infantry" "Japan" 17 "null")
+                 (card "calvary" "Kamchatka" 18 "null")
+                 (card "infantry" "Madagascar" 19 "null")
+                 (card "artillery" "Middle East" 20 "null")
+                 (card "artillery" "Mongolia" 21 "null")
+                 (card "calvary" "New Guinea" 22 "null")
+                 (card "infantry" "North Africa" 23 "null")
+                 (card "calvary" "Northern Europe" 24 "null")
+                 (card "artillery" "Northwest Territory" 25 "null")
+                 (card "calvary" "Ontario" 26 "null")
+                 (card "calvary" "Peru" 27 "null")
+                 (card "artillery" "Quebec" 28 "null")
+                 (card "artillery" "Scandinavia" 29 "null")
+                 (card "artillery" "Siam" 30 "null")
+                 (card "artillery" "Siberia" 31 "null")
+                 (card "artillery" "South Africa" 32 "null")
+                 (card "calvary" "Southern Europe" 33 "null")
+                 (card "artillery" "Ukraine" 34 "null")
+                 (card "calvary" "Ural" 35 "null")
+                 (card "artillery" "Venezuela" 36 "null")
+                 (card "artillery" "Western Australia" 37 "null")
+                 (card "infantry" "Western Europe" 38 "null")
+                 (card "infantry" "Western United States" 39 "null")
+                 (card "calvary" "Yakutsk" 40 "null")
+                 ;Two Wild Cards
+                 (card "wild" "Wild Card 1" 41 "null")
+                 (card "wild" "Wild Card 2" 42 "null")
+                 )
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
@@ -1760,7 +1816,9 @@ Players can turn in cards if one of these three cases is true:
            ;Slider used in attributing armies
            (create-slider 100 0 0)
            )
+          ;Draw Handler
           (to-draw render 1250 1200)
+          ;Mouse Handler
           (on-mouse mouse-handler)
           )
 
