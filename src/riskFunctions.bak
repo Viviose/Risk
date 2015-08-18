@@ -1183,7 +1183,7 @@ Max x: 933
   )
 
 ;territory-update: Updates the territory with new owner, and adds or subtracts armies
-;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player) -> Updated Territorylist
+;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player)
 (define (territory-update f armies name tlist owner)
   (local
     [(define
@@ -1211,33 +1211,6 @@ Max x: 933
     [(define (change-p player)
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)
-    )
-  )
-
-;card-scan Selects a territory struct based on a keyword given.
-;Number (id) -> Card (of that struct)
-(define (card-scan id leest)
-  (cond [(empty? leest) (error "Card not found!")]
-        [(equal? (card-id (first leest)) id)
-         (first leest)]
-        [else (card-scan id (rest leest))]))
-
-;Update-c is for the card-update function. It just applies the changes
-(define (update-c tcard id state owner)
-  (cond [(equal? (card-id tcard) id)
-         (struct-copy card tcard
-                      [owner owner]
-                      [state state])]
-        [else card]))
-
-;Territory-update is for changing aspects of a card based on an id.
-;Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
-  (define (territory-update id owner state cardlist)
-  (local
-    [(define
-       (change-c card)
-       (update-c card id state owner))]
-    (map change-c cardlist)
     )
   )
 

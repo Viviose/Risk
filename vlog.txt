@@ -1,6 +1,11 @@
 Current Version: 1.4.1a
 BUILD IS NOW IN ALPHA
 
+Version 1.4.4a (8/17/15)
+- Aligned cards to the left
+- Gathered cards hitboxes
+- Created a function similar to territory-update for updating cards' owners and states.
+
 Version 1.4.3a (7/17/15)
 - Added in state parameter to card struct for us in card functions and related drawing functions, letting the system know a particular card has been chosen.
 - Updated INITIAL-CARD-LIST to include State parameters for each card, defaulted to "inactive"
