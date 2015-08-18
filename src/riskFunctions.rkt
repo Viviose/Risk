@@ -97,7 +97,7 @@ Provided by matdes.rkt:
 ;__________________________________________________________________________________________________________________________________________________
 
 ;Debug mode variable
-;When set to 0, debug mode will not run on the draw handler in the Risk animation.
+;When set to 0, debug mode will not run on the mouse handler in the Risk animation.
 ;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
 (define DEBUG 0)
 
@@ -1076,6 +1076,7 @@ SAMPLE IMPLEMENTATION!
              (struct-copy 
               system model
               [screen "gameplay"]
+              [debug (string-append (number->string x) " " (number->string y))]
               )
              ;If not true, then it returns model
              model
