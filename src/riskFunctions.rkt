@@ -97,7 +97,7 @@ Provided by matdes.rkt:
 ;__________________________________________________________________________________________________________________________________________________
 
 ;Debug mode variable
-;When set to 0, debug mode will not run on the mouse handler in the Risk animation.
+;When set to 0, debug mode will not run on the draw handler in the Risk animation.
 ;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
 (define DEBUG 0)
 
@@ -946,13 +946,33 @@ SAMPLE IMPLEMENTATION!
         )
   )
 
-#| Card locations for mouse handler:
-- Card 1: 
-- Card 2:
-- Card 3:
-- Card 4:
-- Card 5:
-- Card 6:
+#| GLOBALLY:
+Min y: 415
+Max y: 560
+
+Card 1:
+Min x: 313
+Max x: 413
+
+Card 2:
+Min x: 417 
+Max x: 517
+
+Card 3:
+Min x: 521
+Max x: 621
+
+Card 4:
+Min x: 625
+Max x: 725
+
+Card 5:
+Min x: 729
+Max x: 829
+
+Card 6:
+Min x: 833
+Max x: 933
 |#
 
 
@@ -1087,7 +1107,6 @@ SAMPLE IMPLEMENTATION!
              (struct-copy 
               system model
               [screen "gameplay"]
-              [debug (string-append (number->string x) " " (number->string y))]
               )
              ;If not true, then it returns model
              model
