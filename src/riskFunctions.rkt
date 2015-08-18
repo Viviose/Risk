@@ -899,7 +899,8 @@ SAMPLE IMPLEMENTATION!
         [(equal? (system-screen model) "cards")
          (overlay
           (overlay/align "right" "top" X
-                         (overlay
+                         (overlay/align "left" "center"
+                          (beside (rectangle 10 0 "solid" "black") 
                           (card-buncher 
                            ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
                            (list (make-card "unit" "Rachel is nub" 55 "3")
@@ -907,7 +908,7 @@ SAMPLE IMPLEMENTATION!
                                  (make-card "unit" "BAGEL" 56 "6")
                                  (make-card "unit" "ur mum" 56 "7")
                                  (make-card "unit" "#lang rakt" 56 "5")
-                                 (make-card "unit" "no rugrats" 56 "8")))
+                                 (make-card "unit" "no rugrats" 56 "8"))))
                           (rectangle 700 200 "solid" (make-color 128 0 0))))
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
