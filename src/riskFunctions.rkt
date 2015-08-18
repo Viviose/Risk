@@ -115,8 +115,8 @@ Provided by matdes.rkt:
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
-;[Card]: String(unit-name) String(territory-name) number(card-id) [Maybe number(owner-id)] -> card
-(define-struct card (unit territory id owner)
+;[Card]: String(unit-name) String(territory-name) number(card-id) [Maybe number(owner-id)] string(card-state)-> card
+(define-struct card (unit territory id owner state)
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
@@ -403,50 +403,50 @@ Provided by matdes.rkt:
 
 ;Initial list of all cards and their values in the game.
 (define INITIAL-CARD-LIST (list
-                           (card "infantry" "Afghanistan" 0 "null")
-                           (card "infantry" "Alaska" 1 "null")
-                           (card "infantry" "Alberta" 2 "null")
-                           (card "infantry" "Argentina" 3 "null")
-                           (card "artillery" "Brazil" 4 "null")
-                           (card "calvary" "Central America" 5 "null")
-                           (card "calvary" "China" 6 "null")
-                           (card "calvary" "Congo" 7 "null")
-                           (card "artillery" "East Africa" 8 "null")
-                           (card "infantry" "Eastern Australia" 9 "null")
-                           (card "artillery" "Eastern United States" 10 "null")
-                           (card "infantry" "Egypt" 11 "null")
-                           (card "calvary" "Great Britain" 12 "null")
-                           (card "calvary" "Greenland" 13 "null")
-                           (card "infantry" "India" 14 "null")
-                           (card "calvary" "Indonesia" 15 "null")
-                           (card "infantry" "Irkutsk" 16 "null")
-                           (card "infantry" "Japan" 17 "null")
-                           (card "calvary" "Kamchatka" 18 "null")
-                           (card "infantry" "Madagascar" 19 "null")
-                           (card "artillery" "Middle East" 20 "null")
-                           (card "artillery" "Mongolia" 21 "null")
-                           (card "calvary" "New Guinea" 22 "null")
-                           (card "infantry" "North Africa" 23 "null")
-                           (card "calvary" "Northern Europe" 24 "null")
-                           (card "artillery" "Northwest Territory" 25 "null")
-                           (card "calvary" "Ontario" 26 "null")
-                           (card "calvary" "Peru" 27 "null")
-                           (card "artillery" "Quebec" 28 "null")
-                           (card "artillery" "Scandinavia" 29 "null")
-                           (card "artillery" "Siam" 30 "null")
-                           (card "artillery" "Siberia" 31 "null")
-                           (card "artillery" "South Africa" 32 "null")
-                           (card "calvary" "Southern Europe" 33 "null")
-                           (card "artillery" "Ukraine" 34 "null")
-                           (card "calvary" "Ural" 35 "null")
-                           (card "artillery" "Venezuela" 36 "null")
-                           (card "artillery" "Western Australia" 37 "null")
-                           (card "infantry" "Western Europe" 38 "null")
-                           (card "infantry" "Western United States" 39 "null")
-                           (card "calvary" "Yakutsk" 40 "null")
+                           (card "infantry" "Afghanistan" 0 "null" "inactive")
+                           (card "infantry" "Alaska" 1 "null" "inactive")
+                           (card "infantry" "Alberta" 2 "null" "inactive")
+                           (card "infantry" "Argentina" 3 "null" "inactive")
+                           (card "artillery" "Brazil" 4 "null" "inactive")
+                           (card "calvary" "Central America" 5 "null" "inactive")
+                           (card "calvary" "China" 6 "null" "inactive")
+                           (card "calvary" "Congo" 7 "null" "inactive")
+                           (card "artillery" "East Africa" 8 "null" "inactive")
+                           (card "infantry" "Eastern Australia" 9 "null" "inactive")
+                           (card "artillery" "Eastern United States" 10 "null" "inactive")
+                           (card "infantry" "Egypt" 11 "null" "inactive")
+                           (card "calvary" "Great Britain" 12 "null" "inactive")
+                           (card "calvary" "Greenland" 13 "null" "inactive")
+                           (card "infantry" "India" 14 "null" "inactive")
+                           (card "calvary" "Indonesia" 15 "null" "inactive")
+                           (card "infantry" "Irkutsk" 16 "null" "inactive")
+                           (card "infantry" "Japan" 17 "null" "inactive")
+                           (card "calvary" "Kamchatka" 18 "null" "inactive")
+                           (card "infantry" "Madagascar" 19 "null" "inactive")
+                           (card "artillery" "Middle East" 20 "null" "inactive")
+                           (card "artillery" "Mongolia" 21 "null" "inactive")
+                           (card "calvary" "New Guinea" 22 "null" "inactive")
+                           (card "infantry" "North Africa" 23 "null" "inactive")
+                           (card "calvary" "Northern Europe" 24 "null" "inactive")
+                           (card "artillery" "Northwest Territory" 25 "null" "inactive")
+                           (card "calvary" "Ontario" 26 "null" "inactive")
+                           (card "calvary" "Peru" 27 "null" "inactive")
+                           (card "artillery" "Quebec" 28 "null" "inactive")
+                           (card "artillery" "Scandinavia" 29 "null" "inactive")
+                           (card "artillery" "Siam" 30 "null" "inactive")
+                           (card "artillery" "Siberia" 31 "null" "inactive")
+                           (card "artillery" "South Africa" 32 "null" "inactive")
+                           (card "calvary" "Southern Europe" 33 "null" "inactive")
+                           (card "artillery" "Ukraine" 34 "null" "inactive")
+                           (card "calvary" "Ural" 35 "null" "inactive")
+                           (card "artillery" "Venezuela" 36 "null" "inactive")
+                           (card "artillery" "Western Australia" 37 "null" "inactive")
+                           (card "infantry" "Western Europe" 38 "null" "inactive")
+                           (card "infantry" "Western United States" 39 "null" "inactive")
+                           (card "calvary" "Yakutsk" 40 "null" "inactive")
                            ;Two Wild Cards
-                           (card "wild" "Wild Card 1" 41 "null")
-                           (card "wild" "Wild Card 2" 42 "null")
+                           (card "wild" "Wild Card 1" 41 "null" "inactive")
+                           (card "wild" "Wild Card 2" 42 "null" "inactive")
                            )
   )
 
@@ -803,8 +803,13 @@ SAMPLE IMPLEMENTATION!
    CARD-BUTTON
    (overlay
     (textc (string-append
-           (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
-           " armies in reserves.")
+            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
+            (cond [(equal? (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model)))
+                           1)
+                   " army in reserves."]
+                  [else " armies in reserves."]
+                  )
+            )
            
           16 "orange")
           
@@ -917,15 +922,13 @@ SAMPLE IMPLEMENTATION!
 
                          (overlay/align "left" "center"
                           (beside (rectangle 10 0 "solid" "black") 
-                          (card-buncher 
-                           ;*********THIS WILL BE REPLACED BY THE CARDLIST FOR THE RESPECTIVE PLAYER************
-                           (list (make-card "unit" "Rachel is nub" 55 "3")
-                                 (make-card "unit" "oaml yyA" 56 "4")
-                                 (make-card "unit" "BAGEL" 56 "6")
-                                 (make-card "unit" "ur mum" 56 "7")
-                                 (make-card "unit" "#lang rakt" 56 "5")
-                                 (make-card "unit" "no rugrats" 56 "8"))))
-                          (rectangle 700 200 "solid" (make-color 128 0 0))))
+                                  (card-buncher 
+                                   (player-card-list (system-card-list model) (system-player-turn model))
+                                   )
+                                  )
+                          (rectangle 700 200 "solid" (make-color 128 0 0))
+                          )
+                         )
 
           (above
            (cond [(not (equal? (system-territory-selected model) "null"))
@@ -943,6 +946,14 @@ SAMPLE IMPLEMENTATION!
         )
   )
 
+#| Card locations for mouse handler:
+- Card 1: 
+- Card 2:
+- Card 3:
+- Card 4:
+- Card 5:
+- Card 6:
+|#
 
 
 (define (mouse-handler model x y event)
@@ -1661,6 +1672,7 @@ These include:
 ;I.E. (equal? (system-screen system) "cards") returns true.
  
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
+;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
 
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
