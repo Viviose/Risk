@@ -1823,7 +1823,9 @@ Players can turn in cards if one of these three cases is true:
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
            ;May be changed for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
-           (list (card "infantry" "Afghanistan" 0 0)
+           INITIAL-CARD-LIST
+           ;Test List for debugging purposes.
+           #|(list (card "infantry" "Afghanistan" 0 0)
                  (card "infantry" "Alaska" 1 0)
                  (card "infantry" "Alberta" 2 "null")
                  (card "infantry" "Argentina" 3 "null")
@@ -1868,6 +1870,7 @@ Players can turn in cards if one of these three cases is true:
                  (card "wild" "Wild Card 1" 41 "null")
                  (card "wild" "Wild Card 2" 42 "null")
                  )
+           |#
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
