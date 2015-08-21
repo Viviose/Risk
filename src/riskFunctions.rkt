@@ -962,6 +962,28 @@ Min x: 833
 Max x: 933
 |#
 
+;which-card? determines which card a given coordinate pair is over. This is combined with several mouse functions to act on cards.
+;If the pair is not over a card, then it returns null.
+;Number (x) Number (y) -> Number(card index) OR Null
+(define (which-card? x y)
+  (cond [(and (>= y 415) (<= y 560))
+         (cond [(and (>= x 313) (<= x 413))
+                1]
+               [(and (>= x 417) (<= x 517))
+                2]
+               [(and (>= x 521) (<= x 621))
+                3]
+               [(and (>= x 625) (<= x 725))
+                4]
+               [(and (>= x 729) (<= x 829))
+                5]
+               [(and (>= x 833) (<= x 933))
+                6]
+               [else null])
+         ]
+        [else null]))
+         
+
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -1096,8 +1118,14 @@ Max x: 933
               [screen "gameplay"]
               )
              ;If not true, then it returns model
+             (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
+              ;do something with that card index below
+             (...)
+             ;Else model
              model
+             )
              )]
+                 
         [else model]
         )
   )
