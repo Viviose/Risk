@@ -450,20 +450,7 @@ Provided by matdes.rkt:
                            )
   )
 
-;Front-End card functions
 
-;player-card-list: [List card] number(playerpos) -> [List card]
-;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-;Used in both front and back-end, but must be defined here for the program to work correctly.
-(define (player-card-list card-list playerpos)
-  (cond [(empty? card-list) '()]
-        [(equal? (card-owner (first card-list)) playerpos)
-         (cons (first card-list)
-               (player-card-list (rest card-list) playerpos)
-               )]
-        [else (player-card-list (rest card-list) playerpos)]
-        )
-  )
 
 ;The number of armies per player
 ;Number -> Number
@@ -1214,6 +1201,21 @@ Max x: 933
     )
   )
 
+;Front-End card functions
+
+;player-card-list: [List card] number(playerpos) -> [List card]
+;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
+;Used in both front and back-end, but must be defined here for the program to work correctly.
+(define (player-card-list card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list)) playerpos)
+         (cons (first card-list)
+               (player-card-list (rest card-list) playerpos)
+               )]
+        [else (player-card-list (rest card-list) playerpos)]
+        )
+  )
+
 ;card-scan Selects a territory struct based on a keyword given.
 ;Number (id) -> Card (of that struct)
 (define (card-scan id leest)
@@ -1230,9 +1232,9 @@ Max x: 933
                       [state state])]
         [else card]))
 
-;Territory-update is for changing aspects of a card based on an id.
+;Card-update is for changing aspects of a card based on an id.
 ;Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
-  (define (territory-update id owner state cardlist)
+  (define (card-update id owner state cardlist)
   (local
     [(define
        (change-c card)
