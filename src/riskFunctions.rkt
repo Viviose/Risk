@@ -979,9 +979,11 @@ Max x: 933
                 5]
                [(and (>= x 833) (<= x 933))
                 6]
-               [else null])
-         ]
-        [else null]))
+               [else null]
+               )]
+        [else null]
+        )
+  )
          
 
 
@@ -1091,7 +1093,6 @@ Max x: 933
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
-                                
                                 (attack-phase model x y event)
                                 ]
                               ;Will work when fortify phase function is created

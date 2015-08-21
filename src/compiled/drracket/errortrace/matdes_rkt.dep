@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-("6.1" ("6f1db0fa2549e8861145a110bbeddded6f926792" . "c2acf7461142cf233ea53a753d8c2a6d0ecc8a53") (collects #"picturing-programs" #"main.rkt") #"/home/josh/Desktop/Projects/Racket/risk/src/graph.rkt" (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"main.rkt"))
-=======
-("6.2" ("87e8f0f2331ea4abf1bbda5ac7a1ad7a68bf7c3b" . "035ee616ea6763dc232210be18be216853fb4d20") #"C:\\Users\\Patrick\\Documents\\risk\\src\\graph.rkt" (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"picturing-programs" #"main.rkt"))
->>>>>>> 65f380b49b0312ab2d3e42dae7db4e362fede529
+("6.1" ("6f1db0fa2549e8861145a110bbeddded6f926792" . "817ee6418829f46e094082f0914a44c040bc5c85") (collects #"picturing-programs" #"main.rkt") #"/home/josh/Desktop/Projects/Racket/risk/src/graph.rkt" (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"main.rkt"))
