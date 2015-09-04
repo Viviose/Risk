@@ -1088,7 +1088,7 @@ Max x: 933
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
                               [(equal? (system-turn-stage model) "recruit")
-                               (recruit-phase model x y event)]
+                               #;(recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
@@ -1119,11 +1119,11 @@ Max x: 933
               )
              ;If not true, then it returns model
              (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
-              ;do something with that card index below
-             (...)
-             ;Else model
-             model
-             )
+                 ;do something with that card index below
+                 model
+                 ;Else model
+                 model
+                 )
              )]
         [else model]
         )
@@ -1542,12 +1542,12 @@ The following factor into the amount of armies given to players:
 ;base-armycount: number(territories owned) -> number(army)
 ;Takes in a model and returns the amount of troops yielded.
 (define (base-armycount model)
-  (cond [(< (floor (/ (count-territories (system-turn model) (system-territory-list model))
+  (cond [(< (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
                       3)
                    )
             3)
          3]
-        [else (floor (/ (count-territories (system-turn model) (system-territory-list model))
+        [else (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
                         3)
                      )]
         )
@@ -1786,11 +1786,12 @@ Players can turn in cards if one of these three cases is true:
 
 ;The Recruit Phase
 #|
-
+Events that occur during recruit:
+- The User checks the Cardlist.
+- The User clicks on a territory to add troops.
 
 |#
-Events that have 
-(define (recruit-phase model x y event)
+#;(define (recruit-phase model x y event)
   (cond []
         []
         []
