@@ -1120,8 +1120,7 @@ Max x: 933
              ;If not true, then it returns model
              (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
               ;do something with that card index below
-             ;(...)
-                 model
+             (...)
              ;Else model
              model
              )
@@ -1786,6 +1785,11 @@ Players can turn in cards if one of these three cases is true:
 ;  )
 
 ;The Recruit Phase
+#|
+
+
+|#
+Events that have 
 (define (recruit-phase model x y event)
   (cond []
         []
@@ -1836,7 +1840,7 @@ Players can turn in cards if one of these three cases is true:
            0
            ;Initial phase is init-recruit, changes upon completion of phases
            ;Can be changed for debugging purposes.
-           "attack"
+           "init-recruit"
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.
