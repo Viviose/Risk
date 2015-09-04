@@ -1087,9 +1087,8 @@ Max x: 933
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
-                               [(equal? (system-turn-stage model) "recruit")
-                                  ;Here is the problemo:
-                                  (recruit-phase model x y event)]
+                              [(equal? (system-turn-stage model) "recruit")
+                               (recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
@@ -1541,14 +1540,14 @@ The following factor into the amount of armies given to players:
   )
 
 ;base-armycount: number(territories owned) -> number(army)
-;Takes in a number of territories owned (most likely result of count-territories function) and returns the amount of troops yielded.
-(define (base-armycount num-territories-owned)
-  (cond [(< (floor (/ num-territories-owned
-                        3)
+;Takes in a model and returns the amount of troops yielded.
+(define (base-armycount model)
+  (cond [(< (floor (/ (count-territories (system-turn model) (system-territory-list model))
+                      3)
                    )
             3)
          3]
-        [else (floor (/ num-territories-owned
+        [else (floor (/ (count-territories (system-turn model) (system-territory-list model))
                         3)
                      )]
         )
@@ -1785,9 +1784,12 @@ Players can turn in cards if one of these three cases is true:
 ;        )
 ;  )
 
-;da recruit phase m8
+;The Recruit Phase
 (define (recruit-phase model x y event)
-  model
+  (cond []
+        []
+        []
+        )
   )
 
 (define (between? query min max)
