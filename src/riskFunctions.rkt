@@ -1126,7 +1126,6 @@ Max x: 933
              model
              )
              )]
-                 
         [else model]
         )
   )
@@ -1230,7 +1229,7 @@ Max x: 933
     )
   )
 
-;Front-End card functions
+;Card functions
 
 ;player-card-list: [List card] number(playerpos) -> [List card]
 ;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
@@ -1259,7 +1258,9 @@ Max x: 933
          (struct-copy card tcard
                       [owner owner]
                       [state state])]
-        [else card]))
+        [else card]
+        )
+  )
 
 ;Card-update is for changing aspects of a card based on an id.
 ;Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
