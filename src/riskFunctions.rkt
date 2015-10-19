@@ -405,47 +405,6 @@ Provided by matdes.rkt:
 ;Initial list of all cards and their values in the game.
 ;[Card]: String(unit) String(territory) [Maybe-Number Owner] -> card
 (define INITIAL-CARD-LIST (list
-                           (card "infantry" "Afghanistan" "null")
-                           (card "infantry" "Alaska" "null")
-                           (card "infantry" "Alberta" "null")
-                           (card "infantry" "Argentina" "null")
-                           (card "artillery" "Brazil" "null")
-                           (card "cavalry" "Central America" "null")
-                           (card "cavalry" "China" "null")
-                           (card "cavalry" "Congo" "null")
-                           (card "artillery" "East Africa" "null")
-                           (card "infantry" "Eastern Australia" "null")
-                           (card "artillery" "Eastern United States" "null")
-                           (card "infantry" "Egypt" "null")
-                           (card "cavalry" "Great Britain" "null")
-                           (card "cavalry" "Greenland" "null")
-                           (card "infantry" "India" "null")
-                           (card "cavalry" "Indonesia" "null")
-                           (card "infantry" "Irkutsk" "null")
-                           (card "infantry" "Japan" "null")
-                           (card "cavalry" "Kamchatka" "null")
-                           (card "infantry" "Madagascar" "null")
-                           (card "artillery" "Middle East" "null")
-                           (card "artillery" "Mongolia" "null")
-                           (card "cavalry" "New Guinea" "null")
-                           (card "infantry" "North Africa" "null")
-                           (card "cavalry" "Northern Europe" "null")
-                           (card "artillery" "Northwest Territory" "null")
-                           (card "cavalry" "Ontario" "null")
-                           (card "cavalry" "Peru" "null")
-                           (card "artillery" "Quebec" "null")
-                           (card "artillery" "Scandinavia" "null")
-                           (card "artillery" "Siam" "null")
-                           (card "artillery" "Siberia" "null")
-                           (card "artillery" "South Africa" "null")
-                           (card "cavalry" "Southern Europe" "null")
-                           (card "artillery" "Ukraine" "null")
-                           (card "cavalry" "Ural" "null")
-                           (card "artillery" "Venezuela" "null")
-                           (card "artillery" "Western Australia" "null")
-                           (card "infantry" "Western Europe" "null")
-                           (card "infantry" "Western United States" "null")
-                           (card "cavalry" "Yakutsk" "null")
                            (card "infantry" "Afghanistan" 0 "null" "inactive")
                            (card "infantry" "Alaska" 1 "null" "inactive")
                            (card "infantry" "Alberta" 2 "null" "inactive")
@@ -487,7 +446,6 @@ Provided by matdes.rkt:
                            (card "infantry" "Western Europe" 38 "null" "inactive")
                            (card "infantry" "Western United States" 39 "null" "inactive")
                            (card "calvary" "Yakutsk" 40 "null" "inactive")
->>>>>>> 1d7efb1437eebeecfc2902c4bc3fe56757b68288
                            ;Two Wild Cards
                            (card "wild" "Wild Card 1" 41 "null" "inactive")
                            (card "wild" "Wild Card 2" 42 "null" "inactive")
@@ -1597,13 +1555,6 @@ The following factor into the amount of armies given to players:
         )
   )
 
-(check-expect (base-armycount 8)
-              3)
-(check-expect (base-armycount 12)
-              4)
-(check-expect (base-armycount 21)
-              7)
-
 ;Begin continent bonus functions.
 
 ;owns-asia?: number(playerpos) [List(system-territory-list) territory] -> boolean
@@ -1824,7 +1775,7 @@ These include:
 ;find-reg-cards: [List card] number(playerpos) -> [List card]
 ;Goes through a card-list and returns the cards in that list that aren't wild cards.
 (define (find-reg-cards card-list playerpos)
-  (cond [(empty? card-list) ()']
+  (cond [(empty? card-list) '() ]
         [(equal? (card-unit (first card-list))
                  "wild"
                  )
@@ -1849,7 +1800,7 @@ These include:
 ;return-same-unit: [List card] number(playerpos) string(unit) -> [List card]
 ;Goes through a given list of cards and returns cards with the unit type specified.
 (define (return-same-unit card-list playerpos unit)
-  (cond [(empty? card-list) ()']
+  (cond [(empty? card-list) '()]
         [(equal? (card-unit (first card-list)) unit)
          (cons (first card-list)
                (return-same-unit (rest card-list) playerpos unit)
@@ -1875,12 +1826,12 @@ These include:
   )
 
 ;has-cavalry?
-(define (has-infantry? card-list playerpos)
+(define (has-cavalry? card-list playerpos)
   (not (empty? (return-same-unit card-list playerpos "cavalry")))
   )
 
 ;has-artillery?
-(define (has-infantry? card-list playerpos)
+(define (has-artillery? card-list playerpos)
   (not (empty? (return-same-unit card-list playerpos "artillery")))
   )
 
@@ -1919,7 +1870,10 @@ Players can turn in cards if one of these three cases is true:
         ;They don't have three of the same type, now we check for one of each.
         [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
          true]
+        ;They don't meet 
         [else false]
+        )
+  )
 
 ;The Recruit Phase
 #|
