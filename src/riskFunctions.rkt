@@ -120,7 +120,7 @@ Provided by matdes.rkt:
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
-;[territory]: string(armies) number(armies) string(owner) -> territory
+;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
 (define-struct territory (name armies owner adjacent-territories)
   #:transparent)
 
@@ -148,6 +148,7 @@ Provided by matdes.rkt:
   )
 
 ;List of all territories
+;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
 (define INITIAL-TERRITORY-LIST (list 
                                 ;North America
                                 (territory "Alaska" 0 "null" (list "Northwest Territory"
@@ -402,48 +403,49 @@ Provided by matdes.rkt:
   )
 
 ;Initial list of all cards and their values in the game.
+;[Card]: String(unit) String(territory) [Maybe-Number Owner] -> card
 (define INITIAL-CARD-LIST (list
                            (card "infantry" "Afghanistan" "null")
                            (card "infantry" "Alaska" "null")
                            (card "infantry" "Alberta" "null")
                            (card "infantry" "Argentina" "null")
                            (card "artillery" "Brazil" "null")
-                           (card "calvary" "Central America" "null")
-                           (card "calvary" "China" "null")
-                           (card "calvary" "Congo" "null")
+                           (card "cavalry" "Central America" "null")
+                           (card "cavalry" "China" "null")
+                           (card "cavalry" "Congo" "null")
                            (card "artillery" "East Africa" "null")
                            (card "infantry" "Eastern Australia" "null")
                            (card "artillery" "Eastern United States" "null")
                            (card "infantry" "Egypt" "null")
-                           (card "calvary" "Great Britain" "null")
-                           (card "calvary" "Greenland" "null")
+                           (card "cavalry" "Great Britain" "null")
+                           (card "cavalry" "Greenland" "null")
                            (card "infantry" "India" "null")
-                           (card "calvary" "Indonesia" "null")
+                           (card "cavalry" "Indonesia" "null")
                            (card "infantry" "Irkutsk" "null")
                            (card "infantry" "Japan" "null")
-                           (card "calvary" "Kamchatka" "null")
+                           (card "cavalry" "Kamchatka" "null")
                            (card "infantry" "Madagascar" "null")
                            (card "artillery" "Middle East" "null")
                            (card "artillery" "Mongolia" "null")
-                           (card "calvary" "New Guinea" "null")
+                           (card "cavalry" "New Guinea" "null")
                            (card "infantry" "North Africa" "null")
-                           (card "calvary" "Northern Europe" "null")
+                           (card "cavalry" "Northern Europe" "null")
                            (card "artillery" "Northwest Territory" "null")
-                           (card "calvary" "Ontario" "null")
-                           (card "calvary" "Peru" "null")
+                           (card "cavalry" "Ontario" "null")
+                           (card "cavalry" "Peru" "null")
                            (card "artillery" "Quebec" "null")
                            (card "artillery" "Scandinavia" "null")
                            (card "artillery" "Siam" "null")
                            (card "artillery" "Siberia" "null")
                            (card "artillery" "South Africa" "null")
-                           (card "calvary" "Southern Europe" "null")
+                           (card "cavalry" "Southern Europe" "null")
                            (card "artillery" "Ukraine" "null")
-                           (card "calvary" "Ural" "null")
+                           (card "cavalry" "Ural" "null")
                            (card "artillery" "Venezuela" "null")
                            (card "artillery" "Western Australia" "null")
                            (card "infantry" "Western Europe" "null")
                            (card "infantry" "Western United States" "null")
-                           (card "calvary" "Yakutsk" "null")
+                           (card "cavalry" "Yakutsk" "null")
                            ;Two Wild Cards
                            (card "wild" "Wild Card 1" "null")
                            (card "wild" "Wild Card 2" "null")
@@ -1640,6 +1642,89 @@ These include:
         )
   )
 
+;has-wild-card?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has a wild card in the deck he currently possesses.
+(define (has-wild-card? card-list playerpos)
+  (cond [(empty? card-list) false]
+        [(equal? (card-unit (first card-list))
+                 "wild"
+                 )
+         true]
+        [else (has-wild-card? (rest card-list) playerpos)]
+        )
+  )
+
+;find-reg-cards: [List card] number(playerpos) -> [List card]
+;Goes through a card-list and returns the cards in that list that aren't wild cards.
+(define (find-reg-cards card-list playerpos)
+  (cond [(empty? card-list) ()']
+        [(equal? (card-unit (first card-list))
+                 "wild"
+                 )
+         (find-reg-cards card-list playerpos)]
+        [else (cons (first card-list) 
+                    (find-reg-cards card-list playerpos)
+                    )]
+        )
+  )
+
+;has-two-reg-cards?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has two regular cards of any type in his deck.
+(define (has-two-reg-cards? card-list playerpos)
+  (if (>= (length (find-reg-cards card-list playerpos)) 2)
+      ;Has at least 2 non-wild cards
+      true
+      ;Doesn't
+      false
+      )
+  )
+      
+;return-same-unit: [List card] number(playerpos) string(unit) -> [List card]
+;Goes through a given list of cards and returns cards with the unit type specified.
+(define (return-same-unit card-list playerpos unit)
+  (cond [(empty? card-list) ()']
+        [(equal? (card-unit (first card-list)) unit)
+         (cons (first card-list)
+               (return-same-unit (rest card-list) playerpos unit)
+               )]
+        [else (return-same-unit (rest card-list) playerpos unit)]
+        )
+  )
+
+;has-three-same-unit?: [List card] number(playerpos) -> boolean
+;Checks to see if a player has 3 cards of the same type in their possesion.
+(define (has-three-same-unit? card-list playerpos)
+  ;Will return true if conditions stated in purpose are met, else false.
+  (or (>= (length (return-same-unit card-list playerpos "infantry")) 3)
+      (>= (length (return-same-unit card-list playerpos "artillery")) 3)
+      (>= (length (return-same-unit card-list playerpos "cavalry")) 3)
+      )
+  )
+
+;has-infantry?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has any infantry cards.
+(define (has-infantry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "infantry")))
+  )
+
+;has-cavalry?
+(define (has-infantry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "cavalry")))
+  )
+
+;has-artillery?
+(define (has-infantry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "artillery")))
+  )
+
+;has-one-of-each-unit?: [List card] number(playerpos) -> boolean
+(define (has-one-of-each-unit? card-list playerpos)
+  (and (has-infantry? card-list playerpos)
+       (has-cavalry? card-list playerpos)
+       (has-artillery? card-list playerpos)
+       )
+  )
+
 ;can-turn-in?: system(model) -> boolean
 ;Checks to see if a player has 3 cards available and eligible to be traded in.
 #|
@@ -1652,10 +1737,22 @@ Players can turn in cards if one of these three cases is true:
 |#
 
 (define (can-turn-in? system)
-  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
+  (cond [(< (num-cards-owned (system-card-list system) (system-player-turn system))
             3)
          false]
-        []
+        ;After this point, it is known that the user has 3+ cards.
+        ;Second condition checks to see if the player has a wild card in possession, 
+        [(and (has-wild-card? (system-card-list system) (system-player-turn system)) 
+              (has-two-reg-cards? (system-card-list system) (system-player-turn system))
+              )
+         true]
+        ;Player doesn't have a wild card, so now we check for 3 cards of the same type.
+        [(has-three-same-unit? (system-card-list system) (system-player-turn system))
+         true]
+        ;They don't have three of the same type, now we check for one of each.
+        [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
+         true]
+        [else false]
         )
   )
 
@@ -1667,7 +1764,9 @@ Players can turn in cards if one of these three cases is true:
 (define (between? query min max)
   (and
    (< query max)
-   (> query min)))
+   (> query min)
+   )
+  )
 
 ;ATTACK PHASE
 
