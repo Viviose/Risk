@@ -405,7 +405,6 @@ Provided by matdes.rkt:
 ;Initial list of all cards and their values in the game.
 ;[Card]: String(unit) String(territory) [Maybe-Number Owner] -> card
 (define INITIAL-CARD-LIST (list
-<<<<<<< HEAD
                            (card "infantry" "Afghanistan" "null")
                            (card "infantry" "Alaska" "null")
                            (card "infantry" "Alberta" "null")
@@ -447,7 +446,6 @@ Provided by matdes.rkt:
                            (card "infantry" "Western Europe" "null")
                            (card "infantry" "Western United States" "null")
                            (card "cavalry" "Yakutsk" "null")
-=======
                            (card "infantry" "Afghanistan" 0 "null" "inactive")
                            (card "infantry" "Alaska" 1 "null" "inactive")
                            (card "infantry" "Alberta" 2 "null" "inactive")
@@ -1905,7 +1903,6 @@ Players can turn in cards if one of these three cases is true:
 - The player owns 3 cards of the same unit type.
 |#
 
-<<<<<<< HEAD
 (define (can-turn-in? system)
   (cond [(< (num-cards-owned (system-card-list system) (system-player-turn system))
             3)
@@ -1923,14 +1920,6 @@ Players can turn in cards if one of these three cases is true:
         [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
          true]
         [else false]
-=======
-;(define (can-turn-in? system)
-;  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
-;            3)
-;         false]
-;        []
-;        )
-;  )
 
 ;The Recruit Phase
 #|
@@ -1939,11 +1928,11 @@ Events that occur during recruit:
 - The User clicks on a territory to add troops.
 
 |#
+        
 #;(define (recruit-phase model x y event)
   (cond []
         []
         []
->>>>>>> 1d7efb1437eebeecfc2902c4bc3fe56757b68288
         )
   )
 
