@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 ("6.1" ("54ee1dcf0ac96ccf1105e7d5b095ac32ba7f9a57" . "f29515a5d5233495c6de24c71c3f1797ec390d5c") #"C:\\Users\\Home2014\\Desktop\\Programs and Git Repos\\racket-projects\\risk\\src\\graph.rkt" (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"picturing-programs" #"main.rkt"))
+=======
+("6.1" ("6f1db0fa2549e8861145a110bbeddded6f926792" . "ce2b3d475b1cb752ef9aa9b4aeefe7309bc5a8ae") (collects #"picturing-programs" #"main.rkt") #"/home/josh/Desktop/Projects/Racket/risk/src/graph.rkt" (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"main.rkt"))
+>>>>>>> 1d7efb1437eebeecfc2902c4bc3fe56757b68288

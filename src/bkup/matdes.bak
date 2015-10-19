@@ -3,8 +3,8 @@
 (require "graph.rkt")
 (provide DICE-BUTTON CARD-BUTTON)
 
-(define DICE-ICO (bitmap "imgs/diceico.png"))
-(define CARD-ICO (bitmap "imgs/cardico.png"))
+(define DICE-ICO (bitmap "imgs\\diceico.png"))
+(define CARD-ICO (bitmap "imgs\\cardico.png"))
 
 (define (r x y)
   128)
