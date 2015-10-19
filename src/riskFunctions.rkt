@@ -1526,7 +1526,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
 The following factor into the amount of armies given to players:
 - Territories(# of territories / 3, where f(t) is at minimum 3 and t is the amount of territories a player owns.) **COMPLETED**
 - Continent Bonuses. **COMPLETED**
-- Cards
+- Cards **COMPLETED**
 |#
 
 ;count-territories: number(playerpos) [List territory] -> number
@@ -1875,11 +1875,27 @@ Players can turn in cards if one of these three cases is true:
         )
   )
 
-;The Recruit Phase
+;The Recruit Phase Function
 #|
+Recruit is a repeated process throughout the game, and thus must be very dynamic, just like its siblings, Attack and Fortify.
+Here is the list of conditions that cover the occurences in the recruit phase.
+
+The list of conditions for moving on to the next phase is as follows:
+- The player must have no more troops to place.
+Simple, right?
+
+The conditions for adding troops to territories are as follows:
+- The player must have troops to allocate.
+- The player must own the territory he/she is trying to fortify with troops.
+- The player cannot add more troops than is in their reserves.
+
+Card conditions are mentioned in the comments concerning the "can-turn-in?" discriminator.
+
 Events that occur during recruit:
-- The User checks the Cardlist.
+- The User checks the card-list.
+  - In this case, card functions come into play. Refer to the comments associated with each function or the repository wiki for more details.
 - The User clicks on a territory to add troops.
+  - The aforementioned conditions for adding troops to territories now apply.
 
 |#
         

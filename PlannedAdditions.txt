@@ -1,0 +1,22 @@
+What still needs to be done:
+
+*Recruit*
+- The system can now check to see if cards can be turned in! But, it needs to know
+when to turn in those cards, and how to choose which cards to discard, a.k.a. return
+back to a state of null (no one owns them anymore). Also, the system doesn't distribute cards
+at any point yet, so that needs to be done.
+	- Define methods to distribute cards randomly.
+	- Define methods to choose cards to discard EFFICIENTLY.
+	- Define discriminators which determine whether a user wishes to turn in a set of cards.
+- Once all the methods and discriminators for the recruit phase are defined, these need to be
+implemented into the main method "recruit-phase".
+
+*Attack*
+- Everything.
+
+*Fortify*
+- Everything.
+
+*General*
+- The slider doesn't really work all too well.. Maybe we should consider a more static GUI?
+Something that doesn't have to be quite so dynamic?
