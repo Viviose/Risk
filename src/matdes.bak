@@ -1,11 +1,10 @@
 #lang racket
 (require picturing-programs)
 (require "graph.rkt")
-(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON)
+(provide DICE-BUTTON CARD-BUTTON)
 
 (define DICE-ICO (bitmap "imgs/diceico.png"))
 (define CARD-ICO (bitmap "imgs/cardico.png"))
-(define SUBMIT-ICO (bitmap "imgs/submitico.png"))
 
 (define (r x y)
   128)
@@ -58,9 +57,9 @@
    )
   )
 
-(define SUBMIT-BUTTON
+(define TURN-IN-BUTTON
   (overlay
-   (scale .5 SUBMIT-ICO)
+   (scale .5 CARD-ICO)
    (circle 37.5 "solid"(make-color 98 24 129))
    (shadow-circle 50)
    )

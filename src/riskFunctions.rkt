@@ -82,6 +82,8 @@ Provided by matdes.rkt:
     - A new, material inspired button for rolling the dice.
 - CARD-BUTTON
     - The same as above, only for cards.
+- SUBMIT-BUTTON
+    - The card button morphs into this button.
 |#
 
 
@@ -789,7 +791,10 @@ SAMPLE IMPLEMENTATION!
                                     )
                ) 
     )
-   CARD-BUTTON
+   (cond [(equal? (system-screen model) "cards")
+          SUBMIT-BUTTON]
+         [else CARD-BUTTON]
+         )
    (overlay
     (textc (string-append
             (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
@@ -906,30 +911,30 @@ SAMPLE IMPLEMENTATION!
                 )          
           (toolbar model))]
         [(equal? (system-screen model) "cards")
-         (overlay
-          (overlay/align "right" "top" X
-
-                         (overlay/align "left" "center"
-                          (beside (rectangle 10 0 "solid" "black") 
-                                  (card-buncher 
-                                   (player-card-list (system-card-list model) (system-player-turn model))
-                                   )
-                                  )
-                          (rectangle 700 200 "solid" (make-color 128 0 0))
+          (overlay
+           (overlay/align "right" "top" X
+                          
+                          (overlay/align "left" "center"
+                                         (beside (rectangle 10 0 "solid" "black") 
+                                                 (card-buncher 
+                                                  (player-card-list (system-card-list model) (system-player-turn model))
+                                                  )
+                                                 )
+                                         (rectangle 700 200 "solid" (make-color 128 0 0))
+                                         )
                           )
-                         )
-
-          (above
-           (cond [(not (equal? (system-territory-selected model) "null"))
-                  (place-image (overlay
-                                (above
-                                 (textc (system-territory-selected model) 16 "black")
-                                 (textc "Player who owns" 12 "black"))
-                                (rectangle 100 50 "solid" (playercolor model)))
-                               (system-x model) (system-y model)
-                               BOARD)]
-                 [else BOARD])
-           (toolbar model))
+           
+           (above
+            (cond [(not (equal? (system-territory-selected model) "null"))
+                   (place-image (overlay
+                                 (above
+                                  (textc (system-territory-selected model) 16 "black")
+                                  (textc "Player who owns" 12 "black"))
+                                 (rectangle 100 50 "solid" (playercolor model)))
+                                (system-x model) (system-y model)
+                                BOARD)]
+                  [else BOARD])
+            (toolbar model))
           )]
         [else model]
         )
@@ -1080,12 +1085,12 @@ Max x: 933
            [(equal? DEBUG 0)                 
             (cond [(and 
                     (equal? event "button-down")
-                    (< (distance 923 925 x y) 37.5)
+                    (< (distance 923 925 x y) 37.5))
                     (struct-copy
                      system model
                      [screen "cards"]
                     
-                     ))]
+                     )]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
@@ -1111,21 +1116,29 @@ Max x: 933
            [else model]
            )]
         [(equal? (system-screen model) "cards")
-         (if (and (<= (distance 959 418 x y) 20)
+         (cond [(and (<= (distance 959 418 x y) 20)
                   (equal? event "button-down")
                   )
              ;Checks to see if mouse is on X and has clicked it, if so runs next function
              (struct-copy 
               system model
               [screen "gameplay"]
-              )
+              )]
+               [(and 
+                    (equal? event "button-down")
+                    (< (distance 923 925 x y) 37.5))
+                ;#############################################################################################
+                ;CALL YOUR RETURN CARDS STUFF HERE, OR MOVE IT TO MOUSE HANDLER HELPER FUNCTIONS, YOUR CHOICE!
+                ;#############################################################################################
+
+                ]
              ;If not true, then it returns model
-             (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
+             [else (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
                  ;do something with that card index below
                  model
                  ;Else model
                  model
-                 )
+                 )]
              )]
         [else model]
         )
@@ -1887,7 +1900,7 @@ The list of conditions for moving on to the next phase is as follows:
 ;move-on-to-attack?: system(model) -> boolean
 ;Checks to see if the game should move on to the attack phase based on the current system model.
 (define (move-on-to-attack? model)
-  (cond []
+  (cond [null]
         [else false]
         )
   )
@@ -1920,10 +1933,14 @@ Events that occur during recruit:
                       )]
         ;Add more clauses
         
-        [else (struct-copy system model
-                           [x x]
-                           [y y]
-                           )]
+        [else (cond [(can-turn-in? model)
+                     ;###Placeholder for algorithm###
+                     model
+                     ]
+                    [else  (struct-copy system model
+                                        [x x]
+                                        [y y]
+                                        )])]
         )
   )
 
