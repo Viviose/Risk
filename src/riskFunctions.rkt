@@ -874,7 +874,7 @@ SAMPLE IMPLEMENTATION!
   ;should see at a given moment or on a given event
   ;Ex: if the screen element of the model is "splash", the "splash" screen displays.
   (cond [(equal? (system-screen model) "splash")
-         ;This is the first thing the player sees, purely asthetic.
+         ;This is the first thing the player sees, purely aesthetic.
          SPLASH]
         [(equal? (system-screen model) "playerscrn")
          ;This screen chooses the amount of players.
@@ -1099,8 +1099,7 @@ Max x: 933
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
-                                (attack-phase model x y event)
-                                ]
+                                (attack-phase model x y event)]
                               ;Will work when fortify phase function is created
                               #; [(equal? (system-turn-stage model) "fortify")]
                               [else model]
@@ -1119,19 +1118,17 @@ Max x: 933
          (cond [(and (<= (distance 959 418 x y) 20)
                   (equal? event "button-down")
                   )
-             ;Checks to see if mouse is on X and has clicked it, if so runs next function
-             (struct-copy 
-              system model
-              [screen "gameplay"]
-              )]
-               [(and 
-                    (equal? event "button-down")
-                    (< (distance 923 925 x y) 37.5))
+                ;Checks to see if mouse is on X and has clicked it, if so runs next function
+                (struct-copy system model
+                             [screen "gameplay"]
+                             )]
+               [(and (equal? event "button-down")
+                     (< (distance 923 925 x y) 37.5)
+                     )
                 ;#############################################################################################
                 ;CALL YOUR RETURN CARDS STUFF HERE, OR MOVE IT TO MOUSE HANDLER HELPER FUNCTIONS, YOUR CHOICE!
                 ;#############################################################################################
-
-                ]
+                (turn-in-cards model)]
              ;If not true, then it returns model
              [else (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
                  ;do something with that card index below
@@ -1894,6 +1891,40 @@ Players can turn in cards if one of these three cases is true:
         ;They don't meet 
         [else false]
         )
+  )
+
+;Functions to turn in cards.
+;The main function, turn-in-cards, is actually used in the mouse handler in the cards GUI, when the screen is "cards".
+
+;cards-bonus: real(sets) -> real
+;Takes in a number which states how many card sets have been turned in and returns a number that shows how many troops
+;the player should receive at that point.
+(define (cards-bonus sets)
+  ;First checks to see if the number of sets turned in is less than five.
+  ;The army result is the output of the function T_n = n + 
+  (cond [(<= sets
+            5)
+         "rip"]
+        [(> sets
+            5)
+         "kek"]
+        [else (error "Invalid input.")]
+        )
+  )
+
+;turn-in-cards: system(model) -> system
+;Takes in the system model and returns a system model with the current player's updated card list that removes the cards
+;that they have turned in by choosing to turn in cards.
+
+#|
+A few events happen when cards are turned in:
+- The player's card list is updated with the removal of appropriate cards.
+  - These cards are "turned in", meaning their owner state is reset to default.
+- The player gains extra troops depending on how many sets have been turned in.
+- The system increments the total set count, which tracks how many card sets have been turned in.
+|#
+(define (turn-in-cards system)
+  "lmao"
   )
 
 ;The Recruit Phase Method

@@ -3,8 +3,8 @@
 (require "graph.rkt")
 (provide DICE-BUTTON CARD-BUTTON)
 
-(define DICE-ICO (bitmap "imgs\\diceico.png"))
-(define CARD-ICO (bitmap "imgs\\cardico.png"))
+(define DICE-ICO (bitmap "imgs/diceico.png"))
+(define CARD-ICO (bitmap "imgs/cardico.png"))
 
 (define (r x y)
   128)
@@ -50,6 +50,14 @@
   )
 
 (define CARD-BUTTON
+  (overlay
+   (scale .5 CARD-ICO)
+   (circle 37.5 "solid"(make-color 98 24 129))
+   (shadow-circle 50)
+   )
+  )
+
+(define TURN-IN-BUTTON
   (overlay
    (scale .5 CARD-ICO)
    (circle 37.5 "solid"(make-color 98 24 129))
