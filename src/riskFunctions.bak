@@ -1875,24 +1875,13 @@ Players can turn in cards if one of these three cases is true:
         )
   )
 
-;The Recruit Phase Method
+;The Recruit Phase Function
 #|
 Recruit is a repeated process throughout the game, and thus must be very dynamic, just like its siblings, Attack and Fortify.
 Here is the list of conditions that cover the occurences in the recruit phase.
 
 The list of conditions for moving on to the next phase is as follows:
 - The player must have no more troops to place.
-|#
-
-;move-on-to-attack?: system(model) -> boolean
-;Checks to see if the game should move on to the attack phase based on the current system model.
-(define (move-on-to-attack? model)
-  (cond []
-        [else false]
-        )
-  )
-#|
-
 Simple, right?
 
 The conditions for adding troops to territories are as follows:
@@ -1910,20 +1899,10 @@ Events that occur during recruit:
 
 |#
         
-(define (recruit-phase model x y event)
-  (cond [(move-on-to-attack? model)
-         ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
-         (struct-copy system model
-                      [turn-stage "attack"]
-                      [x x]
-                      [y y]
-                      )]
-        ;Add more clauses
-        
-        [else (struct-copy system model
-                           [x x]
-                           [y y]
-                           )]
+#;(define (recruit-phase model x y event)
+  (cond []
+        []
+        []
         )
   )
 
