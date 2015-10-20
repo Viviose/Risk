@@ -120,7 +120,7 @@ Provided by matdes.rkt:
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
-;[territory]: string(armies) number(armies) string(owner) -> territory
+;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
 (define-struct territory (name armies owner adjacent-territories)
   #:transparent)
 
@@ -148,6 +148,7 @@ Provided by matdes.rkt:
   )
 
 ;List of all territories
+;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
 (define INITIAL-TERRITORY-LIST (list 
                                 ;North America
                                 (territory "Alaska" 0 "null" (list "Northwest Territory"
@@ -402,6 +403,7 @@ Provided by matdes.rkt:
   )
 
 ;Initial list of all cards and their values in the game.
+;[Card]: String(unit) String(territory) [Maybe-Number Owner] -> card
 (define INITIAL-CARD-LIST (list
                            (card "infantry" "Afghanistan" 0 "null" "inactive")
                            (card "infantry" "Alaska" 1 "null" "inactive")
@@ -450,20 +452,7 @@ Provided by matdes.rkt:
                            )
   )
 
-;Front-End card functions
 
-;player-card-list: [List card] number(playerpos) -> [List card]
-;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-;Used in both front and back-end, but must be defined here for the program to work correctly.
-(define (player-card-list card-list playerpos)
-  (cond [(empty? card-list) '()]
-        [(equal? (card-owner (first card-list)) playerpos)
-         (cons (first card-list)
-               (player-card-list (rest card-list) playerpos)
-               )]
-        [else (player-card-list (rest card-list) playerpos)]
-        )
-  )
 
 ;The number of armies per player
 ;Number -> Number
@@ -975,6 +964,30 @@ Min x: 833
 Max x: 933
 |#
 
+;which-card? determines which card a given coordinate pair is over. This is combined with several mouse functions to act on cards.
+;If the pair is not over a card, then it returns null.
+;Number (x) Number (y) -> Number(card index) OR Null
+(define (which-card? x y)
+  (cond [(and (>= y 415) (<= y 560))
+         (cond [(and (>= x 313) (<= x 413))
+                1]
+               [(and (>= x 417) (<= x 517))
+                2]
+               [(and (>= x 521) (<= x 621))
+                3]
+               [(and (>= x 625) (<= x 725))
+                4]
+               [(and (>= x 729) (<= x 829))
+                5]
+               [(and (>= x 833) (<= x 933))
+                6]
+               [else null]
+               )]
+        [else null]
+        )
+  )
+         
+
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -1076,13 +1089,11 @@ Max x: 933
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
-                               [(equal? (system-turn-stage model) "recruit")
-                                  ;Here is the problemo:
-                                  (recruit-phase model x y event)]
+                              [(equal? (system-turn-stage model) "recruit")
+                               #;(recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
-                                
                                 (attack-phase model x y event)
                                 ]
                               ;Will work when fortify phase function is created
@@ -1109,7 +1120,12 @@ Max x: 933
               [screen "gameplay"]
               )
              ;If not true, then it returns model
-             model
+             (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
+                 ;do something with that card index below
+                 model
+                 ;Else model
+                 model
+                 )
              )]
         [else model]
         )
@@ -1183,7 +1199,7 @@ Max x: 933
   )
 
 ;territory-update: Updates the territory with new owner, and adds or subtracts armies
-;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player)
+;Operator (+/-) Number (armies to subtract) String (name of territory) List (list of territories) Number (player) -> Updated Territorylist
 (define (territory-update f armies name tlist owner)
   (local
     [(define
@@ -1211,6 +1227,50 @@ Max x: 933
     [(define (change-p player)
        (update-player-armies player f armies playerpos))]
     (map change-p playerlist)
+    )
+  )
+
+;Card functions
+
+;player-card-list: [List card] number(playerpos) -> [List card]
+;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
+;Used in both front and back-end, but must be defined here for the program to work correctly.
+(define (player-card-list card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list)) playerpos)
+         (cons (first card-list)
+               (player-card-list (rest card-list) playerpos)
+               )]
+        [else (player-card-list (rest card-list) playerpos)]
+        )
+  )
+
+;card-scan Selects a territory struct based on a keyword given.
+;Number (id) -> Card (of that struct)
+(define (card-scan id leest)
+  (cond [(empty? leest) (error "Card not found!")]
+        [(equal? (card-id (first leest)) id)
+         (first leest)]
+        [else (card-scan id (rest leest))]))
+
+;Update-c is for the card-update function. It just applies the changes
+(define (update-c tcard id state owner)
+  (cond [(equal? (card-id tcard) id)
+         (struct-copy card tcard
+                      [owner owner]
+                      [state state])]
+        [else card]
+        )
+  )
+
+;Card-update is for changing aspects of a card based on an id.
+;Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
+  (define (card-update id owner state cardlist)
+  (local
+    [(define
+       (change-c card)
+       (update-c card id state owner))]
+    (map change-c cardlist)
     )
   )
 
@@ -1466,7 +1526,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
 The following factor into the amount of armies given to players:
 - Territories(# of territories / 3, where f(t) is at minimum 3 and t is the amount of territories a player owns.) **COMPLETED**
 - Continent Bonuses. **COMPLETED**
-- Cards
+- Cards **COMPLETED**
 |#
 
 ;count-territories: number(playerpos) [List territory] -> number
@@ -1482,25 +1542,18 @@ The following factor into the amount of armies given to players:
   )
 
 ;base-armycount: number(territories owned) -> number(army)
-;Takes in a number of territories owned (most likely result of count-territories function) and returns the amount of troops yielded.
-(define (base-armycount num-territories-owned)
-  (cond [(< (floor (/ num-territories-owned
-                        3)
+;Takes in a model and returns the amount of troops yielded.
+(define (base-armycount model)
+  (cond [(< (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
+                      3)
                    )
             3)
          3]
-        [else (floor (/ num-territories-owned
+        [else (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
                         3)
                      )]
         )
   )
-
-(check-expect (base-armycount 8)
-              3)
-(check-expect (base-armycount 12)
-              4)
-(check-expect (base-armycount 21)
-              7)
 
 ;Begin continent bonus functions.
 
@@ -1707,6 +1760,89 @@ These include:
         )
   )
 
+;has-wild-card?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has a wild card in the deck he currently possesses.
+(define (has-wild-card? card-list playerpos)
+  (cond [(empty? card-list) false]
+        [(equal? (card-unit (first card-list))
+                 "wild"
+                 )
+         true]
+        [else (has-wild-card? (rest card-list) playerpos)]
+        )
+  )
+
+;find-reg-cards: [List card] number(playerpos) -> [List card]
+;Goes through a card-list and returns the cards in that list that aren't wild cards.
+(define (find-reg-cards card-list playerpos)
+  (cond [(empty? card-list) '() ]
+        [(equal? (card-unit (first card-list))
+                 "wild"
+                 )
+         (find-reg-cards card-list playerpos)]
+        [else (cons (first card-list) 
+                    (find-reg-cards card-list playerpos)
+                    )]
+        )
+  )
+
+;has-two-reg-cards?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has two regular cards of any type in his deck.
+(define (has-two-reg-cards? card-list playerpos)
+  (if (>= (length (find-reg-cards card-list playerpos)) 2)
+      ;Has at least 2 non-wild cards
+      true
+      ;Doesn't
+      false
+      )
+  )
+      
+;return-same-unit: [List card] number(playerpos) string(unit) -> [List card]
+;Goes through a given list of cards and returns cards with the unit type specified.
+(define (return-same-unit card-list playerpos unit)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-unit (first card-list)) unit)
+         (cons (first card-list)
+               (return-same-unit (rest card-list) playerpos unit)
+               )]
+        [else (return-same-unit (rest card-list) playerpos unit)]
+        )
+  )
+
+;has-three-same-unit?: [List card] number(playerpos) -> boolean
+;Checks to see if a player has 3 cards of the same type in their possesion.
+(define (has-three-same-unit? card-list playerpos)
+  ;Will return true if conditions stated in purpose are met, else false.
+  (or (>= (length (return-same-unit card-list playerpos "infantry")) 3)
+      (>= (length (return-same-unit card-list playerpos "artillery")) 3)
+      (>= (length (return-same-unit card-list playerpos "cavalry")) 3)
+      )
+  )
+
+;has-infantry?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has any infantry cards.
+(define (has-infantry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "infantry")))
+  )
+
+;has-cavalry?
+(define (has-cavalry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "cavalry")))
+  )
+
+;has-artillery?
+(define (has-artillery? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "artillery")))
+  )
+
+;has-one-of-each-unit?: [List card] number(playerpos) -> boolean
+(define (has-one-of-each-unit? card-list playerpos)
+  (and (has-infantry? card-list playerpos)
+       (has-cavalry? card-list playerpos)
+       (has-artillery? card-list playerpos)
+       )
+  )
+
 ;can-turn-in?: system(model) -> boolean
 ;Checks to see if a player has 3 cards available and eligible to be traded in.
 #|
@@ -1718,17 +1854,56 @@ Players can turn in cards if one of these three cases is true:
 - The player owns 3 cards of the same unit type.
 |#
 
-;(define (can-turn-in? system)
-;  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
-;            3)
-;         false]
-;        []
-;        )
-;  )
+(define (can-turn-in? system)
+  (cond [(< (num-cards-owned (system-card-list system) (system-player-turn system))
+            3)
+         false]
+        ;After this point, it is known that the user has 3+ cards.
+        ;Second condition checks to see if the player has a wild card in possession, 
+        [(and (has-wild-card? (system-card-list system) (system-player-turn system)) 
+              (has-two-reg-cards? (system-card-list system) (system-player-turn system))
+              )
+         true]
+        ;Player doesn't have a wild card, so now we check for 3 cards of the same type.
+        [(has-three-same-unit? (system-card-list system) (system-player-turn system))
+         true]
+        ;They don't have three of the same type, now we check for one of each.
+        [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
+         true]
+        ;They don't meet 
+        [else false]
+        )
+  )
 
-;da recruit phase m8
-(define (recruit-phase model x y event)
-  model
+;The Recruit Phase Function
+#|
+Recruit is a repeated process throughout the game, and thus must be very dynamic, just like its siblings, Attack and Fortify.
+Here is the list of conditions that cover the occurences in the recruit phase.
+
+The list of conditions for moving on to the next phase is as follows:
+- The player must have no more troops to place.
+Simple, right?
+
+The conditions for adding troops to territories are as follows:
+- The player must have troops to allocate.
+- The player must own the territory he/she is trying to fortify with troops.
+- The player cannot add more troops than is in their reserves.
+
+Card conditions are mentioned in the comments concerning the "can-turn-in?" discriminator.
+
+Events that occur during recruit:
+- The User checks the card-list.
+  - In this case, card functions come into play. Refer to the comments associated with each function or the repository wiki for more details.
+- The User clicks on a territory to add troops.
+  - The aforementioned conditions for adding troops to territories now apply.
+
+|#
+        
+#;(define (recruit-phase model x y event)
+  (cond []
+        []
+        []
+        )
   )
 
 (define (between? query min max)
@@ -1796,7 +1971,9 @@ Players can turn in cards if one of these three cases is true:
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
            ;May be changed for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
-           (list (card "infantry" "Afghanistan" 0 0)
+           INITIAL-CARD-LIST
+           ;Test List for debugging purposes.
+           #|(list (card "infantry" "Afghanistan" 0 0)
                  (card "infantry" "Alaska" 1 0)
                  (card "infantry" "Alberta" 2 "null")
                  (card "infantry" "Argentina" 3 "null")
@@ -1841,6 +2018,7 @@ Players can turn in cards if one of these three cases is true:
                  (card "wild" "Wild Card 1" 41 "null")
                  (card "wild" "Wild Card 2" 42 "null")
                  )
+           |#
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking

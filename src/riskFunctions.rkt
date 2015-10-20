@@ -1413,6 +1413,14 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
          (struct-copy system model
                       [turn-stage "recruit"]
                       [player-turn 0]
+                      ;Update Player 1's army count to have additional armies based on recruit functions.
+                      [playerlist (update-player-armies (system-playerlist model)
+                                                        +
+                                                        (+ (base-armycount model)
+                                                           (continent-bonus-calc model)
+                                                           )
+                                                        0
+                                                        )]
                       [x x]
                       [y y]
                       )]
@@ -1542,7 +1550,7 @@ The following factor into the amount of armies given to players:
   )
 
 ;base-armycount: number(territories owned) -> number(army)
-;Takes in a model and returns the amount of troops yielded.
+;Takes in a model and returns the amount of troops yielded based on territories the current player owns.
 (define (base-armycount model)
   (cond [(< (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
                       3)
@@ -1887,10 +1895,9 @@ The list of conditions for moving on to the next phase is as follows:
 ;move-on-to-attack?: system(model) -> boolean
 ;Checks to see if the game should move on to the attack phase based on the current system model.
 (define (move-on-to-attack? model)
-  (cond []
-        [else false]
-        )
+  (not (troops-to-allocate? model))
   )
+
 #|
 
 Simple, right?
@@ -1918,6 +1925,7 @@ Events that occur during recruit:
                       [x x]
                       [y y]
                       )]
+        ;At this point, the system knows that the player doesn't
         ;Add more clauses
         
         [else (struct-copy system model
