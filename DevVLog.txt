@@ -1,5 +1,9 @@
-Current Version: 1.4.1a
+Current Version: 1.5.1a
 BUILD IS NOW IN ALPHA
+Version 1.5.1a
+- Added troop recruitment to the end of the initial-recruit phase so that P1 starts recruit with appropriate troops
+- Finished first clause of recruit-phase
+
 Version 1.5a (10/18/15)
 - Created functions to check card-list for types and quantities
 - Created functions that check card-list for conditions concerning type and quantity
