@@ -15,8 +15,7 @@ Risk: The Game of World Domination
 
 Version 1.5a
 
-Project Name: Riskit
-A combination of Risk and Racket, yeah?
+Project Name - Risk: Racket Edition
 
 Included libraries are imgs and src.
 - "src" library contains ALL source code used in the game.
