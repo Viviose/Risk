@@ -1116,19 +1116,12 @@ Max x: 933
            )]
         [(equal? (system-screen model) "cards")
          (cond [(and (<= (distance 959 418 x y) 20)
-                  (equal? event "button-down")
-                  )
+                     (equal? event "button-down")
+                     )
                 ;Checks to see if mouse is on X and has clicked it, if so runs next function
                 (struct-copy system model
                              [screen "gameplay"]
                              )]
-               [(and (equal? event "button-down")
-                     (< (distance 923 925 x y) 37.5)
-                     )
-                ;#############################################################################################
-                ;CALL YOUR RETURN CARDS STUFF HERE, OR MOVE IT TO MOUSE HANDLER HELPER FUNCTIONS, YOUR CHOICE!
-                ;#############################################################################################
-                (turn-in-cards model)]
              ;If not true, then it returns model
              [else (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
                  ;do something with that card index below
@@ -1923,8 +1916,18 @@ A few events happen when cards are turned in:
 - The player gains extra troops depending on how many sets have been turned in.
 - The system increments the total set count, which tracks how many card sets have been turned in.
 |#
-(define (turn-in-cards system)
-  "lmao"
+
+;We need a function that applies both update-player-armies and card-update to a playerlist.
+(define (turn-in-cards model)
+  (struct-copy system model
+               ;Turn in cards and add troops to player's army reserves
+               [playerlist (update-player-armies (system-playerlist model) 
+                                                  + (cards-bonus (system-cardsets-redeemed model))
+                                                  (system-player-turn model)
+                                                  )]
+               ;Increment set count
+               [cardsets-redeemed (+ (system-cardsets-redeemed model) 1)]
+               )
   )
 
 ;The Recruit Phase Method
@@ -1969,17 +1972,22 @@ Events that occur during recruit:
                       [x x]
                       [y y]
                       )]
-        ;At this point, the system knows that the player doesn't
+        ;At this point, the system knows that the player has more troops to place.
+        ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
+        ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
+        ;The event discriminator will check to see if the button has been clicked.
+        ;The system will check if the cards can be turned in AFTER all of these conditions are true, as it is the most specific of the conditions.
+        ;This order optimizes the performance of the function.
+        [(and (< (distance 923 925 x y) 37.5)
+              (equal? event "button-down")
+              (can-turn-in? model)
+              )
+         (turn-in-cards model)]
         ;Add more clauses
-        
-        [else (cond [(can-turn-in? model)
-                     ;###Placeholder for algorithm###
-                     model
-                     ]
-                    [else  (struct-copy system model
-                                        [x x]
-                                        [y y]
-                                        )])]
+        [else (struct-copy system model
+                           [x x]
+                           [y y]
+                           )]
         )
   )
 
