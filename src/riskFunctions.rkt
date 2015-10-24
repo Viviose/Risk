@@ -1095,7 +1095,7 @@ Max x: 933
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
                               [(equal? (system-turn-stage model) "recruit")
-                               #;(recruit-phase model x y event)]
+                               (recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
@@ -1122,18 +1122,24 @@ Max x: 933
                 (struct-copy system model
                              [screen "gameplay"]
                              )]
-             ;If not true, then it returns model
-             [else (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
-                 ;do something with that card index below
-                 model
-                 ;Else model
-                 model
-                 )]
-             )]
+               ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
+               ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
+               ;The event discriminator will check to see if the button has been clicked.
+               ;The phase discriminator will check to see if the current phase is the recruit phase.
+               ;The system will check if the cards can be turned in AFTER all of these conditions are true, as it is the most specific of the conditions.
+               ;This order optimizes the performance of the function.
+               [(and (< (distance 923 925 x y) 37.5)
+                     (equal? event "button-down")
+                     (equal? (system-turn-stage model) "recruit")
+                     ;(can-turn-in? model)
+                     )
+                (turn-in-cards model)]
+               ;If not true, then it returns model
+               [else model]
+               )]
         [else model]
         )
   )
-
 
 ;tooltip: a central function to risk that determines what territory is selected given coords
 ;Number (x) Number (y) System (model) -> String (territory selected)
@@ -1761,8 +1767,8 @@ These include:
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
 (define (num-cards-owned card-list playerpos)
   (cond [(empty? card-list) 0]
-        [(equal? (card-owner (first card-list)
-                             playerpos)
+        [(equal? (card-owner (first card-list))
+                 playerpos
                  )
          (+ 1
             (num-cards-owned (rest card-list) playerpos)
@@ -1921,10 +1927,10 @@ A few events happen when cards are turned in:
 (define (turn-in-cards model)
   (struct-copy system model
                ;Turn in cards and add troops to player's army reserves
-               [playerlist (update-player-armies (system-playerlist model) 
-                                                  + (cards-bonus (system-cardsets-redeemed model))
-                                                  (system-player-turn model)
-                                                  )]
+               [playerlist (player-update-armies (system-playerlist model) 
+                                                 + (cards-bonus (system-cardsets-redeemed model))
+                                                 (system-player-turn model)
+                                                 )]
                ;Increment set count
                [cardsets-redeemed (+ (system-cardsets-redeemed model) 1)]
                )
@@ -1955,6 +1961,7 @@ The conditions for adding troops to territories are as follows:
 - The player cannot add more troops than is in their reserves.
 
 Card conditions are mentioned in the comments concerning the "can-turn-in?" discriminator.
+Card functions are executed by the top-level mouse-handler function, and all conditions are checked there.
 
 Events that occur during recruit:
 - The User checks the card-list.
@@ -1972,17 +1979,6 @@ Events that occur during recruit:
                       [x x]
                       [y y]
                       )]
-        ;At this point, the system knows that the player has more troops to place.
-        ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
-        ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
-        ;The event discriminator will check to see if the button has been clicked.
-        ;The system will check if the cards can be turned in AFTER all of these conditions are true, as it is the most specific of the conditions.
-        ;This order optimizes the performance of the function.
-        [(and (< (distance 923 925 x y) 37.5)
-              (equal? event "button-down")
-              (can-turn-in? model)
-              )
-         (turn-in-cards model)]
         ;Add more clauses
         [else (struct-copy system model
                            [x x]
