@@ -1899,14 +1899,31 @@ Players can turn in cards if one of these three cases is true:
 ;Takes in a number which states how many card sets have been turned in and returns a number that shows how many troops
 ;the player should receive at that point.
 (define (cards-bonus sets)
-  ;First checks to see if the number of sets turned in is less than five.
-  ;The army result is the output of the function T_n = n + 
-  (cond [(<= sets
-            5)
-         "rip"]
-        [(> sets
-            5)
-         "kek"]
+  ;First set turned in is worth 4 armies.
+  (cond [(equal? sets 0)
+         4]
+        ;Second is 6.
+        [(equal? sets 1)
+         6]
+        ;Third is 8.
+        [(equal? sets 2)
+         8]
+        ;Fourth is 10;
+        [(equal? sets 3)
+        10]
+        ;Fifth is 12
+        [(equal? sets 4)
+         12]
+        ;Sixth is 15.
+        [(equal? sets 5)
+         15]
+        ;Every set after this is 5 more than the number gained by the last set turned in.
+        ;I.E. Seventh = 20, Eighth = 25...
+        [(> sets 5)
+         (+ 5
+            (cards-bonus (- sets 1))
+            )]
+        ;Otherwise, input to function must not be a number. Useful for debugging.
         [else (error "Invalid input.")]
         )
   )
