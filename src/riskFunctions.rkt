@@ -2133,25 +2133,40 @@ Players can turn in cards if one of these three cases is true:
 - The player has any 2 cards and a wild card
 - The player owns 3 cards of each unit type.
 - The player owns 3 cards of the same unit type.
+
+The system is being programmed to handle these cases:
+- If the player has a card list of three, the system will automatically select and turn in the three cards.
+- If the player has more than 3 cards, the system will only check the list of those which the player has selected.
+
+This discriminator, however, will always check for active cards, as the system will automatically set card sets of three to active.
 |#
 
 (define (can-turn-in? system)
+  ;Does the player have less than three cards?
   (cond [(< (num-cards-owned (system-card-list system) (system-player-turn system))
             3)
          false]
-        ;After this point, it is known that the user has 3+ cards.
-        ;Second condition checks to see if the player has a wild card in possession, 
-        [(and (has-wild-card? (system-card-list system) (system-player-turn system)) 
-              (has-two-reg-cards? (system-card-list system) (system-player-turn system))
+        ;After this point, it is known that the user has 4+ cards.
+        ;This condition checks to see if the player has a wild card in possession, 
+        [(and (has-wild-card? (active-card-list (system-card-list system))
+                              (system-player-turn system)
+                              ) 
+              (has-two-reg-cards? (active-card-list (system-card-list system))
+                                  (system-player-turn system)
+                                  )
               )
          true]
         ;Player doesn't have a wild card, so now we check for 3 cards of the same type.
-        [(has-three-same-unit? (system-card-list system) (system-player-turn system))
+        [(has-three-same-unit? (active-card-list (system-card-list system))
+                               (system-player-turn system)
+                               )
          true]
         ;They don't have three of the same type, now we check for one of each.
-        [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
+        [(has-one-of-each-unit? (active-card-list (system-card-list system))
+                                (system-player-turn system)
+                                )
          true]
-        ;They don't meet 
+        ;They don't meet any conditions.
         [else false]
         )
   )
@@ -2189,6 +2204,19 @@ Players can turn in cards if one of these three cases is true:
             )]
         ;Otherwise, input to function must not be a number. Useful for debugging.
         [else (error "Invalid input.")]
+        )
+  )
+
+;active-card-list: [List card] -> [List card]
+;Takes in the system card list and returns a list of those which are active.
+(define (active-card-list cardlist)
+  (cond [(empty? cardlist) '()]
+        [(equal? (card-state (first cardlist))
+                 "active")
+         (cons (first cardlist)
+               (active-card-list (rest cardlist))
+               )]
+        [else (active-card-list (rest cardlist))]
         )
   )
 
