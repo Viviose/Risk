@@ -2202,7 +2202,7 @@ This discriminator, however, will always check for active cards, as the system w
          (+ 5
             (cards-bonus (- sets 1))
             )]
-        ;Otherwise, input of function must not be a number. Useful for debugging.
+        ;Otherwise, input to function must not be a number. Useful for debugging.
         [else (error "Invalid input.")]
         )
   )
