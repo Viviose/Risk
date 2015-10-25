@@ -1515,7 +1515,9 @@ Max x: 933
   (cond [(empty? leest) (error "Card not found!")]
         [(equal? (card-id (first leest)) id)
          (first leest)]
-        [else (card-scan id (rest leest))]))
+        [else (card-scan id (rest leest))]
+        )
+  )
 
 ;Update-c is for the card-update function. It just applies the changes
 (define (update-c tcard id state owner)
