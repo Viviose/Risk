@@ -1,5 +1,9 @@
 Current Version: 1.5.1a
 BUILD IS NOW IN ALPHA
+Version 1.5.2a
+- Created more card redemption functions that set cards into an active state when clicked on and turn in cards
+- Fixed bugs relating to transition between init-recruit and recruit phase
+
 Version 1.5.1a
 - Added troop recruitment to the end of the initial-recruit phase so that P1 starts recruit with appropriate troops
 - Finished first clause of recruit-phase
