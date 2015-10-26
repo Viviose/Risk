@@ -1229,17 +1229,17 @@ Max x: 933
 (define (which-card? x y)
   (cond [(and (>= y 415) (<= y 560))
          (cond [(and (>= x 313) (<= x 413))
-                1]
+                0]
                [(and (>= x 417) (<= x 517))
-                2]
+                1]
                [(and (>= x 521) (<= x 621))
-                3]
+                2]
                [(and (>= x 625) (<= x 725))
-                4]
+                3]
                [(and (>= x 729) (<= x 829))
-                5]
+                4]
                [(and (>= x 833) (<= x 933))
-                6]
+                5]
                [else null]
                )]
         [else null]
@@ -1376,12 +1376,19 @@ Max x: 933
                 (struct-copy system model
                              [screen "gameplay"]
                              )]
+               ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
+               [(and (not (equal? (which-card? x y)))
+                     (equal? event "button-down"))
+
+                (change-card-selected (which-card? x y) model)] 
+                
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
                ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
                ;The event discriminator will check to see if the button has been clicked.
                ;The phase discriminator will check to see if the current phase is the recruit phase.
                ;The system will check if the cards can be turned in AFTER all of these conditions are true, as it is the most specific of the conditions.
                ;This order optimizes the performance of the function.
+               
                [(and (< (distance 923 925 x y) 37.5)
                      (equal? event "button-down")
                      (equal? (system-turn-stage model) "recruit")
@@ -1537,6 +1544,16 @@ Max x: 933
        (update-c card id state owner))]
     (map change-c cardlist)
     )
+  )
+
+;Change-card-selected is for changing the state of a player's card to selected based off of an index number.
+;Number (index) -> System (updated cardlist)
+
+(define (change-card-selected index model)
+  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model)
+                                                )
+                              )
+               [state "active"])
   )
 
 ;***Initial Recruitment Phase***
