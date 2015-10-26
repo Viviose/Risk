@@ -1506,7 +1506,6 @@ Max x: 933
 
 ;player-card-list: [List card] number(playerpos) -> [List card]
 ;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-;Used in both front and back-end, but must be defined here for the program to work correctly.
 (define (player-card-list card-list playerpos)
   (cond [(empty? card-list) '()]
         [(equal? (card-owner (first card-list)) playerpos)
@@ -1523,7 +1522,9 @@ Max x: 933
   (cond [(empty? leest) (error "Card not found!")]
         [(equal? (card-id (first leest)) id)
          (first leest)]
-        [else (card-scan id (rest leest))]))
+        [else (card-scan id (rest leest))]
+        )
+  )
 
 ;Update-c is for the card-update function. It just applies the changes
 (define (update-c tcard id state owner)
@@ -2219,7 +2220,7 @@ This discriminator, however, will always check for active cards, as the system w
          (+ 5
             (cards-bonus (- sets 1))
             )]
-        ;Otherwise, input of function must not be a number. Useful for debugging.
+        ;Otherwise, input to function must not be a number. Useful for debugging.
         [else (error "Invalid input.")]
         )
   )
