@@ -1378,8 +1378,8 @@ Max x: 933
                              )]
                ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
                [(and (not (equal? (which-card? x y)))
-                     (equal? event "button-down"))
-
+                     (equal? event "button-down")
+                     )
                 (change-card-selected (which-card? x y) model)] 
                 
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
@@ -1388,7 +1388,6 @@ Max x: 933
                ;The phase discriminator will check to see if the current phase is the recruit phase.
                ;The system will check if the cards can be turned in AFTER all of these conditions are true, as it is the most specific of the conditions.
                ;This order optimizes the performance of the function.
-               
                [(and (< (distance 923 925 x y) 37.5)
                      (equal? event "button-down")
                      (equal? (system-turn-stage model) "recruit")
@@ -1548,13 +1547,14 @@ Max x: 933
   )
 
 ;Change-card-selected is for changing the state of a player's card to selected based off of an index number.
-;Number (index) -> System (updated cardlist)
+;Number (index) System(model) -> System(updated cardlist)
 
 (define (change-card-selected index model)
-  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model)
-                                                )
+  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
+                              index
                               )
-               [state "active"])
+               [state "active"]
+               )
   )
 
 ;***Initial Recruitment Phase***
