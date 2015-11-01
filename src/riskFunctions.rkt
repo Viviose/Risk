@@ -2360,7 +2360,7 @@ Territory-selected and x+y coordinates must be updated in each clause.
            0
            ;Initial phase is init-recruit, changes upon completion of phases
            ;Can be changed for debugging purposes.
-           "init-recruit"
+           "attack"
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.

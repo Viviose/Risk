@@ -1229,17 +1229,17 @@ Max x: 933
 (define (which-card? x y)
   (cond [(and (>= y 415) (<= y 560))
          (cond [(and (>= x 313) (<= x 413))
-                1]
+                0]
                [(and (>= x 417) (<= x 517))
-                2]
+                1]
                [(and (>= x 521) (<= x 621))
-                3]
+                2]
                [(and (>= x 625) (<= x 725))
-                4]
+                3]
                [(and (>= x 729) (<= x 829))
-                5]
+                4]
                [(and (>= x 833) (<= x 933))
-                6]
+                5]
                [else null]
                )]
         [else null]
@@ -1376,6 +1376,12 @@ Max x: 933
                 (struct-copy system model
                              [screen "gameplay"]
                              )]
+               ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
+               [(and (not (equal? (which-card? x y)))
+                     (equal? event "button-down")
+                     )
+                (change-card-selected (which-card? x y) model)] 
+                
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
                ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
                ;The event discriminator will check to see if the button has been clicked.
@@ -1499,7 +1505,6 @@ Max x: 933
 
 ;player-card-list: [List card] number(playerpos) -> [List card]
 ;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-;Used in both front and back-end, but must be defined here for the program to work correctly.
 (define (player-card-list card-list playerpos)
   (cond [(empty? card-list) '()]
         [(equal? (card-owner (first card-list)) playerpos)
@@ -1516,7 +1521,9 @@ Max x: 933
   (cond [(empty? leest) (error "Card not found!")]
         [(equal? (card-id (first leest)) id)
          (first leest)]
-        [else (card-scan id (rest leest))]))
+        [else (card-scan id (rest leest))]
+        )
+  )
 
 ;Update-c is for the card-update function. It just applies the changes
 (define (update-c tcard id state owner)
@@ -1537,6 +1544,17 @@ Max x: 933
        (update-c card id state owner))]
     (map change-c cardlist)
     )
+  )
+
+;Change-card-selected is for changing the state of a player's card to selected based off of an index number.
+;Number (index) System(model) -> System(updated cardlist)
+
+(define (change-card-selected index model)
+  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
+                              index
+                              )
+               [state "active"]
+               )
   )
 
 ;***Initial Recruitment Phase***
