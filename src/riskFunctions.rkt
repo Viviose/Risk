@@ -1393,7 +1393,7 @@ Max x: 933
                      (equal? (system-turn-stage model) "recruit")
                      (can-turn-in? model)
                      )
-                (turn-in-cards model)]
+                (get-card-bonus model)]
                ;If not true, then it returns model
                [else model]
                )]
@@ -2173,7 +2173,7 @@ This discriminator, however, will always check for active cards, as the system w
                                   (system-player-turn system)
                                   )
               )
-         true]
+        true]
         ;Player doesn't have a wild card, so now we check for 3 cards of the same type.
         [(has-three-same-unit? (active-card-list (system-card-list system))
                                (system-player-turn system)
@@ -2225,6 +2225,12 @@ This discriminator, however, will always check for active cards, as the system w
         )
   )
 
+;turn-in-cards: [List card](active-cards) [List card](master-list) -> [List card]
+;Searches master card list for cards in active list and resets both the active state and owner state to "inactive" and "null", respectively.
+(define (turn-in-cards active-cards master-list)
+  (error "kek")
+  )
+
 ;active-card-list: [List card] -> [List card]
 ;Takes in the system card list and returns a list of those which are active.
 (define (active-card-list cardlist)
@@ -2238,7 +2244,7 @@ This discriminator, however, will always check for active cards, as the system w
         )
   )
 
-;turn-in-cards: system(model) -> system
+;get-card-bonus: system(model) -> system
 ;Takes in the system model and returns a system model with the current player's updated card list that removes the cards
 ;that they have turned in by choosing to turn in cards.
 
@@ -2250,10 +2256,10 @@ A few events happen when cards are turned in:
 - The system increments the total set count, which tracks how many card sets have been turned in.
 |#
 
-;We need a function that applies both update-player-armies and card-update to a playerlist.
-(define (turn-in-cards model)
+(define (get-card-bonus model)
   (struct-copy system model
                ;Turn in cards and add troops to player's army reserves
+               [card-list (turn-in-cards model)]
                [playerlist (player-update-armies (system-playerlist model) 
                                                  + (cards-bonus (system-cardsets-redeemed model))
                                                  (system-player-turn model)
@@ -2373,6 +2379,7 @@ Territory-selected and x+y coordinates must be updated in each clause.
            ;Territory selected is initially null, and remains such unless a territory is selected
            "null"
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
+           ;Can be swapped out for DEBUG-TERRITORY-LIST, which can be used to debug functions involving territories, but should always be INITIAL-CARD-LIST for release builds.
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
            "LMAOBOX"
@@ -2381,55 +2388,8 @@ Territory-selected and x+y coordinates must be updated in each clause.
            ;Mouse y coordinate
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
-           ;May be changed for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
+           ;May be changed to DEBUG-CARD-LIST for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
            INITIAL-CARD-LIST
-           ;Test List for debugging purposes.
-           #|(list (card "infantry" "Afghanistan" 0 0)
-                 (card "infantry" "Alaska" 1 0)
-                 (card "infantry" "Alberta" 2 "null")
-                 (card "infantry" "Argentina" 3 "null")
-                 (card "artillery" "Brazil" 4 "null")
-                 (card "calvary" "Central America" 5 "null")
-                 (card "calvary" "China" 6 "null")
-                 (card "calvary" "Congo" 7 "null")
-                 (card "artillery" "East Africa" 8 "null")
-                 (card "infantry" "Eastern Australia" 9 "null")
-                 (card "artillery" "Eastern United States" 10 "null")
-                 (card "infantry" "Egypt" 11 "null")
-                 (card "calvary" "Great Britain" 12 "null")
-                 (card "calvary" "Greenland" 13 "null")
-                 (card "infantry" "India" 14 "null")
-                 (card "calvary" "Indonesia" 15 "null")
-                 (card "infantry" "Irkutsk" 16 "null")
-                 (card "infantry" "Japan" 17 "null")
-                 (card "calvary" "Kamchatka" 18 "null")
-                 (card "infantry" "Madagascar" 19 "null")
-                 (card "artillery" "Middle East" 20 "null")
-                 (card "artillery" "Mongolia" 21 "null")
-                 (card "calvary" "New Guinea" 22 "null")
-                 (card "infantry" "North Africa" 23 "null")
-                 (card "calvary" "Northern Europe" 24 "null")
-                 (card "artillery" "Northwest Territory" 25 "null")
-                 (card "calvary" "Ontario" 26 "null")
-                 (card "calvary" "Peru" 27 "null")
-                 (card "artillery" "Quebec" 28 "null")
-                 (card "artillery" "Scandinavia" 29 "null")
-                 (card "artillery" "Siam" 30 "null")
-                 (card "artillery" "Siberia" 31 "null")
-                 (card "artillery" "South Africa" 32 "null")
-                 (card "calvary" "Southern Europe" 33 "null")
-                 (card "artillery" "Ukraine" 34 "null")
-                 (card "calvary" "Ural" 35 "null")
-                 (card "artillery" "Venezuela" 36 "null")
-                 (card "artillery" "Western Australia" 37 "null")
-                 (card "infantry" "Western Europe" 38 "null")
-                 (card "infantry" "Western United States" 39 "null")
-                 (card "calvary" "Yakutsk" 40 "null")
-                 ;Two Wild Cards
-                 (card "wild" "Wild Card 1" 41 "null")
-                 (card "wild" "Wild Card 2" 42 "null")
-                 )
-           |#
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
