@@ -1721,7 +1721,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                       [territory-selected (tooltip x y model)]
                       [player-turn (turn-update model)]
                       )]
-        ;This clause will check to see if the player is not currrently hovering over a territory.
+        ;This clause will check to see if the player is not currently hovering over a territory.
         ;If they are not (this conditional will return true in this case), then the model will simply be returned with updated default attributes.
         [(equal? (system-territory-selected model) "null")
          (struct-copy system model
@@ -1800,12 +1800,11 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                              [territory-selected (tooltip x y model)]
                              )]
                ;If a territory cannot be claimed or fortified, then the model is updated with default attributes.
-               [else (struct-copy
-                      system model
-                      [x x]
-                      [y y]
-                      [territory-selected (tooltip x y model)]
-                      )]
+               [else (struct-copy system model
+                                  [x x]
+                                  [y y]
+                                  [territory-selected (tooltip x y model)]
+                                  )]
                )]
         ;If none of these cases apply, then the system will be updated with default attributes and initial recruitment will continue.
         [else (struct-copy system model
@@ -2276,7 +2275,7 @@ A few events happen when cards are turned in:
   (struct-copy system model
                ;Turn in cards and add troops to player's army reserves
                [card-list (turn-in-cards model 
-                                         (active-card-list (card-list model))
+                                         (active-card-list (system-card-list model))
                                          )]
                [playerlist (player-update-armies (system-playerlist model) 
                                                  + (cards-bonus (system-cardsets-redeemed model))
@@ -2320,7 +2319,7 @@ Events that occur during recruit:
 - The User clicks on a territory to add troops.
   - The aforementioned conditions for adding troops to territories now apply.
 
-Territory-selected and x+y coordinates must be updated in each clause.
+Territory-selected and x + y coordinates must be updated in each clause.
 |#
         
 (define (recruit-phase model x y event)
@@ -2332,14 +2331,42 @@ Territory-selected and x+y coordinates must be updated in each clause.
                       [x x]
                       [y y]
                       )]
-        ;Add more clauses
-        [else (struct-copy system model
-                           [territory-selected (tooltip x y model)]
-                           [x x]
-                           [y y]
-                           )]
-        )
-  )
+        ;This clause will check to see if the player is not currently hovering over a territory.
+        ;If they are not (this conditional will return true in this case), then the model will simply be returned with updated default attributes.
+        [(equal? (system-territory-selected model) "null")
+         (struct-copy system model
+                      [x x]
+                      [y y]
+                      [territory-selected (tooltip x y model)]
+                      )]
+        ;This clause checks to see if the player is clicking on a territory and can place troops there.
+        ;If they can, it will implement the slider interface to add troops.
+        [(and (equal? event "button-down")
+              (not (equal? (system-territory-selected model) "null"))
+              )
+         ;This clause checks to see if the player selecting the territory is the owner of that territory 
+         ;If they are, slider functions are implemented to add troops.
+         (cond [(equal? (territory-armies (territory-scan (system-territory-selected model)
+                                                               (system-territory-list model)
+                                                               )
+                                               )
+                             0)
+                ;IMPLEMENT SLIDER STUFF
+                ]
+               ;If the territory is not owned by the user, then the model is updated with default attributes.
+               [else (struct-copy system model
+                                  [x x]
+                                  [y y]
+                                  [territory-selected (tooltip x y model)]
+                                  )]
+               )]
+         [else (struct-copy system model
+                            [territory-selected (tooltip x y model)]
+                            [x x]
+                            [y y]
+                            )]
+         )
+)
 
 (define (between? query min max)
   (and
