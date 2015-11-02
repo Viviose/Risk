@@ -2232,6 +2232,7 @@ This discriminator, however, will always check for active cards, as the system w
 (define (nullify-card model card)
   (card-update (card-id card) "null" "inactive" (system-card-list model)) 
   )
+
 ;Use with active-card-list!
 ;turn-in-cards: System(model) [List card](active-cards) -> {no return type}
 ;Searches master card list for cards in active list and resets both the active state and owner state to "inactive" and "null", respectively.
@@ -2241,8 +2242,8 @@ This discriminator, however, will always check for active cards, as the system w
      [(define
         (nullcarder card)
         (nullify-card model card)
-  )]
-   (for-each nullcarder active-cards)
+        )]
+     (for-each nullcarder active-cards)
      )
   )
 
@@ -2274,7 +2275,9 @@ A few events happen when cards are turned in:
 (define (get-card-bonus model)
   (struct-copy system model
                ;Turn in cards and add troops to player's army reserves
-               [card-list (turn-in-cards model)]
+               [card-list (turn-in-cards model 
+                                         (active-card-list (card-list model))
+                                         )]
                [playerlist (player-update-armies (system-playerlist model) 
                                                  + (cards-bonus (system-cardsets-redeemed model))
                                                  (system-player-turn model)
