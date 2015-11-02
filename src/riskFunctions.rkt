@@ -2346,11 +2346,12 @@ Territory-selected and x + y coordinates must be updated in each clause.
               )
          ;This clause checks to see if the player selecting the territory is the owner of that territory 
          ;If they are, slider functions are implemented to add troops.
-         (cond [(equal? (territory-armies (territory-scan (system-territory-selected model)
-                                                               (system-territory-list model)
-                                                               )
-                                               )
-                             0)
+         (cond [(equal? (territory-owner (territory-scan (system-territory-selected model)
+                                                         (system-territory-list model)
+                                                         )
+                                         )
+                        (system-player-turn model)
+                        )
                 ;IMPLEMENT SLIDER STUFF
                 ]
                ;If the territory is not owned by the user, then the model is updated with default attributes.
