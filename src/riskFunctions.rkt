@@ -1536,15 +1536,17 @@ Max x: 933
   )
 
 ;Card-update is for changing aspects of a card based on an id.
-;Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
-  (define (card-update id owner state cardlist)
+;System(model) Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
+  (define (card-update model id owner state cardlist)
   (local
     [(define
        (change-c card)
        (update-c card id state owner))]
-    (map change-c cardlist)
+    (struct-copy system model
+                 [card-list (map change-c cardlist)]
     )
   )
+)
 
 ;Change-card-selected is for changing the state of a player's card to selected based off of an index number.
 ;Number (index) System(model) -> System(updated cardlist)
@@ -2225,10 +2227,23 @@ This discriminator, however, will always check for active cards, as the system w
         )
   )
 
-;turn-in-cards: [List card](active-cards) [List card](master-list) -> [List card]
+;nullify-card: System Card List[Card] -> System
+;Changes the given card's value to a set of null values.
+(define (nullify-card model card)
+  (card-update (card-id card) "null" "inactive" (system-card-list model)) 
+  )
+;Use with active-card-list!
+;turn-in-cards: System(model) [List card](active-cards) -> {no return type}
 ;Searches master card list for cards in active list and resets both the active state and owner state to "inactive" and "null", respectively.
-(define (turn-in-cards active-cards master-list)
-  (error "kek")
+;This function, while not returning anything, will update the cardlist in the given model. (Could be modified to return a model if needed)
+(define (turn-in-cards model active-cards)
+   (local
+     [(define
+        (nullcarder card)
+        (nullify-card model card)
+  )]
+   (for-each nullcarder active-cards)
+     )
   )
 
 ;active-card-list: [List card] -> [List card]
