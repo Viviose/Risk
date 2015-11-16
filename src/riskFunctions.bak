@@ -2339,87 +2339,35 @@ Territory-selected and x + y coordinates must be updated in each clause.
                       [y y]
                       [territory-selected (tooltip x y model)]
                       )]
-        ;This complex clause checks to see if the player is clicking on a territory and can place troops there.
+        ;This clause checks to see if the player is clicking on a territory and can place troops there.
         ;If they can, it will implement the slider interface to add troops.
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               )
-         ;This conditional checks to see if the player selecting the territory is the owner of that territory 
+         ;This clause checks to see if the player selecting the territory is the owner of that territory 
          ;If they are, slider functions are implemented to add troops.
-         (cond [(equal? (territory-armies (territory-scan (system-territory-selected model)
-                                                               (system-territory-list model)
-                                                               )
-                                               )
-                             0)
-                ;If this clause is true, the player will now claim the territory.
-                ;The player will place one troop inside of the territory (meaning the territory gains an army and the player loses one),
-                ;and default attributes will be updated.
-                ;The turn will be changed to that of the next player using turn-update, and the player's list of claimed territories is updated.
-                (struct-copy system model
-                             [territory-list (territory-update + 1
-                                                               (territory-name (territory-scan (system-territory-selected model)
-                                                                                               (system-territory-list model)
-                                                                                               )
-                                                                               )
-                                                               (system-territory-list model)
-                                                               (system-player-turn model)
-                                                               )]
-                             [territory-selected (tooltip x y model)]
-                             [x x]
-                             [y y]
-                             [playerlist (player-update-armies (system-playerlist model)
-                                                               - 1
-                                                               (system-player-turn model)
-                                                               )]
-                             [player-turn (turn-update model)]
-                             )]
-               ;This second clause checks to see if a player can fortify a territory.
-               #| In order to be able to fortify a territory:
-                    - All other territories must have been claimed.
-                    - The player must have troops to allocate.
-                    - The player must own the territory. |#
-               [(and (equal? (territory-owner (territory-scan (system-territory-selected model)
-                                                              (system-territory-list model)
-                                                              )
-                                              )
-                         (system-player-turn model)
-                         )
-                     (not (any-unclaimed-terrs? (system-territory-list model)))
-                     )
-                ;If the player can fortify a territory, then the system model will update the territory selected to include an extra troop inside of it.
-                ;It will change the player turn using turn-update function, and will also update default attributes.
-                (struct-copy system model
-                             [territory-list (territory-update + 1
-                                                               (territory-name (territory-scan (system-territory-selected model)
-                                                                                               (system-territory-list model)
-                                                                                               )
-                                                                               )
-                                                               (system-territory-list model)
-                                                               (system-player-turn model)
-                                                               )]
-                             [playerlist (player-update-armies (system-playerlist model)
-                                                               - 1
-                                                               (system-player-turn model)
-                                                               )]
-                             [player-turn (turn-update model)]
-                             [x x]
-                             [y y]
-                             [territory-selected (tooltip x y model)]
-                             )]
-               ;If a territory cannot be claimed or fortified, then the model is updated with default attributes.
+         (cond [(equal? (territory-owner (territory-scan (system-territory-selected model)
+                                                         (system-territory-list model)
+                                                         )
+                                         )
+                        (system-player-turn model)
+                        )
+                ;IMPLEMENT SLIDER STUFF BOOKMARK
+                ]
+               ;If the territory is not owned by the user, then the model is updated with default attributes.
                [else (struct-copy system model
                                   [x x]
                                   [y y]
                                   [territory-selected (tooltip x y model)]
                                   )]
                )]
-        [else (struct-copy system model
-                           [territory-selected (tooltip x y model)]
-                           [x x]
-                           [y y]
-                           )]
-        )
-  )
+         [else (struct-copy system model
+                            [territory-selected (tooltip x y model)]
+                            [x x]
+                            [y y]
+                            )]
+         )
+)
 
 (define (between? query min max)
   (and

@@ -2352,7 +2352,16 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                          )
                         (system-player-turn model)
                         )
-                ;IMPLEMENT SLIDER STUFF
+                ;IMPLEMENT SLIDER STUFF [Implemented]
+                (struct-copy system model
+                             [territory-list (territory-update +
+                                                               (slider-armies (system-slider-store model))
+                                                               (territory-name (system-territory-selected model))
+                                                               (system-territory-list model)
+                                                               (territory-owner (system-territory-selected model)))]
+                             [x x]
+                             [y y])
+                             
                 ]
                ;If the territory is not owned by the user, then the model is updated with default attributes.
                [else (struct-copy system model
@@ -2402,6 +2411,16 @@ Territory-selected and x + y coordinates must be updated in each clause.
                            )]
         )
   )
+
+;KEY HANDLER
+
+(define (key-handler model e)
+  (cond [(equal? e "escape")
+         (stop-with model)
+         ]
+        [else model]))
+
+
   
   
 ;Animation includes a mouse and draw handler, as well as an initial system model.
@@ -2447,6 +2466,8 @@ Territory-selected and x + y coordinates must be updated in each clause.
           (to-draw render 1250 1200)
           ;Mouse Handler
           (on-mouse mouse-handler)
+          ;Key Handler
+          (on-key key-handler)
           )
 
 (test)
