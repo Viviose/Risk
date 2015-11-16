@@ -1062,7 +1062,9 @@ SAMPLE IMPLEMENTATION!
           16 "orange")
           
     (rectangle 160 75 "solid" "purple"))
-   (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
+   (cond [(or
+           (equal? (system-turn-stage model) "attack")
+           (equal? (system-turn-stage model) "recruit"));Adding more later to this [BOOKMARK] 
           (slider-image (system-slider-store model))
           ]
           
@@ -1267,9 +1269,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 3) "alive" 0)
-                                                             (make-player (list)  (army-count 3) "alive" 1)
-                                                             (make-player (list)  (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (list)  15 "alive" 0)
+                                                             (make-player (list)  15 "alive" 1)
+                                                             (make-player (list)  15 "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1501,6 +1503,8 @@ Max x: 933
     )
   )
 
+
+
 ;Card functions
 
 ;player-card-list: [List card] number(playerpos) -> [List card]
@@ -1699,7 +1703,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                       [turn-stage "recruit"]
                       [player-turn 0]
                       ;Update Player 1's army count to have additional armies based on recruit functions.
-                      [playerlist (update-player-armies (system-playerlist model)
+                      [playerlist (player-update-armies (system-playerlist model)
                                                         +
                                                         (+ (base-armycount model)
                                                            (continent-bonus-calc 0
@@ -2323,7 +2327,19 @@ Territory-selected and x + y coordinates must be updated in each clause.
 |#
         
 (define (recruit-phase model x y event)
-  (cond [(move-on-to-attack? model)
+  (cond
+         [(and
+          (equal? event "drag")
+          (between? x 1027 1236)
+          (between? y 911 923))
+         (struct-copy system model
+                      [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                          (system-player-turn model)))
+                                                   (- x 1027)
+                                                   0) ]
+                      [debug "Workin"])]
+
+         [(move-on-to-attack? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
          (struct-copy system model
                       [turn-stage "attack"]
@@ -2356,9 +2372,10 @@ Territory-selected and x + y coordinates must be updated in each clause.
                 (struct-copy system model
                              [territory-list (territory-update +
                                                                (slider-armies (system-slider-store model))
-                                                               (territory-name (system-territory-selected model))
+                                                               (system-territory-selected model)
                                                                (system-territory-list model)
-                                                               (territory-owner (system-territory-selected model)))]
+                                                               (territory-owner (territory-scan (system-territory-selected model)
+                                                                                                (system-territory-list model))))]
                              [x x]
                              [y y])
                              
@@ -2431,7 +2448,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
            0
            ;Initial phase is init-recruit, changes upon completion of phases
            ;Can be changed for debugging purposes.
-           "attack"
+           "init-recruit"
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.
