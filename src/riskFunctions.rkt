@@ -2376,6 +2376,10 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                                                (system-territory-list model)
                                                                (territory-owner (territory-scan (system-territory-selected model)
                                                                                                 (system-territory-list model))))]
+                             [playerlist (player-update-armies (system-playerlist model)
+                                                               -
+                                                               (slider-armies (system-slider-store model))
+                                                               (system-player-turn model))]
                              [x x]
                              [y y])
                              
