@@ -940,24 +940,27 @@ SAMPLE IMPLEMENTATION!
           (on-mouse mousey))
 |#
 
-(define (numberbar armies)
-  (beside
-   (overlay
-    (text "0" 12  "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay 
-    (text (number->string (round (/ armies 4))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string (round (/ armies 2))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string (round (/ (* 3 armies) 4))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string armies) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))))
-
+(define (numberbar armies selected)
+  (above
+   
+   (beside
+    (overlay
+     (textc "0" 12  "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay 
+     (textc (number->string (round (/ armies 4))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string (round (/ armies 2))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string (round (/ (* 3 armies) 4))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string armies) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0))))
+   (textc (number->string selected) 16 "black")))
+  
 
 
 (define (calc-armies bar-width max-armies x)
@@ -971,15 +974,17 @@ SAMPLE IMPLEMENTATION!
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
 ;the number of armies it's on with (slider-armies ...)
-(define (create-slider armies x y)
+(define (create-slider armies x y selected)
   (make-slider
    (above
     (place-image SLIDER-HEAD
                 x
                 y
                 SLIDER-BAR)
-    (numberbar armies))
+    (numberbar armies selected))
     (calc-armies SLIDER-WIDTH armies x)))
+
+;Slider needs a way to check if 
 ;_____________________________________________________________________________________________________
 
 ;This shows a variable number of die on the bar.
@@ -2330,13 +2335,14 @@ Territory-selected and x + y coordinates must be updated in each clause.
 (define (recruit-phase model x y event)
   (cond  [(and (equal? event "drag")
                (between? x 1027 1236)
-               (between? y 911 923)
+               (between? y 900 935)
                )
           (struct-copy system model
                        [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
                                                                                            (system-player-turn model)))
                                                     (- x 1027)
                                                     0
+                                                    (slider-armies (system-slider-store model))
                                                     )]
                        [debug "Workin"]
                        )]         
@@ -2393,6 +2399,12 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   )]
                )]
          [else (struct-copy system model
+                            [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                           (system-player-turn model)))
+                                                    (- x 1027)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )]
                             [territory-selected (tooltip x y model)]
                             [x x]
                             [y y]
@@ -2422,8 +2434,8 @@ The win conditions are simple: no other players have armies left. |#
 (define (won-game? p-list playerpos)
   (cond [(empty? p-list) true]
         [(equal? (player-reserved-armies (first p-list))
-                 0)
-        []
+                 0)]
+        [else false]
         )
   )
 
@@ -2440,7 +2452,9 @@ The win conditions are simple: no other players have armies left. |#
                       [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
                                                                                           (system-player-turn model)))
                                                    (- x 1027)
-                                                   0) ]
+                                                   0
+                                                   (slider-armies (system-slider-store model))
+                                                   ) ]
                       [debug "Workin"]
                       )]
         [else (struct-copy system model
@@ -2500,7 +2514,7 @@ The win conditions are simple: no other players have armies left. |#
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
            ;Slider used in attributing armies
-           (create-slider 100 0 0)
+           (create-slider 100 0 0 0)
            )
           ;Draw Handler
           (to-draw render 1250 1200)
