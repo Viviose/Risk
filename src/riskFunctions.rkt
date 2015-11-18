@@ -65,7 +65,8 @@ Provided by graph.rkt:
 - in-ellipse?: number(x1) number(y1) number(x2) number(y2) number(x3) number(y3) number(x) number(y) -> boolean
     - Given the left, right, and top points of an ellipse, as well as a point to compare, checks to see if the point is inside of the given ellipse.
     - Dependencies on calc-angle and distance, both of which are local to sub-module.
-
+- between?: number(query) number(min) number(max) -> boolean
+    - Given a number to compare, and two numbers which represent bounds to compare, returns true if number is in bounds.
 |#
 
 (require "matdes.rkt")
@@ -2327,18 +2328,18 @@ Territory-selected and x + y coordinates must be updated in each clause.
 |#
         
 (define (recruit-phase model x y event)
-  (cond
-         [(and
-          (equal? event "drag")
-          (between? x 1027 1236)
-          (between? y 911 923))
-         (struct-copy system model
-                      [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
-                                                                                          (system-player-turn model)))
-                                                   (- x 1027)
-                                                   0) ]
-                      [debug "Workin"])]
-
+  (cond  [(and (equal? event "drag")
+               (between? x 1027 1236)
+               (between? y 911 923)
+               )
+          (struct-copy system model
+                       [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                           (system-player-turn model)))
+                                                    (- x 1027)
+                                                    0
+                                                    )]
+                       [debug "Workin"]
+                       )]         
          [(move-on-to-attack? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
          (struct-copy system model
@@ -2399,20 +2400,36 @@ Territory-selected and x + y coordinates must be updated in each clause.
          )
 )
 
-(define (between? query min max)
-  (and
-   (< query max)
-   (> query min)
-   )
+;Attack Phase
+#|
+
+Time to get to the good stuff.
+
+The attack phase and fortification phase are unique in that they require the system to keep track of two
+selected territories, which may get a little complicated.
+
+Events that occur in the attack phase:
+- The player wins the game by defeating all the other players in the game (no one has armies left).
+- The player rolls dice to attack the player.
+- The player chooses a territory to attack from and to attack.
+
+Attack Phase must check for win conditions first, then move on to fortify conditions.
+
+The win conditions are simple: no other players have armies left. |#
+
+;won-game?: list(player-list) -> boolean
+;Checks to see if all other players have no armies remaining.
+(define (won-game? p-list playerpos)
+  (cond [(empty? p-list) true]
+        [(equal? (player-reserved-armies (first p-list))
+                 0)
+        []
+        )
   )
 
-;ATTACK PHASE
+#|
 
-;can-attack?: Checks to see if the player can attack a selected territory by being next to it
-;
-;(define (can-attack? attacking target)
-  ;(if (equal?
-      ; (
+|#
 
 (define (attack-phase model x y event)
   (cond [(and
@@ -2424,7 +2441,8 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                                                                           (system-player-turn model)))
                                                    (- x 1027)
                                                    0) ]
-                      [debug "Workin"])]
+                      [debug "Workin"]
+                      )]
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
@@ -2434,12 +2452,13 @@ Territory-selected and x + y coordinates must be updated in each clause.
   )
 
 ;KEY HANDLER
-
-(define (key-handler model e)
-  (cond [(equal? e "escape")
-         (stop-with model)
-         ]
-        [else model]))
+;Stop the game using the escape key at anytime.
+(define (key-handler model key)
+  (cond [(equal? key "escape")
+         (stop-with model)]
+        [else model]
+        )
+  )
 
 
   

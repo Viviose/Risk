@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 ("6.1" ("fdae738ed78ae52d66193d199ab1091735204b71" . "a7bcdd2bc1f17c0193ad38165907739eba08c084") #"/home/student02/Documents/risk/src/graph.rkt" (collects #"racket" #"main.rkt") (collects #"picturing-programs" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
+=======
+("6.1" ("fdae738ed78ae52d66193d199ab1091735204b71" . "1e68f5451c523f72c78ff2144e951efd8689b5af") (collects #"racket" #"main.rkt") (collects #"picturing-programs" #"main.rkt") (collects #"racket" #"runtime-config.rkt") #"/home/student02/Desktop/risk/src/graph.rkt")
+>>>>>>> 12f5b477a28986ba5302c26dee09fa31182a5e9e
