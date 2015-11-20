@@ -109,7 +109,7 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked armies-attacking slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -2345,6 +2345,9 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                                     (slider-armies (system-slider-store model))
                                                     )]
                        [debug "Workin"]
+                       [territory-selected (tooltip x y model)]
+                       [x x]
+                       [y y] 
                        )]         
          [(move-on-to-attack? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
@@ -2440,8 +2443,11 @@ The win conditions are simple: no other players have armies left. |#
   )
 
 #|
-
+We shoulda defined this sucker long ago:
 |#
+
+(define (select-t-scan model)
+  (territory-scan (system-territory-selected model) (system-territory-list model)))
 
 (define (attack-phase model x y event)
   (cond [(and
@@ -2449,7 +2455,8 @@ The win conditions are simple: no other players have armies left. |#
           (between? x 1027 1236)
           (between? y 911 923))
          (struct-copy system model
-                      [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                      [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
+                                                   (player-reserved-armies (select-player (system-playerlist model)
                                                                                           (system-player-turn model)))
                                                    (- x 1027)
                                                    0
@@ -2457,6 +2464,44 @@ The win conditions are simple: no other players have armies left. |#
                                                    ) ]
                       [debug "Workin"]
                       )]
+        [(and (equal? event "button-down")
+              (not (equal? (system-territory-selected model) "null"))
+              (equal? player-pos (territory-owner (select-t-scan model))) 
+              )
+         (struct-copy system model
+                      [territory-selected (tooltip x y model)]
+                      [x x]
+                      [y y]
+                      [territory-attacked "primed"]
+                      [slider-store (create-slider (- (territory-armies (select-t-scan model))
+                                                           ;This signifies that it is one less than the territory's armies
+                                                           1)
+                                                    (- x 1027)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )])]
+        [(and (equal? event "button-down")
+              (equal? (system-territory-attacked model) "primed")
+              ;We will eventually need to check if we border the territory
+              (not (equal? (system-territory-selected model) "null"))
+              (not (equal? player-pos (territory-owner (select-t-scan model)))))
+         ;Actual attack
+         ;What has to happen:
+         ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
+         ;J:Dice are rolled, win loss stacked up <- This is what goes in this clause
+         ;P:Attacker chooses how many troops move on
+         ;P:Process can repeat, attacked-territory needs to be made null again.
+
+         ;NOTE FOR JOSH: The number of armies a player has chosen is invoked like so:
+         ; (slider-armies (system-slider-store model) -> Number (armies selected by slider)
+
+             ;Dice functions, update armies, etc.
+
+         ]
+
+        ;'Move on to fortfiy' clause
+         
+         
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
@@ -2464,6 +2509,10 @@ The win conditions are simple: no other players have armies left. |#
                            )]
         )
   )
+
+
+
+
 
 ;KEY HANDLER
 ;Stop the game using the escape key at anytime.
@@ -2513,6 +2562,8 @@ The win conditions are simple: no other players have armies left. |#
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
+           ;There are no armies attacking, initially
+           0
            ;Slider used in attributing armies
            (create-slider 100 0 0 0)
            )
