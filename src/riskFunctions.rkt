@@ -1248,9 +1248,9 @@ Max x: 933
                 4]
                [(and (>= x 833) (<= x 933))
                 5]
-               [else null]
+               [else -1]
                )]
-        [else null]
+        [else -1]
         )
   )
          
@@ -1385,10 +1385,14 @@ Max x: 933
                              [screen "gameplay"]
                              )]
                ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
-               [(and (not (equal? (which-card? x y)))
+               [(and (not (equal? (which-card? x y)
+                                  -1)
+                          )
                      (equal? event "button-down")
                      )
-                (change-card-selected (which-card? x y) model)] 
+                (change-card-selected (which-card? x y)
+                                      model
+                                      )] 
                 
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
                ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
@@ -1562,11 +1566,18 @@ Max x: 933
 ;Number (index) System(model) -> System(updated cardlist)
 
 (define (change-card-selected index model)
-  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
-                              index
+  ;First clause is catch all for instances in which the player has no cards.
+  (cond [(empty? (cards-owned (system-card-list model)
+                              (system-player-turn model)
                               )
-               [state "active"]
-               )
+                 )
+         model]
+        [else (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
+                                          index
+                                          )
+                           [state "active"]
+                           )]
+        )
   )
 
 ;***Initial Recruitment Phase***
@@ -2055,6 +2066,20 @@ These include:
  
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
 ;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
+
+;cards-owned: [List card] number(playerpos) -> [List card]
+;Returns the cards owned by a particular player.
+(define (cards-owned card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list))
+                 playerpos
+                 )
+         (cons (first card-list)
+               (cards-owned (rest card-list) playerpos)
+               )]
+        [else (cards-owned (rest card-list) playerpos)]
+        )
+  )
 
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.

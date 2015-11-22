@@ -82,6 +82,8 @@ Provided by matdes.rkt:
     - A new, material inspired button for rolling the dice.
 - CARD-BUTTON
     - The same as above, only for cards.
+- SUBMIT-BUTTON
+    - The card button morphs into this button.
 |#
 
 
@@ -120,7 +122,7 @@ Provided by matdes.rkt:
   #:transparent)
 
 ;Territory Struct (Holds the information of each territory)
-;[territory]: string(armies) number(armies) string(owner) -> territory
+;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
 (define-struct territory (name armies owner adjacent-territories)
   #:transparent)
 
@@ -148,6 +150,7 @@ Provided by matdes.rkt:
   )
 
 ;List of all territories
+;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
 (define INITIAL-TERRITORY-LIST (list 
                                 ;North America
                                 (territory "Alaska" 0 "null" (list "Northwest Territory"
@@ -402,6 +405,7 @@ Provided by matdes.rkt:
   )
 
 ;Initial list of all cards and their values in the game.
+;[Card]: String(unit) String(territory) [Maybe-Number Owner] -> card
 (define INITIAL-CARD-LIST (list
                            (card "infantry" "Afghanistan" 0 "null" "inactive")
                            (card "infantry" "Alaska" 1 "null" "inactive")
@@ -787,7 +791,10 @@ SAMPLE IMPLEMENTATION!
                                     )
                ) 
     )
-   CARD-BUTTON
+   (cond [(equal? (system-screen model) "cards")
+          SUBMIT-BUTTON]
+         [else CARD-BUTTON]
+         )
    (overlay
     (textc (string-append
             (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
@@ -904,30 +911,30 @@ SAMPLE IMPLEMENTATION!
                 )          
           (toolbar model))]
         [(equal? (system-screen model) "cards")
-         (overlay
-          (overlay/align "right" "top" X
-
-                         (overlay/align "left" "center"
-                          (beside (rectangle 10 0 "solid" "black") 
-                                  (card-buncher 
-                                   (player-card-list (system-card-list model) (system-player-turn model))
-                                   )
-                                  )
-                          (rectangle 700 200 "solid" (make-color 128 0 0))
+          (overlay
+           (overlay/align "right" "top" X
+                          
+                          (overlay/align "left" "center"
+                                         (beside (rectangle 10 0 "solid" "black") 
+                                                 (card-buncher 
+                                                  (player-card-list (system-card-list model) (system-player-turn model))
+                                                  )
+                                                 )
+                                         (rectangle 700 200 "solid" (make-color 128 0 0))
+                                         )
                           )
-                         )
-
-          (above
-           (cond [(not (equal? (system-territory-selected model) "null"))
-                  (place-image (overlay
-                                (above
-                                 (textc (system-territory-selected model) 16 "black")
-                                 (textc "Player who owns" 12 "black"))
-                                (rectangle 100 50 "solid" (playercolor model)))
-                               (system-x model) (system-y model)
-                               BOARD)]
-                 [else BOARD])
-           (toolbar model))
+           
+           (above
+            (cond [(not (equal? (system-territory-selected model) "null"))
+                   (place-image (overlay
+                                 (above
+                                  (textc (system-territory-selected model) 16 "black")
+                                  (textc "Player who owns" 12 "black"))
+                                 (rectangle 100 50 "solid" (playercolor model)))
+                                (system-x model) (system-y model)
+                                BOARD)]
+                  [else BOARD])
+            (toolbar model))
           )]
         [else model]
         )
@@ -1078,18 +1085,17 @@ Max x: 933
            [(equal? DEBUG 0)                 
             (cond [(and 
                     (equal? event "button-down")
-                    (< (distance 923 925 x y) 37.5)
+                    (< (distance 923 925 x y) 37.5))
                     (struct-copy
                      system model
                      [screen "cards"]
                     
-                     ))]
+                     )]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
-                               [(equal? (system-turn-stage model) "recruit")
-                                  ;Here is the problemo:
-                                  (recruit-phase model x y event)]
+                              [(equal? (system-turn-stage model) "recruit")
+                               #;(recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
@@ -1110,21 +1116,29 @@ Max x: 933
            [else model]
            )]
         [(equal? (system-screen model) "cards")
-         (if (and (<= (distance 959 418 x y) 20)
+         (cond [(and (<= (distance 959 418 x y) 20)
                   (equal? event "button-down")
                   )
              ;Checks to see if mouse is on X and has clicked it, if so runs next function
              (struct-copy 
               system model
               [screen "gameplay"]
-              )
+              )]
+               [(and 
+                    (equal? event "button-down")
+                    (< (distance 923 925 x y) 37.5))
+                ;#############################################################################################
+                ;CALL YOUR RETURN CARDS STUFF HERE, OR MOVE IT TO MOUSE HANDLER HELPER FUNCTIONS, YOUR CHOICE!
+                ;#############################################################################################
+
+                ]
              ;If not true, then it returns model
-             (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
-              ;do something with that card index below
-             (...)
-             ;Else model
-             model
-             )
+             [else (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
+                 ;do something with that card index below
+                 model
+                 ;Else model
+                 model
+                 )]
              )]
         [else model]
         )
@@ -1412,6 +1426,14 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
          (struct-copy system model
                       [turn-stage "recruit"]
                       [player-turn 0]
+                      ;Update Player 1's army count to have additional armies based on recruit functions.
+                      [playerlist (update-player-armies (system-playerlist model)
+                                                        +
+                                                        (+ (base-armycount model)
+                                                           (continent-bonus-calc model)
+                                                           )
+                                                        0
+                                                        )]
                       [x x]
                       [y y]
                       )]
@@ -1525,7 +1547,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
 The following factor into the amount of armies given to players:
 - Territories(# of territories / 3, where f(t) is at minimum 3 and t is the amount of territories a player owns.) **COMPLETED**
 - Continent Bonuses. **COMPLETED**
-- Cards
+- Cards **COMPLETED**
 |#
 
 ;count-territories: number(playerpos) [List territory] -> number
@@ -1541,25 +1563,18 @@ The following factor into the amount of armies given to players:
   )
 
 ;base-armycount: number(territories owned) -> number(army)
-;Takes in a number of territories owned (most likely result of count-territories function) and returns the amount of troops yielded.
-(define (base-armycount num-territories-owned)
-  (cond [(< (floor (/ num-territories-owned
-                        3)
+;Takes in a model and returns the amount of troops yielded based on territories the current player owns.
+(define (base-armycount model)
+  (cond [(< (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
+                      3)
                    )
             3)
          3]
-        [else (floor (/ num-territories-owned
+        [else (floor (/ (count-territories (system-player-turn model) (system-territory-list model))
                         3)
                      )]
         )
   )
-
-(check-expect (base-armycount 8)
-              3)
-(check-expect (base-armycount 12)
-              4)
-(check-expect (base-armycount 21)
-              7)
 
 ;Begin continent bonus functions.
 
@@ -1766,6 +1781,89 @@ These include:
         )
   )
 
+;has-wild-card?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has a wild card in the deck he currently possesses.
+(define (has-wild-card? card-list playerpos)
+  (cond [(empty? card-list) false]
+        [(equal? (card-unit (first card-list))
+                 "wild"
+                 )
+         true]
+        [else (has-wild-card? (rest card-list) playerpos)]
+        )
+  )
+
+;find-reg-cards: [List card] number(playerpos) -> [List card]
+;Goes through a card-list and returns the cards in that list that aren't wild cards.
+(define (find-reg-cards card-list playerpos)
+  (cond [(empty? card-list) '() ]
+        [(equal? (card-unit (first card-list))
+                 "wild"
+                 )
+         (find-reg-cards card-list playerpos)]
+        [else (cons (first card-list) 
+                    (find-reg-cards card-list playerpos)
+                    )]
+        )
+  )
+
+;has-two-reg-cards?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has two regular cards of any type in his deck.
+(define (has-two-reg-cards? card-list playerpos)
+  (if (>= (length (find-reg-cards card-list playerpos)) 2)
+      ;Has at least 2 non-wild cards
+      true
+      ;Doesn't
+      false
+      )
+  )
+      
+;return-same-unit: [List card] number(playerpos) string(unit) -> [List card]
+;Goes through a given list of cards and returns cards with the unit type specified.
+(define (return-same-unit card-list playerpos unit)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-unit (first card-list)) unit)
+         (cons (first card-list)
+               (return-same-unit (rest card-list) playerpos unit)
+               )]
+        [else (return-same-unit (rest card-list) playerpos unit)]
+        )
+  )
+
+;has-three-same-unit?: [List card] number(playerpos) -> boolean
+;Checks to see if a player has 3 cards of the same type in their possesion.
+(define (has-three-same-unit? card-list playerpos)
+  ;Will return true if conditions stated in purpose are met, else false.
+  (or (>= (length (return-same-unit card-list playerpos "infantry")) 3)
+      (>= (length (return-same-unit card-list playerpos "artillery")) 3)
+      (>= (length (return-same-unit card-list playerpos "cavalry")) 3)
+      )
+  )
+
+;has-infantry?: [List card] number(playerpos) -> boolean
+;Checks to see if the player has any infantry cards.
+(define (has-infantry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "infantry")))
+  )
+
+;has-cavalry?
+(define (has-cavalry? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "cavalry")))
+  )
+
+;has-artillery?
+(define (has-artillery? card-list playerpos)
+  (not (empty? (return-same-unit card-list playerpos "artillery")))
+  )
+
+;has-one-of-each-unit?: [List card] number(playerpos) -> boolean
+(define (has-one-of-each-unit? card-list playerpos)
+  (and (has-infantry? card-list playerpos)
+       (has-cavalry? card-list playerpos)
+       (has-artillery? card-list playerpos)
+       )
+  )
+
 ;can-turn-in?: system(model) -> boolean
 ;Checks to see if a player has 3 cards available and eligible to be traded in.
 #|
@@ -1777,17 +1875,81 @@ Players can turn in cards if one of these three cases is true:
 - The player owns 3 cards of the same unit type.
 |#
 
-;(define (can-turn-in? system)
-;  (cond [(< (num-cards-owned (system-card-list) (system-player-turn))
-;            3)
-;         false]
-;        []
-;        )
-;  )
+(define (can-turn-in? system)
+  (cond [(< (num-cards-owned (system-card-list system) (system-player-turn system))
+            3)
+         false]
+        ;After this point, it is known that the user has 3+ cards.
+        ;Second condition checks to see if the player has a wild card in possession, 
+        [(and (has-wild-card? (system-card-list system) (system-player-turn system)) 
+              (has-two-reg-cards? (system-card-list system) (system-player-turn system))
+              )
+         true]
+        ;Player doesn't have a wild card, so now we check for 3 cards of the same type.
+        [(has-three-same-unit? (system-card-list system) (system-player-turn system))
+         true]
+        ;They don't have three of the same type, now we check for one of each.
+        [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
+         true]
+        ;They don't meet 
+        [else false]
+        )
+  )
 
-;da recruit phase m8
+;The Recruit Phase Method
+#|
+Recruit is a repeated process throughout the game, and thus must be very dynamic, just like its siblings, Attack and Fortify.
+Here is the list of conditions that cover the occurences in the recruit phase.
+
+The list of conditions for moving on to the next phase is as follows:
+- The player must have no more troops to place.
+|#
+
+;move-on-to-attack?: system(model) -> boolean
+;Checks to see if the game should move on to the attack phase based on the current system model.
+(define (move-on-to-attack? model)
+   (not (troops-to-allocate? model))
+  )
+
+#|
+
+Simple, right?
+
+The conditions for adding troops to territories are as follows:
+- The player must have troops to allocate.
+- The player must own the territory he/she is trying to fortify with troops.
+- The player cannot add more troops than is in their reserves.
+
+Card conditions are mentioned in the comments concerning the "can-turn-in?" discriminator.
+
+Events that occur during recruit:
+- The User checks the card-list.
+  - In this case, card functions come into play. Refer to the comments associated with each function or the repository wiki for more details.
+- The User clicks on a territory to add troops.
+  - The aforementioned conditions for adding troops to territories now apply.
+
+|#
+        
 (define (recruit-phase model x y event)
-  model
+  (cond [(move-on-to-attack? model)
+         ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
+         (struct-copy system model
+                      [turn-stage "attack"]
+                      [x x]
+                      [y y]
+                      )]
+        ;At this point, the system knows that the player doesn't
+        ;Add more clauses
+        
+        [else (cond [(can-turn-in? model)
+                     ;###Placeholder for algorithm###
+                     model
+                     ]
+                    [else  (struct-copy system model
+                                        [x x]
+                                        [y y]
+                                        )])]
+        )
   )
 
 (define (between? query min max)
