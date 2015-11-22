@@ -114,7 +114,7 @@ Provided by matdes.rkt:
 
 ;Player struct (Holds the information of each player)
 ;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (territories-owned reserved-armies status pos)
+(define-struct player (reserved-armies status pos)
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
@@ -1248,9 +1248,9 @@ Max x: 933
                 4]
                [(and (>= x 833) (<= x 933))
                 5]
-               [else null]
+               [else -1]
                )]
-        [else null]
+        [else -1]
         )
   )
          
@@ -1275,9 +1275,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  15 "alive" 0)
-                                                             (make-player (list)  15 "alive" 1)
-                                                             (make-player (list)  15 "alive" 2)
+                                           [playerlist (list (make-player (army-count 3) "alive" 0)
+                                                             (make-player (army-count 3) "alive" 1)
+                                                             (make-player (army-count 3) "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1287,10 +1287,10 @@ Max x: 933
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 4) "alive" 0)
-                                                             (make-player (list)  (army-count 4) "alive" 1)
-                                                             (make-player (list)  (army-count 4) "alive" 2)
-                                                             (make-player (list)  (army-count 4) "alive" 3)
+                                           [playerlist (list (make-player (army-count 4) "alive" 0)
+                                                             (make-player (army-count 4) "alive" 1)
+                                                             (make-player (army-count 4) "alive" 2)
+                                                             (make-player (army-count 4) "alive" 3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1300,11 +1300,11 @@ Max x: 933
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 5) "alive" 0)
-                                                             (make-player (list)  (army-count 5) "alive" 1)
-                                                             (make-player (list)  (army-count 5) "alive" 2)
-                                                             (make-player (list)  (army-count 5) "alive" 3)
-                                                             (make-player (list)  (army-count 5) "alive" 4)
+                                           [playerlist (list (make-player (army-count 5) "alive" 0)
+                                                             (make-player (army-count 5) "alive" 1)
+                                                             (make-player (army-count 5) "alive" 2)
+                                                             (make-player (army-count 5) "alive" 3)
+                                                             (make-player (army-count 5) "alive" 4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1314,12 +1314,12 @@ Max x: 933
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 6) "alive" 0)
-                                                             (make-player (list)  (army-count 6) "alive" 1)
-                                                             (make-player (list)  (army-count 6) "alive" 2)
-                                                             (make-player (list)  (army-count 6) "alive" 3)
-                                                             (make-player (list)  (army-count 6) "alive" 4)
-                                                             (make-player (list)  (army-count 6) "alive" 5)
+                                           [playerlist (list (make-player (army-count 6) "alive" 0)
+                                                             (make-player (army-count 6) "alive" 1)
+                                                             (make-player (army-count 6) "alive" 2)
+                                                             (make-player (army-count 6) "alive" 3)
+                                                             (make-player (army-count 6) "alive" 4)
+                                                             (make-player (army-count 6) "alive" 5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1385,10 +1385,14 @@ Max x: 933
                              [screen "gameplay"]
                              )]
                ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
-               [(and (not (equal? (which-card? x y)))
+               [(and (not (equal? (which-card? x y)
+                                  -1)
+                          )
                      (equal? event "button-down")
                      )
-                (change-card-selected (which-card? x y) model)] 
+                (change-card-selected (which-card? x y)
+                                      model
+                                      )] 
                 
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
                ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
@@ -1562,11 +1566,18 @@ Max x: 933
 ;Number (index) System(model) -> System(updated cardlist)
 
 (define (change-card-selected index model)
-  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
-                              index
+  ;First clause is catch all for instances in which the player has no cards.
+  (cond [(empty? (cards-owned (system-card-list model)
+                              (system-player-turn model)
                               )
-               [state "active"]
-               )
+                 )
+         model]
+        [else (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
+                                          index
+                                          )
+                           [state "active"]
+                           )]
+        )
   )
 
 ;***Initial Recruitment Phase***
@@ -2056,6 +2067,20 @@ These include:
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
 ;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
 
+;cards-owned: [List card] number(playerpos) -> [List card]
+;Returns the cards owned by a particular player.
+(define (cards-owned card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list))
+                 playerpos
+                 )
+         (cons (first card-list)
+               (cards-owned (rest card-list) playerpos)
+               )]
+        [else (cards-owned (rest card-list) playerpos)]
+        )
+  )
+
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
 (define (num-cards-owned card-list playerpos)
@@ -2378,7 +2403,6 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                          )
                         (system-player-turn model)
                         )
-                ;IMPLEMENT SLIDER STUFF [Implemented]
                 (struct-copy system model
                              [territory-list (territory-update +
                                                                (slider-armies (system-slider-store model))
@@ -2391,9 +2415,8 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                                                (slider-armies (system-slider-store model))
                                                                (system-player-turn model))]
                              [x x]
-                             [y y])
-                             
-                ]
+                             [y y]
+                             )]
                ;If the territory is not owned by the user, then the model is updated with default attributes.
                [else (struct-copy system model
                                   [x x]
@@ -2424,7 +2447,7 @@ The attack phase and fortification phase are unique in that they require the sys
 selected territories, which may get a little complicated.
 
 Events that occur in the attack phase:
-- The player wins the game by defeating all the other players in the game (no one has armies left).
+- The player wins the game by defeating all the other players in the game (no one owns anymore territories).
 - The player rolls dice to attack the player.
 - The player chooses a territory to attack from and to attack.
 
@@ -2432,13 +2455,18 @@ Attack Phase must check for win conditions first, then move on to fortify condit
 
 The win conditions are simple: no other players have armies left. |#
 
-;won-game?: list(player-list) -> boolean
+;won-game?: [List territory] [List card] number(playerpos) -> boolean
 ;Checks to see if all other players have no armies remaining.
-(define (won-game? p-list playerpos)
+(define (won-game? t-list p-list playerpos)
   (cond [(empty? p-list) true]
-        [(equal? (player-reserved-armies (first p-list))
-                 0)]
-        [else false]
+        ;This clause is a catch for the current player so that the algorithm doesn't check them.
+        [(equal? (player-pos (first p-list))
+                 playerpos)
+         (won-game? (rest p-list))]
+        ;This clause checks to see if players in the list are out of territories (aka if the list is NOT empty, they are still in play).
+        [(not (empty? (territories-owned t-list playerpos)))
+         false]
+        [else (won-game? (rest p-list))]
         )
   )
 
@@ -2446,11 +2474,34 @@ The win conditions are simple: no other players have armies left. |#
 We shoulda defined this sucker long ago:
 |#
 
+;DEFINE CONTRACT AND PURPOSE STATEMENT
 (define (select-t-scan model)
-  (territory-scan (system-territory-selected model) (system-territory-list model)))
+  (territory-scan (system-territory-selected model) (system-territory-list model))
+  )
 
+;territories-owned: [List territory] number(playerpos) -> [List territory]
+;Takes in a list of territories and a player's ID and returns a list of territories owned by that player.
+(define (territories-owned t-list playerpos)
+  (cond [(empty? t-list) '()]
+        [(equal? (territory-owner (first t-list))
+                 playerpos)
+         (cons (first t-list)
+               (territories-owned (rest t-list) playerpos)
+               )]
+        [else (territories-owned (rest t-list) playerpos)]
+        )
+  )
+
+;Attack Phase
 (define (attack-phase model x y event)
-  (cond [(and
+  (cond [(won-game? (system-territory-list model)
+                    (system-playerlist model)
+                    (system-player-turn model)
+                    )
+         ;WIN CONDITIONS
+         ;for now...
+         model]
+        [(and
           (equal? event "drag")
           (between? x 1027 1236)
           (between? y 911 923))
@@ -2461,7 +2512,7 @@ We shoulda defined this sucker long ago:
                                                    (- x 1027)
                                                    0
                                                    (slider-armies (system-slider-store model))
-                                                   ) ]
+                                                   )]
                       [debug "Workin"]
                       )]
         [(and (equal? event "button-down")
@@ -2484,7 +2535,8 @@ We shoulda defined this sucker long ago:
               (equal? (system-territory-attacked model) "primed")
               ;We will eventually need to check if we border the territory
               (not (equal? (system-territory-selected model) "null"))
-              (not (equal? player-pos (territory-owner (select-t-scan model)))))
+              (not (equal? player-pos (territory-owner (select-t-scan model))))
+              )
          ;Actual attack
          ;What has to happen:
          ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
@@ -2499,8 +2551,7 @@ We shoulda defined this sucker long ago:
 
          ]
 
-        ;'Move on to fortfiy' clause
-         
+        ;'Move on to fortfiy' clause 
          
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
@@ -2527,8 +2578,8 @@ We shoulda defined this sucker long ago:
   )
 
 
-  
-  
+
+
 ;Animation includes a mouse and draw handler, as well as an initial system model.
 (big-bang (make-system 
            ;No players at first, updated upon player selection
