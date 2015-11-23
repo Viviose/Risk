@@ -2501,20 +2501,18 @@ We shoulda defined this sucker long ago:
          ;WIN CONDITIONS
          ;for now...
          model]
-        [(and (equal? event "drag")
-              (between? x 1027 1236)
-              (between? y 911 923)
-              )
+        [(and
+          (equal? event "drag")
+          (between? x 1027 1236)
+          (between? y 911 923))
          (struct-copy system model
                       [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
-                                     (player-reserved-armies (select-player (system-playerlist model)
-                                                                            (system-player-turn model)
-                                                                            )
-                                                             )
-                                     (- x 1027)
-                                     0
-                                     (slider-armies (system-slider-store model))
-                                     )]
+                                                   (player-reserved-armies (select-player (system-playerlist model)
+                                                                                          (system-player-turn model)))
+                                                   (- x 1027)
+                                                   0
+                                                   (slider-armies (system-slider-store model))
+                                                   )]
                       [debug "Workin"]
                       )]
         [(and (equal? event "button-down")
@@ -2527,13 +2525,12 @@ We shoulda defined this sucker long ago:
                       [y y]
                       [territory-attacked "primed"]
                       [slider-store (create-slider (- (territory-armies (select-t-scan model))
-                                                      ;This signifies that it is one less than the territory's armies
-                                                      1)
-                                                   (- x 1027)
-                                                   0
-                                                   (slider-armies (system-slider-store model))
-                                                   )]
-                      )]
+                                                           ;This signifies that it is one less than the territory's armies
+                                                           1)
+                                                    (- x 1027)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )])]
         [(and (equal? event "button-down")
               (equal? (system-territory-attacked model) "primed")
               ;We will eventually need to check if we border the territory
@@ -2575,8 +2572,7 @@ We shoulda defined this sucker long ago:
          (stop-with model)]
         [(equal? key "d")
          (struct-copy system model
-                      [lel rekt]
-                      )]
+                      [
         [else model]
         )
   )
