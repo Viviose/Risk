@@ -109,7 +109,7 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked armies-attacking slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacking territory-attacked armies-attacking slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -2548,7 +2548,8 @@ We shoulda defined this sucker long ago:
               (equal? player-pos (territory-owner (select-t-scan model))) 
               )
          (struct-copy system model
-                      ;[territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip x y model)]
+                      [territory-attacking (tooltip x y model)]
                       [x x]
                       [y y]
                       [territory-attacked "primed"]
@@ -2566,7 +2567,7 @@ We shoulda defined this sucker long ago:
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
-                      [territory-attacked (territory-attacked model)]
+                      [territory-attacked (territory-selected model)]
                       )]
          ;Actual attack
          ;What has to happen:
@@ -2578,7 +2579,21 @@ We shoulda defined this sucker long ago:
          ;NOTE FOR JOSH: The number of armies a player has chosen is invoked like so:
          ; (slider-armies (system-slider-store model) -> Number (armies selected by slider)
 
-             ;Dice functions, update armies, etc.
+
+
+         
+;Potential bug/exploit
+        [(and (not (equal? (system-territory-attacked model) "null"))
+              (not (equal? (system-territory-attacked model) "primed"))
+
+              ;Do stuff here, like with dice functs, updating armies, all that jazz
+
+
+              ;Do not forget at the end we need to set attacking and attacked both back to null.
+
+              )
+         ]
+              
 
         ;'Move on to fortify' clause 
          
