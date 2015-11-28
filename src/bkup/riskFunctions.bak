@@ -65,7 +65,8 @@ Provided by graph.rkt:
 - in-ellipse?: number(x1) number(y1) number(x2) number(y2) number(x3) number(y3) number(x) number(y) -> boolean
     - Given the left, right, and top points of an ellipse, as well as a point to compare, checks to see if the point is inside of the given ellipse.
     - Dependencies on calc-angle and distance, both of which are local to sub-module.
-
+- between?: number(query) number(min) number(max) -> boolean
+    - Given a number to compare, and two numbers which represent bounds to compare, returns true if number is in bounds.
 |#
 
 (require "matdes.rkt")
@@ -108,7 +109,7 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked armies-attacking slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -939,24 +940,27 @@ SAMPLE IMPLEMENTATION!
           (on-mouse mousey))
 |#
 
-(define (numberbar armies)
-  (beside
-   (overlay
-    (text "0" 12  "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay 
-    (text (number->string (round (/ armies 4))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string (round (/ armies 2))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string (round (/ (* 3 armies) 4))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string armies) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))))
-
+(define (numberbar armies selected)
+  (above
+   
+   (beside
+    (overlay
+     (textc "0" 12  "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay 
+     (textc (number->string (round (/ armies 4))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string (round (/ armies 2))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string (round (/ (* 3 armies) 4))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string armies) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0))))
+   (textc (number->string selected) 16 "black")))
+  
 
 
 (define (calc-armies bar-width max-armies x)
@@ -970,15 +974,17 @@ SAMPLE IMPLEMENTATION!
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
 ;the number of armies it's on with (slider-armies ...)
-(define (create-slider armies x y)
+(define (create-slider armies x y selected)
   (make-slider
    (above
     (place-image SLIDER-HEAD
                 x
                 y
                 SLIDER-BAR)
-    (numberbar armies))
+    (numberbar armies selected))
     (calc-armies SLIDER-WIDTH armies x)))
+
+;Slider needs a way to check if 
 ;_____________________________________________________________________________________________________
 
 ;This shows a variable number of die on the bar.
@@ -1062,7 +1068,9 @@ SAMPLE IMPLEMENTATION!
           16 "orange")
           
     (rectangle 160 75 "solid" "purple"))
-   (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
+   (cond [(or
+           (equal? (system-turn-stage model) "attack")
+           (equal? (system-turn-stage model) "recruit"));Adding more later to this [BOOKMARK] 
           (slider-image (system-slider-store model))
           ]
           
@@ -1267,9 +1275,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 3) "alive" 0)
-                                                             (make-player (list)  (army-count 3) "alive" 1)
-                                                             (make-player (list)  (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (list)  15 "alive" 0)
+                                                             (make-player (list)  15 "alive" 1)
+                                                             (make-player (list)  15 "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1501,6 +1509,8 @@ Max x: 933
     )
   )
 
+
+
 ;Card functions
 
 ;player-card-list: [List card] number(playerpos) -> [List card]
@@ -1699,7 +1709,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                       [turn-stage "recruit"]
                       [player-turn 0]
                       ;Update Player 1's army count to have additional armies based on recruit functions.
-                      [playerlist (update-player-armies (system-playerlist model)
+                      [playerlist (player-update-armies (system-playerlist model)
                                                         +
                                                         (+ (base-armycount model)
                                                            (continent-bonus-calc 0
@@ -2323,7 +2333,23 @@ Territory-selected and x + y coordinates must be updated in each clause.
 |#
         
 (define (recruit-phase model x y event)
-  (cond [(move-on-to-attack? model)
+  (cond  [(and (equal? event "drag")
+               (between? x 1027 1236)
+               (between? y 900 935)
+               )
+          (struct-copy system model
+                       [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                           (system-player-turn model)))
+                                                    (- x 1027)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )]
+                       [debug "Workin"]
+                       [territory-selected (tooltip x y model)]
+                       [x x]
+                       [y y] 
+                       )]         
+         [(move-on-to-attack? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
          (struct-copy system model
                       [turn-stage "attack"]
@@ -2352,7 +2378,21 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                          )
                         (system-player-turn model)
                         )
-                ;IMPLEMENT SLIDER STUFF BOOKMARK
+                ;IMPLEMENT SLIDER STUFF [Implemented]
+                (struct-copy system model
+                             [territory-list (territory-update +
+                                                               (slider-armies (system-slider-store model))
+                                                               (system-territory-selected model)
+                                                               (system-territory-list model)
+                                                               (territory-owner (territory-scan (system-territory-selected model)
+                                                                                                (system-territory-list model))))]
+                             [playerlist (player-update-armies (system-playerlist model)
+                                                               -
+                                                               (slider-armies (system-slider-store model))
+                                                               (system-player-turn model))]
+                             [x x]
+                             [y y])
+                             
                 ]
                ;If the territory is not owned by the user, then the model is updated with default attributes.
                [else (struct-copy system model
@@ -2362,6 +2402,12 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   )]
                )]
          [else (struct-copy system model
+                            [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                           (system-player-turn model)))
+                                                    (- x 1027)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )]
                             [territory-selected (tooltip x y model)]
                             [x x]
                             [y y]
@@ -2369,20 +2415,39 @@ Territory-selected and x + y coordinates must be updated in each clause.
          )
 )
 
-(define (between? query min max)
-  (and
-   (< query max)
-   (> query min)
-   )
+;Attack Phase
+#|
+
+Time to get to the good stuff.
+
+The attack phase and fortification phase are unique in that they require the system to keep track of two
+selected territories, which may get a little complicated.
+
+Events that occur in the attack phase:
+- The player wins the game by defeating all the other players in the game (no one has armies left).
+- The player rolls dice to attack the player.
+- The player chooses a territory to attack from and to attack.
+
+Attack Phase must check for win conditions first, then move on to fortify conditions.
+
+The win conditions are simple: no other players have armies left. |#
+
+;won-game?: list(player-list) -> boolean
+;Checks to see if all other players have no armies remaining.
+(define (won-game? p-list playerpos)
+  (cond [(empty? p-list) true]
+        [(equal? (player-reserved-armies (first p-list))
+                 0)]
+        [else false]
+        )
   )
 
-;ATTACK PHASE
+#|
+We shoulda defined this sucker long ago:
+|#
 
-;can-attack?: Checks to see if the player can attack a selected territory by being next to it
-;
-;(define (can-attack? attacking target)
-  ;(if (equal?
-      ; (
+(define (select-t-scan model)
+  (territory-scan (system-territory-selected model) (system-territory-list model)))
 
 (define (attack-phase model x y event)
   (cond [(and
@@ -2390,11 +2455,53 @@ Territory-selected and x + y coordinates must be updated in each clause.
           (between? x 1027 1236)
           (between? y 911 923))
          (struct-copy system model
-                      [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                      [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
+                                                   (player-reserved-armies (select-player (system-playerlist model)
                                                                                           (system-player-turn model)))
                                                    (- x 1027)
-                                                   0) ]
-                      [debug "Workin"])]
+                                                   0
+                                                   (slider-armies (system-slider-store model))
+                                                   ) ]
+                      [debug "Workin"]
+                      )]
+        [(and (equal? event "button-down")
+              (not (equal? (system-territory-selected model) "null"))
+              (equal? player-pos (territory-owner (select-t-scan model))) 
+              )
+         (struct-copy system model
+                      [territory-selected (tooltip x y model)]
+                      [x x]
+                      [y y]
+                      [territory-attacked "primed"]
+                      [slider-store (create-slider (- (territory-armies (select-t-scan model))
+                                                           ;This signifies that it is one less than the territory's armies
+                                                           1)
+                                                    (- x 1027)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )])]
+        [(and (equal? event "button-down")
+              (equal? (system-territory-attacked model) "primed")
+              ;We will eventually need to check if we border the territory
+              (not (equal? (system-territory-selected model) "null"))
+              (not (equal? player-pos (territory-owner (select-t-scan model)))))
+         ;Actual attack
+         ;What has to happen:
+         ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
+         ;J:Dice are rolled, win loss stacked up <- This is what goes in this clause
+         ;P:Attacker chooses how many troops move on
+         ;P:Process can repeat, attacked-territory needs to be made null again.
+
+         ;NOTE FOR JOSH: The number of armies a player has chosen is invoked like so:
+         ; (slider-armies (system-slider-store model) -> Number (armies selected by slider)
+
+             ;Dice functions, update armies, etc.
+
+         ]
+
+        ;'Move on to fortfiy' clause
+         
+         
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
@@ -2402,6 +2509,21 @@ Territory-selected and x + y coordinates must be updated in each clause.
                            )]
         )
   )
+
+
+
+
+
+;KEY HANDLER
+;Stop the game using the escape key at anytime.
+(define (key-handler model key)
+  (cond [(equal? key "escape")
+         (stop-with model)]
+        [else model]
+        )
+  )
+
+
   
   
 ;Animation includes a mouse and draw handler, as well as an initial system model.
@@ -2412,7 +2534,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
            0
            ;Initial phase is init-recruit, changes upon completion of phases
            ;Can be changed for debugging purposes.
-           "attack"
+           "init-recruit"
            ;First screen displayed is splash, changes upon events in-game
            "splash"
            ;Initial die list is one of random rolled dice.
@@ -2440,13 +2562,17 @@ Territory-selected and x + y coordinates must be updated in each clause.
            0
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
+           ;There are no armies attacking, initially
+           0
            ;Slider used in attributing armies
-           (create-slider 100 0 0)
+           (create-slider 100 0 0 0)
            )
           ;Draw Handler
           (to-draw render 1250 1200)
           ;Mouse Handler
           (on-mouse mouse-handler)
+          ;Key Handler
+          (on-key key-handler)
           )
 
 (test)
