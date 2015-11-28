@@ -1,7 +1,10 @@
 #lang racket
 (require picturing-programs)
 (require "graph.rkt")
-(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON)
+(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON SLIDER-WARN)
+
+;PLS PASTE  HERE pl0X: textc at line 142 in riskFunctions.rkt
+
 
 (define DICE-ICO (bitmap "imgs/diceico.png"))
 (define CARD-ICO (bitmap "imgs/cardico.png"))
@@ -65,5 +68,11 @@
    (shadow-circle 50)
    )
   )
+
+(define SLIDER-WARN
+  (overlay
+   (textc "Make sure to select your armies with the slider before attacking!" 16 "black")
+   (rectangle 375 75 "solid" "green")))
+;Color will change
 
    
