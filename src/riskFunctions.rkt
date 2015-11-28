@@ -2002,11 +2002,9 @@ We shoulda defined this sucker long ago:
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
-<<<<<<< HEAD
+
                       [territory-attacked (system-territory-attacked model)]
-=======
-                      [territory-attacked (system-territory-selected model)]
->>>>>>> 74797b3046485eb981b9b8df63b151400947b65d
+
                       )]
          ;Actual attack
          ;What has to happen:

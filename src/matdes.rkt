@@ -82,7 +82,7 @@
 
 (define SLIDER-WARN
   (overlay
-   (textc "Make sure to select your armies with the slider before attacking!" 16 "black")
+   (textc "Make sure to select your armies with the slider before attacking!" 12 "black")
    (rectangle 375 75 "solid" "green")))
 ;Color will change
 
