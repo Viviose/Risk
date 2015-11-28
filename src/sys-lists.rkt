@@ -356,13 +356,13 @@
                                     "Iceland"
                                     )
               )
-   (territory "Northwest Territory" 5 5 (list "Alaska"
+   (territory "Northwest Territory" 5 1 (list "Alaska"
                                               "Alberta"
                                               "Ontario"
                                               "Greenland"
                                               )
               )
-   (territory "Ontario" 2 1 (list "Greenland"
+   (territory "Ontario" 2 2 (list "Greenland"
                                   "Quebec"
                                   "Northwest Territory"
                                   "Alberta"
@@ -370,7 +370,7 @@
                                   "Eastern United States"
                                   )
               )
-   (territory "Quebec" 1 4 (list "Greenland"
+   (territory "Quebec" 1 3 (list "Greenland"
                                  "Ontario"
                                  "Eastern United States"
                                  )
@@ -382,57 +382,57 @@
                                                  )
               )
    ;South America
-   (territory "Argentina" 0 "null" (list "Brazil"
+   (territory "Argentina" 0 0 (list "Brazil"
                                          "Peru"
                                          )
               )
-   (territory "Brazil" 0 "null" (list "Peru"
+   (territory "Brazil" 0 1 (list "Peru"
                                       "Venezuela"
                                       "Argentina"
                                       "North Africa"
                                       )
               )
-   (territory "Peru" 0 "null" (list "Argentina"
+   (territory "Peru" 0 2 (list "Argentina"
                                     "Venezuela"
                                     "Brazil"
                                     )
               )
-   (territory "Venezuela" 0 "null" (list "Brazil"
+   (territory "Venezuela" 0 3 (list "Brazil"
                                          "Peru"
                                          "Central America"
                                          )
               )
    ;Europe
-   (territory "Great Britain" 0 "null" (list "Iceland"
+   (territory "Great Britain" 0 4 (list "Iceland"
                                              "Western Europe"
                                              "Scandinavia"
                                              "Northern Europe"
                                              )
               )
-   (territory "Iceland" 0 "null" (list "Greenland"
+   (territory "Iceland" 0 0 (list "Greenland"
                                        "Great Britain"
                                        "Scandinavia"
                                        )
               )
-   (territory "Northern Europe" 0 "null" (list "Great Britain"
+   (territory "Northern Europe" 0 1 (list "Great Britain"
                                                "Western Europe"
                                                "Southern Europe"
                                                "Ukraine"
                                                )
               )
-   (territory "Scandinavia" 0 "null" (list "Iceland"
+   (territory "Scandinavia" 0 2 (list "Iceland"
                                            "Great Britain"
                                            "Ukraine"
                                            )
               )
-   (territory "Southern Europe" 0 "null" (list "Northern Europe"
+   (territory "Southern Europe" 0  3 (list "Northern Europe"
                                                "Western Europe"
                                                "North Africa"
                                                "Egypt"
                                                "Middle East"
                                                )
               )
-   (territory "Ukraine" 0 "null" (list "Northern Europe"
+   (territory "Ukraine" 0 4 (list "Northern Europe"
                                        "Scandinavia"
                                        "Southern Europe"
                                        "Ural"
@@ -440,56 +440,56 @@
                                        "Middle East"
                                        )
               )
-   (territory "Western Europe" 0 "null" (list "North Africa"
+   (territory "Western Europe" 0 0 (list "North Africa"
                                               "Great Britain"
                                               "Northern Europe"
                                               "Southern Europe"
                                               )
               )
    ;Africa
-   (territory "Congo" 0 "null" (list "North Africa"
+   (territory "Congo" 0 1 (list "North Africa"
                                      "East Africa"
                                      "South Africa"
                                      )
               )
-   (territory "East Africa" 0 "null" (list "Egypt"
+   (territory "East Africa" 0 2 (list "Egypt"
                                            "Congo"
                                            "South Africa"
                                            "Madagascar"
                                            "North Africa"
                                            )
               )
-   (territory "Egypt" 0 "null" (list "Southern Europe"
+   (territory "Egypt" 0 3 (list "Southern Europe"
                                      "Middle East"
                                      "North Africa"
                                      "East Africa"
                                      )
               )
-   (territory "Madagascar" 0 "null" (list "East Africa"
+   (territory "Madagascar" 0 4 (list "East Africa"
                                           "South Africa"
                                           )
               )
-   (territory "North Africa" 0 "null" (list "Brazil"
+   (territory "North Africa" 0 0 (list "Brazil"
                                             "Egypt"
                                             "Western Europe"
                                             "Congo"
                                             "East Africa"
                                             )
               )
-   (territory "South Africa" 0 "null" (list "Madagascar"
+   (territory "South Africa" 0 1 (list "Madagascar"
                                             "Congo"
                                             "East Africa"
                                             )
               )
    ;Asia
-   (territory "Afghanistan" 1 1 (list "Middle East"
+   (territory "Afghanistan" 1 2 (list "Middle East"
                                       "India"
                                       "China"
                                       "Ural"
                                       "Ukraine"
                                       )
               )
-   (territory "China" 1 1 (list "India"
+   (territory "China" 1 3 (list "India"
                                 "Siam"
                                 "Afghanistan"
                                 "Mongolia"
@@ -497,13 +497,13 @@
                                 "Ural"
                                 )
               )
-   (territory "India" 1 1 (list "Siam"
+   (territory "India" 1 4 (list "Siam"
                                 "Middle East"
                                 "Afghanistan"
                                 "China"
                                 )
               )
-   (territory "Irkutsk" 1 1 (list "Yakutsk"
+   (territory "Irkutsk" 1 0 (list "Yakutsk"
                                   "Kamchatka"
                                   "Siberia"
                                   "Mongolia"
@@ -513,27 +513,27 @@
                                 "Kamchatka"
                                 )
               )
-   (territory "Kamchatka" 1 1 (list "Yakutsk"
+   (territory "Kamchatka" 1 2 (list "Yakutsk"
                                     "Alaska"
                                     "Irkutsk"
                                     "Mongolia"
                                     )
               ) 
-   (territory "Middle East" 1 1 (list "Egypt"
+   (territory "Middle East" 1 3 (list "Egypt"
                                       "India"
                                       "Afghanistan"
                                       "Ukraine"
                                       "Southern Europe"
                                       )
               )
-   (territory "Mongolia" 1 1 (list "China"
+   (territory "Mongolia" 1 4 (list "China"
                                    "Japan"
                                    "Irkutsk"
                                    "Kamchatka"
                                    "Siberia"
                                    )
               )
-   (territory "Siam" 1 1 (list "Indonesia"
+   (territory "Siam" 1 0 (list "Indonesia"
                                "China"
                                "India"
                                )
@@ -545,33 +545,33 @@
                                   "Yakutsk"
                                   )
               )
-   (territory "Ural" 1 1 (list "Ukraine"
+   (territory "Ural" 1 2 (list "Ukraine"
                                "Afghanistan"
                                "Siberia"
                                "China"
                                )
               )
-   (territory "Yakutsk" 1 1 (list "Siberia"
+   (territory "Yakutsk" 1 3 (list "Siberia"
                                   "Irkutsk"
                                   "Kamchatka"
                                   )
               )
    ;Australia
-   (territory "Eastern Australia" 0 "null" (list "Western Australia"
+   (territory "Eastern Australia" 0 4 (list "Western Australia"
                                                  "New Guinea"
                                                  )
               )
-   (territory "Indonesia" 0 "null" (list "Western Australia"
+   (territory "Indonesia" 0 0 (list "Western Australia"
                                          "New Guinea"
                                          "Siam"
                                          )
               )
-   (territory "New Guinea" 0 "null" (list "Eastern Australia"
+   (territory "New Guinea" 0 1 (list "Eastern Australia"
                                           "Western Australia"
                                           "Indonesia"
                                           )
               )
-   (territory "Western Australia" 0 "null" (list "Eastern Australia"
+   (territory "Western Australia" 0 2 (list "Eastern Australia"
                                                  "Indonesia"
                                                  "New Guinea"
                                                  )
