@@ -110,7 +110,7 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked armies-attacking slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacking territory-attacked armies-attacking slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -1987,6 +1987,7 @@ We shoulda defined this sucker long ago:
                       ;[territory-selected (tooltip x y model)]
                       [x x]
                       [y y]
+                      [screen "slider_warning"]
                       [territory-attacked "primed"]
                       [slider-store (create-slider (- (territory-armies (select-t-scan model))
                                                       ;This signifies that it is one less than the territory's armies
