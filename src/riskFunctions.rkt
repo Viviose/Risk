@@ -2562,11 +2562,13 @@ We shoulda defined this sucker long ago:
                                                    )]
                       )]
         [(and (equal? event "button-down")
-              
               (equal? (system-territory-attacked model) "primed")
               (not (equal? (system-territory-selected model) "null"))
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
+         (struct-copy system model
+                      [territory-attacked (territory-attacked model)]
+                      )]
          ;Actual attack
          ;What has to happen:
          ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
@@ -2579,11 +2581,10 @@ We shoulda defined this sucker long ago:
 
              ;Dice functions, update armies, etc.
 
+
          ]
         [(and (not (equal? (system-territory-attacked model) "null"))
               (not (equal? (
-              
-              
 
         ;'Move on to fortify' clause 
          
