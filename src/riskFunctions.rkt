@@ -143,20 +143,6 @@ Redefinition of these structs here can crash the program, and as thus they shoul
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
 
-;The custom roboto fonted text function:
-;textc: Prints a text image with the defined font below
-;String (text to disp.) Number (height of text) String/Color (color of text) -> Image (text)
-(define (textc string size color)
-  (text/font string
-             size
-             color
-             "Roboto Light"
-             'default
-             'normal
-             'normal
-             #f)
-  )
-
 ;The number of armies per player
 ;Number -> Number
 (define (army-count players)

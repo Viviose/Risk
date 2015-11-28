@@ -1,14 +1,25 @@
 #lang racket
 (require picturing-programs)
 (require "graph.rkt")
-(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON SLIDER-WARN)
-
-;PLS PASTE  HERE pl0X: textc at line 142 in riskFunctions.rkt
-
+(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON SLIDER-WARN textc)
 
 (define DICE-ICO (bitmap "imgs/diceico.png"))
 (define CARD-ICO (bitmap "imgs/cardico.png"))
 (define SUBMIT-ICO (bitmap "imgs/submitico.png"))
+
+;The custom roboto fonted text function:
+;textc: Prints a text image with the defined font below
+;String (text to disp.) Number (height of text) String/Color (color of text) -> Image (text)
+(define (textc string size color)
+  (text/font string
+             size
+             color
+             "Roboto Light"
+             'default
+             'normal
+             'normal
+             #f)
+  )
 
 (define (r x y)
   128)
