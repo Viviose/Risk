@@ -1981,6 +1981,7 @@ We shoulda defined this sucker long ago:
                       )]
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
+              (equal? (system-territory-attacked model) "null")
               (equal? player-pos (territory-owner (select-t-scan model))) 
               )
          (struct-copy system model
