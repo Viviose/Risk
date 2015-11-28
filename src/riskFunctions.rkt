@@ -472,8 +472,12 @@ SAMPLE IMPLEMENTATION!
           [else (textc (system-debug model) 16 "black")])
     (square 75 "solid" (turncolor model))
     )
-   DICE-BUTTON
-   (die-bar (system-dicelist model))
+   ;No more dice button! Woohoo!
+   (cond [(equal? (system-screen model) "slider_warning" )
+          SLIDER-WARN
+          ]
+         [else (die-bar (system-dicelist model))]
+         )
    (overlay
     (textc (cond [(equal? (system-turn-stage model) "recruit")
                  "Recruit"]
@@ -2012,7 +2016,11 @@ We shoulda defined this sucker long ago:
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
+<<<<<<< HEAD
                       [territory-attacked (system-territory-attacked model)]
+=======
+                      [territory-attacked (system-territory-selected model)]
+>>>>>>> 74797b3046485eb981b9b8df63b151400947b65d
                       )]
          ;Actual attack
          ;What has to happen:
@@ -2093,6 +2101,8 @@ We shoulda defined this sucker long ago:
            INITIAL-CARD-LIST
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
+           ;Attacking territory is null too
+           "null"
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
            ;There are no armies attacking, initially
