@@ -2570,9 +2570,9 @@ We shoulda defined this sucker long ago:
 (define (key-handler model key)
   (cond [(equal? key "escape")
          (stop-with model)]
-        [(equal? key "d")
-         (struct-copy system model
-                      [
+        #|[(equal? key "d")
+         (struct-copy system model|#
+                      
         [else model]
         )
   )
