@@ -2567,7 +2567,7 @@ We shoulda defined this sucker long ago:
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
-                      [territory-attacked (territory-attacked model)]
+                      [territory-attacked (territory-selected model)]
                       )]
          ;Actual attack
          ;What has to happen:
@@ -2579,12 +2579,21 @@ We shoulda defined this sucker long ago:
          ;NOTE FOR JOSH: The number of armies a player has chosen is invoked like so:
          ; (slider-armies (system-slider-store model) -> Number (armies selected by slider)
 
-             ;Dice functions, update armies, etc.
 
 
-         ]
+         
+;Potential bug/exploit
         [(and (not (equal? (system-territory-attacked model) "null"))
-              (not (equal? (
+              (not (equal? (system-territory-attacked model) "primed"))
+
+              ;Do stuff here, like with dice functs, updating armies, all that jazz
+
+
+              ;Do not forget at the end we need to set attacking and attacked both back to null.
+
+              )
+         ]
+              
 
         ;'Move on to fortify' clause 
          
