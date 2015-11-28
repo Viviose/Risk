@@ -12,10 +12,7 @@
 
 ;__________________________________________________________________________________________________________________
 
-(define-struct die (number type)
-  ;Transparent instance call was added by Josh Sanch on 5/14/15
-  ;Didn't know if you left it out by mistake or planned on adding it later, so I left this comment for you in case you wanted to keep it opaque.
-  #:transparent)
+(define-struct die (number type) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
 
