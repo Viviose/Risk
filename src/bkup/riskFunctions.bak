@@ -109,12 +109,12 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked armies-attacking slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacking territory-attacked armies-attacking slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
 ;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (territories-owned reserved-armies status pos)
+(define-struct player (reserved-armies status pos)
   #:transparent) 
 
 ;Card struct (Holds the information for each card)
@@ -407,256 +407,256 @@ Provided by matdes.rkt:
 
 (define DEBUG-TERRITORY-LIST
   (list 
-                                ;North America
-                                (territory "Alaska" 1 0 (list "Northwest Territory"
-                                                                   "Alberta"
-                                                                   "Kamchatka")
-                                           )
-                                (territory "Alberta" 4  1 (list "Ontario"
-                                                                   "Northwest Territory"
-                                                                   "Western United States"
-                                                                   "Alaska")
-                                           )
-                                (territory "Central America" 2 2 (list "Venezuela"
-                                                                            "Eastern United States"
-                                                                            "Western United States"
-                                                                            )
-                                           )
-                                (territory "Eastern United States" 3 3 (list "Western United States"
-                                                                                  "Ontario"
-                                                                                  "Quebec"
-                                                                                  "Central America"
-                                                                                  )
-                                           )
-                                (territory "Greenland" 4 4 (list "Northwest Territory"
-                                                                      "Ontario"
-                                                                      "Quebec"
-                                                                      "Iceland"
-                                                                      )
-                                           )
-                                (territory "Northwest Territory" 5 5 (list "Alaska"
-                                                                                "Alberta"
-                                                                                "Ontario"
-                                                                                "Greenland"
-                                                                                )
-                                           )
-                                (territory "Ontario" 2 1 (list "Greenland"
-                                                                    "Quebec"
-                                                                    "Northwest Territory"
-                                                                    "Alberta"
-                                                                    "Western United States"
-                                                                    "Eastern United States"
-                                                                    )
-                                           )
-                                (territory "Quebec" 1 4 (list "Greenland"
-                                                                   "Ontario"
-                                                                   "Eastern United States"
-                                                                   )
-                                           )
-                                (territory "Western United States" 11 4 (list "Alberta"
-                                                                                  "Eastern United States"
-                                                                                  "Central America"
-                                                                                  "Ontario"
-                                                                                  )
-                                           )
-                                ;South America
-                                (territory "Argentina" 0 "null" (list "Brazil"
-                                                                      "Peru"
-                                                                      )
-                                           )
-                                (territory "Brazil" 0 "null" (list "Peru"
-                                                                   "Venezuela"
-                                                                   "Argentina"
-                                                                   "North Africa"
-                                                                   )
-                                           )
-                                (territory "Peru" 0 "null" (list "Argentina"
-                                                                 "Venezuela"
-                                                                 "Brazil"
-                                                                 )
-                                           )
-                                (territory "Venezuela" 0 "null" (list "Brazil"
-                                                                      "Peru"
-                                                                      "Central America"
-                                                                      )
-                                           )
-                                ;Europe
-                                (territory "Great Britain" 0 "null" (list "Iceland"
-                                                                          "Western Europe"
-                                                                          "Scandinavia"
-                                                                          "Northern Europe"
-                                                                          )
-                                           )
-                                (territory "Iceland" 0 "null" (list "Greenland"
-                                                                    "Great Britain"
-                                                                    "Scandinavia"
-                                                                    )
-                                           )
-                                (territory "Northern Europe" 0 "null" (list "Great Britain"
-                                                                            "Western Europe"
-                                                                            "Southern Europe"
-                                                                            "Ukraine"
-                                                                            )
+   ;North America
+   (territory "Alaska" 1 0 (list "Northwest Territory"
+                                 "Alberta"
+                                 "Kamchatka")
+              )
+   (territory "Alberta" 4  1 (list "Ontario"
+                                   "Northwest Territory"
+                                   "Western United States"
+                                   "Alaska")
+              )
+   (territory "Central America" 2 2 (list "Venezuela"
+                                          "Eastern United States"
+                                          "Western United States"
                                           )
-                                (territory "Scandinavia" 0 "null" (list "Iceland"
-                                                                        "Great Britain"
-                                                                        "Ukraine"
-                                                                        )
+              )
+   (territory "Eastern United States" 3 3 (list "Western United States"
+                                                "Ontario"
+                                                "Quebec"
+                                                "Central America"
+                                                )
+              )
+   (territory "Greenland" 4 4 (list "Northwest Territory"
+                                    "Ontario"
+                                    "Quebec"
+                                    "Iceland"
+                                    )
+              )
+   (territory "Northwest Territory" 5 5 (list "Alaska"
+                                              "Alberta"
+                                              "Ontario"
+                                              "Greenland"
+                                              )
+              )
+   (territory "Ontario" 2 1 (list "Greenland"
+                                  "Quebec"
+                                  "Northwest Territory"
+                                  "Alberta"
+                                  "Western United States"
+                                  "Eastern United States"
+                                  )
+              )
+   (territory "Quebec" 1 4 (list "Greenland"
+                                 "Ontario"
+                                 "Eastern United States"
+                                 )
+              )
+   (territory "Western United States" 11 4 (list "Alberta"
+                                                 "Eastern United States"
+                                                 "Central America"
+                                                 "Ontario"
+                                                 )
+              )
+   ;South America
+   (territory "Argentina" 0 "null" (list "Brazil"
+                                         "Peru"
+                                         )
+              )
+   (territory "Brazil" 0 "null" (list "Peru"
+                                      "Venezuela"
+                                      "Argentina"
+                                      "North Africa"
+                                      )
+              )
+   (territory "Peru" 0 "null" (list "Argentina"
+                                    "Venezuela"
+                                    "Brazil"
+                                    )
+              )
+   (territory "Venezuela" 0 "null" (list "Brazil"
+                                         "Peru"
+                                         "Central America"
+                                         )
+              )
+   ;Europe
+   (territory "Great Britain" 0 "null" (list "Iceland"
+                                             "Western Europe"
+                                             "Scandinavia"
+                                             "Northern Europe"
+                                             )
+              )
+   (territory "Iceland" 0 "null" (list "Greenland"
+                                       "Great Britain"
+                                       "Scandinavia"
+                                       )
+              )
+   (territory "Northern Europe" 0 "null" (list "Great Britain"
+                                               "Western Europe"
+                                               "Southern Europe"
+                                               "Ukraine"
+                                               )
+              )
+   (territory "Scandinavia" 0 "null" (list "Iceland"
+                                           "Great Britain"
+                                           "Ukraine"
                                            )
-                                (territory "Southern Europe" 0 "null" (list "Northern Europe"
-                                                                            "Western Europe"
-                                                                            "North Africa"
-                                                                            "Egypt"
-                                                                            "Middle East"
-                                                                            )
+              )
+   (territory "Southern Europe" 0 "null" (list "Northern Europe"
+                                               "Western Europe"
+                                               "North Africa"
+                                               "Egypt"
+                                               "Middle East"
+                                               )
+              )
+   (territory "Ukraine" 0 "null" (list "Northern Europe"
+                                       "Scandinavia"
+                                       "Southern Europe"
+                                       "Ural"
+                                       "Afghanistan"
+                                       "Middle East"
+                                       )
+              )
+   (territory "Western Europe" 0 "null" (list "North Africa"
+                                              "Great Britain"
+                                              "Northern Europe"
+                                              "Southern Europe"
+                                              )
+              )
+   ;Africa
+   (territory "Congo" 0 "null" (list "North Africa"
+                                     "East Africa"
+                                     "South Africa"
+                                     )
+              )
+   (territory "East Africa" 0 "null" (list "Egypt"
+                                           "Congo"
+                                           "South Africa"
+                                           "Madagascar"
+                                           "North Africa"
                                            )
-                                (territory "Ukraine" 0 "null" (list "Northern Europe"
-                                                                    "Scandinavia"
-                                                                    "Southern Europe"
-                                                                    "Ural"
-                                                                    "Afghanistan"
-                                                                    "Middle East"
-                                                                    )
-                                           )
-                                (territory "Western Europe" 0 "null" (list "North Africa"
-                                                                           "Great Britain"
-                                                                           "Northern Europe"
-                                                                           "Southern Europe"
-                                                                           )
-                                           )
-                                ;Africa
-                                (territory "Congo" 0 "null" (list "North Africa"
-                                                                  "East Africa"
-                                                                  "South Africa"
-                                                                  )
-                                           )
-                                (territory "East Africa" 0 "null" (list "Egypt"
-                                                                        "Congo"
-                                                                        "South Africa"
-                                                                        "Madagascar"
-                                                                        "North Africa"
-                                                                        )
-                                           )
-                                (territory "Egypt" 0 "null" (list "Southern Europe"
-                                                                  "Middle East"
-                                                                  "North Africa"
-                                                                  "East Africa"
-                                                                  )
-                                           )
-                                (territory "Madagascar" 0 "null" (list "East Africa"
-                                                                       "South Africa"
-                                                                       )
-                                           )
-                                (territory "North Africa" 0 "null" (list "Brazil"
-                                                                         "Egypt"
-                                                                         "Western Europe"
-                                                                         "Congo"
-                                                                         "East Africa"
-                                                                         )
-                                           )
-                                (territory "South Africa" 0 "null" (list "Madagascar"
-                                                                         "Congo"
-                                                                         "East Africa"
-                                                                         )
-                                           )
-                                ;Asia
-                                (territory "Afghanistan" 1 1 (list "Middle East"
-                                                                        "India"
-                                                                        "China"
-                                                                        "Ural"
-                                                                        "Ukraine"
-                                                                        )
-                                           )
-                                (territory "China" 1 1 (list "India"
-                                                                  "Siam"
-                                                                  "Afghanistan"
-                                                                  "Mongolia"
-                                                                  "Siberia"
-                                                                  "Ural"
-                                                                  )
-                                           )
-                                (territory "India" 1 1 (list "Siam"
-                                                                  "Middle East"
-                                                                  "Afghanistan"
-                                                                  "China"
-                                                                  )
-                                           )
-                                (territory "Irkutsk" 1 1 (list "Yakutsk"
-                                                                    "Kamchatka"
-                                                                    "Siberia"
-                                                                    "Mongolia"
-                                                                    )
-                                           )
-                                (territory "Japan" 1 1 (list "Mongolia"
-                                                                  "Kamchatka"
-                                                                  )
-                                           )
-                                (territory "Kamchatka" 1 1 (list "Yakutsk"
-                                                                      "Alaska"
-                                                                      "Irkutsk"
-                                                                      "Mongolia"
-                                                                      )
-                                           ) 
-                                (territory "Middle East" 1 1 (list "Egypt"
-                                                                        "India"
-                                                                        "Afghanistan"
-                                                                        "Ukraine"
-                                                                        "Southern Europe"
-                                                                        )
-                                           )
-                                (territory "Mongolia" 1 1 (list "China"
-                                                                     "Japan"
-                                                                     "Irkutsk"
-                                                                     "Kamchatka"
-                                                                     "Siberia"
-                                                                     )
-                                           )
-                                (territory "Siam" 1 1 (list "Indonesia"
-                                                                 "China"
-                                                                 "India"
-                                                                 )
-                                           )
-                                (territory "Siberia" 1 1 (list "Ural"
-                                                                    "China"
-                                                                    "Mongolia"
-                                                                    "Irkutsk"
-                                                                    "Yakutsk"
-                                                                    )
-                                           )
-                                (territory "Ural" 1 1 (list "Ukraine"
-                                                                 "Afghanistan"
-                                                                 "Siberia"
-                                                                 "China"
-                                                                 )
-                                           )
-                                (territory "Yakutsk" 1 1 (list "Siberia"
-                                                                    "Irkutsk"
-                                                                    "Kamchatka"
-                                                                    )
-                                           )
-                                ;Australia
-                                (territory "Eastern Australia" 0 "null" (list "Western Australia"
-                                                                              "New Guinea"
-                                                                              )
-                                           )
-                                (territory "Indonesia" 0 "null" (list "Western Australia"
-                                                                      "New Guinea"
-                                                                      "Siam"
-                                                                      )
-                                           )
-                                (territory "New Guinea" 0 "null" (list "Eastern Australia"
-                                                                       "Western Australia"
-                                                                       "Indonesia"
-                                                                       )
-                                           )
-                                (territory "Western Australia" 0 "null" (list "Eastern Australia"
-                                                                              "Indonesia"
-                                                                              "New Guinea"
-                                                                              )
-                                           )
-                                ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 9001 404 '())
+              )
+   (territory "Egypt" 0 "null" (list "Southern Europe"
+                                     "Middle East"
+                                     "North Africa"
+                                     "East Africa"
+                                     )
+              )
+   (territory "Madagascar" 0 "null" (list "East Africa"
+                                          "South Africa"
+                                          )
+              )
+   (territory "North Africa" 0 "null" (list "Brazil"
+                                            "Egypt"
+                                            "Western Europe"
+                                            "Congo"
+                                            "East Africa"
+                                            )
+              )
+   (territory "South Africa" 0 "null" (list "Madagascar"
+                                            "Congo"
+                                            "East Africa"
+                                            )
+              )
+   ;Asia
+   (territory "Afghanistan" 1 1 (list "Middle East"
+                                      "India"
+                                      "China"
+                                      "Ural"
+                                      "Ukraine"
+                                      )
+              )
+   (territory "China" 1 1 (list "India"
+                                "Siam"
+                                "Afghanistan"
+                                "Mongolia"
+                                "Siberia"
+                                "Ural"
                                 )
+              )
+   (territory "India" 1 1 (list "Siam"
+                                "Middle East"
+                                "Afghanistan"
+                                "China"
+                                )
+              )
+   (territory "Irkutsk" 1 1 (list "Yakutsk"
+                                  "Kamchatka"
+                                  "Siberia"
+                                  "Mongolia"
+                                  )
+              )
+   (territory "Japan" 1 1 (list "Mongolia"
+                                "Kamchatka"
+                                )
+              )
+   (territory "Kamchatka" 1 1 (list "Yakutsk"
+                                    "Alaska"
+                                    "Irkutsk"
+                                    "Mongolia"
+                                    )
+              ) 
+   (territory "Middle East" 1 1 (list "Egypt"
+                                      "India"
+                                      "Afghanistan"
+                                      "Ukraine"
+                                      "Southern Europe"
+                                      )
+              )
+   (territory "Mongolia" 1 1 (list "China"
+                                   "Japan"
+                                   "Irkutsk"
+                                   "Kamchatka"
+                                   "Siberia"
+                                   )
+              )
+   (territory "Siam" 1 1 (list "Indonesia"
+                               "China"
+                               "India"
+                               )
+              )
+   (territory "Siberia" 1 1 (list "Ural"
+                                  "China"
+                                  "Mongolia"
+                                  "Irkutsk"
+                                  "Yakutsk"
+                                  )
+              )
+   (territory "Ural" 1 1 (list "Ukraine"
+                               "Afghanistan"
+                               "Siberia"
+                               "China"
+                               )
+              )
+   (territory "Yakutsk" 1 1 (list "Siberia"
+                                  "Irkutsk"
+                                  "Kamchatka"
+                                  )
+              )
+   ;Australia
+   (territory "Eastern Australia" 0 "null" (list "Western Australia"
+                                                 "New Guinea"
+                                                 )
+              )
+   (territory "Indonesia" 0 "null" (list "Western Australia"
+                                         "New Guinea"
+                                         "Siam"
+                                         )
+              )
+   (territory "New Guinea" 0 "null" (list "Eastern Australia"
+                                          "Western Australia"
+                                          "Indonesia"
+                                          )
+              )
+   (territory "Western Australia" 0 "null" (list "Eastern Australia"
+                                                 "Indonesia"
+                                                 "New Guinea"
+                                                 )
+              )
+   ;Null territory: For when territory scanning functions do not have a valid territory.
+   (territory "null" 9001 404 '())
+   )
   )
 
 ;Initial list of all cards and their values in the game.
@@ -1248,9 +1248,9 @@ Max x: 933
                 4]
                [(and (>= x 833) (<= x 933))
                 5]
-               [else null]
+               [else -1]
                )]
-        [else null]
+        [else -1]
         )
   )
          
@@ -1275,9 +1275,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  15 "alive" 0)
-                                                             (make-player (list)  15 "alive" 1)
-                                                             (make-player (list)  15 "alive" 2)
+                                           [playerlist (list (make-player (army-count 3) "alive" 0)
+                                                             (make-player (army-count 3) "alive" 1)
+                                                             (make-player (army-count 3) "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1287,10 +1287,10 @@ Max x: 933
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 4) "alive" 0)
-                                                             (make-player (list)  (army-count 4) "alive" 1)
-                                                             (make-player (list)  (army-count 4) "alive" 2)
-                                                             (make-player (list)  (army-count 4) "alive" 3)
+                                           [playerlist (list (make-player (army-count 4) "alive" 0)
+                                                             (make-player (army-count 4) "alive" 1)
+                                                             (make-player (army-count 4) "alive" 2)
+                                                             (make-player (army-count 4) "alive" 3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1300,11 +1300,11 @@ Max x: 933
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 5) "alive" 0)
-                                                             (make-player (list)  (army-count 5) "alive" 1)
-                                                             (make-player (list)  (army-count 5) "alive" 2)
-                                                             (make-player (list)  (army-count 5) "alive" 3)
-                                                             (make-player (list)  (army-count 5) "alive" 4)
+                                           [playerlist (list (make-player (army-count 5) "alive" 0)
+                                                             (make-player (army-count 5) "alive" 1)
+                                                             (make-player (army-count 5) "alive" 2)
+                                                             (make-player (army-count 5) "alive" 3)
+                                                             (make-player (army-count 5) "alive" 4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1314,12 +1314,12 @@ Max x: 933
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 6) "alive" 0)
-                                                             (make-player (list)  (army-count 6) "alive" 1)
-                                                             (make-player (list)  (army-count 6) "alive" 2)
-                                                             (make-player (list)  (army-count 6) "alive" 3)
-                                                             (make-player (list)  (army-count 6) "alive" 4)
-                                                             (make-player (list)  (army-count 6) "alive" 5)
+                                           [playerlist (list (make-player (army-count 6) "alive" 0)
+                                                             (make-player (army-count 6) "alive" 1)
+                                                             (make-player (army-count 6) "alive" 2)
+                                                             (make-player (army-count 6) "alive" 3)
+                                                             (make-player (army-count 6) "alive" 4)
+                                                             (make-player (army-count 6) "alive" 5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1385,10 +1385,14 @@ Max x: 933
                              [screen "gameplay"]
                              )]
                ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
-               [(and (not (equal? (which-card? x y)))
+               [(and (not (equal? (which-card? x y)
+                                  -1)
+                          )
                      (equal? event "button-down")
                      )
-                (change-card-selected (which-card? x y) model)] 
+                (change-card-selected (which-card? x y)
+                                      model
+                                      )] 
                 
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
                ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
@@ -1562,11 +1566,18 @@ Max x: 933
 ;Number (index) System(model) -> System(updated cardlist)
 
 (define (change-card-selected index model)
-  (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
-                              index
+  ;First clause is catch all for instances in which the player has no cards.
+  (cond [(empty? (cards-owned (system-card-list model)
+                              (system-player-turn model)
                               )
-               [state "active"]
-               )
+                 )
+         model]
+        [else (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
+                                          index
+                                          )
+                           [state "active"]
+                           )]
+        )
   )
 
 ;***Initial Recruitment Phase***
@@ -2056,6 +2067,20 @@ These include:
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
 ;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
 
+;cards-owned: [List card] number(playerpos) -> [List card]
+;Returns the cards owned by a particular player.
+(define (cards-owned card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list))
+                 playerpos
+                 )
+         (cons (first card-list)
+               (cards-owned (rest card-list) playerpos)
+               )]
+        [else (cards-owned (rest card-list) playerpos)]
+        )
+  )
+
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
 (define (num-cards-owned card-list playerpos)
@@ -2335,7 +2360,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
 (define (recruit-phase model x y event)
   (cond  [(and (equal? event "drag")
                (between? x 1027 1236)
-               (between? y 900 935)
+               (between? y 910 935)
                )
           (struct-copy system model
                        [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
@@ -2378,7 +2403,6 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                          )
                         (system-player-turn model)
                         )
-                ;IMPLEMENT SLIDER STUFF [Implemented]
                 (struct-copy system model
                              [territory-list (territory-update +
                                                                (slider-armies (system-slider-store model))
@@ -2391,9 +2415,8 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                                                (slider-armies (system-slider-store model))
                                                                (system-player-turn model))]
                              [x x]
-                             [y y])
-                             
-                ]
+                             [y y]
+                             )]
                ;If the territory is not owned by the user, then the model is updated with default attributes.
                [else (struct-copy system model
                                   [x x]
@@ -2402,12 +2425,14 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   )]
                )]
          [else (struct-copy system model
-                            [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
-                                                                                           (system-player-turn model)))
-                                                    (- x 1027)
-                                                    0
-                                                    (slider-armies (system-slider-store model))
-                                                    )]
+                            ;[slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                             ;                                                              (system-player-turn model)))
+                              ;                      60
+                               ;                     0
+                                ;                    (slider-armies (system-slider-store model))
+                                 ;                   )]
+                            ;(struct-copy slider (system-slider-store model)
+                             ;            [
                             [territory-selected (tooltip x y model)]
                             [x x]
                             [y y]
@@ -2424,7 +2449,7 @@ The attack phase and fortification phase are unique in that they require the sys
 selected territories, which may get a little complicated.
 
 Events that occur in the attack phase:
-- The player wins the game by defeating all the other players in the game (no one has armies left).
+- The player wins the game by defeating all the other players in the game (no one owns anymore territories).
 - The player rolls dice to attack the player.
 - The player chooses a territory to attack from and to attack.
 
@@ -2432,36 +2457,90 @@ Attack Phase must check for win conditions first, then move on to fortify condit
 
 The win conditions are simple: no other players have armies left. |#
 
-;won-game?: list(player-list) -> boolean
+;won-game?: [List territory] [List card] number(playerpos) -> boolean
 ;Checks to see if all other players have no armies remaining.
-(define (won-game? p-list playerpos)
+(define (won-game? t-list p-list playerpos)
   (cond [(empty? p-list) true]
-        [(equal? (player-reserved-armies (first p-list))
-                 0)]
-        [else false]
+        ;This clause is a catch for the current player so that the algorithm doesn't check them.
+        [(equal? (player-pos (first p-list))
+                 playerpos)
+         (won-game? t-list (rest p-list) playerpos)]
+        ;This clause checks to see if players in the list are out of territories (aka if the list is NOT empty, they are still in play).
+        [(not (empty? (territories-owned t-list playerpos)))
+         false]
+        [else (won-game? t-list (rest p-list) playerpos)]
         )
   )
+
 
 #|
 We shoulda defined this sucker long ago:
 |#
 
+;DEFINE CONTRACT AND PURPOSE STATEMENT
 (define (select-t-scan model)
-  (territory-scan (system-territory-selected model) (system-territory-list model)))
+  (territory-scan (system-territory-selected model) (system-territory-list model))
+  )
 
+;territories-owned: [List territory] number(playerpos) -> [List territory]
+;Takes in a list of territories and a player's ID and returns a list of territories owned by that player.
+(define (territories-owned t-list playerpos)
+  (cond [(empty? t-list) '()]
+        [(equal? (territory-owner (first t-list))
+                 playerpos)
+         (cons (first t-list)
+               (territories-owned (rest t-list) playerpos)
+               )]
+        [else (territories-owned (rest t-list) playerpos)]
+        )
+  )
+
+;___
+;bt-helper: [List string] territory -> boolean
+;Checks to see if a territory-name is in a list of strings, true if it is.
+(define (bt-helper str-list territory)
+  (cond [(empty? str-list) false]
+        [(equal? (first str-list)
+                 (territory-name territory)
+                 )
+         true]
+        [else (bt-helper (rest str-list)
+                         territory)]
+        )
+  )
+
+;borders-territory?: territory(home) territory(border) -> [List territory]
+;Takes in a home country and a country to check for bordering and returns if the countries border each other.
+(define (borders-territory? home border)
+  (bt-helper (territory-adjacent-territories home)
+             border
+             )
+  )
+;___
+
+;Attack Phase
 (define (attack-phase model x y event)
-  (cond [(and
-          (equal? event "drag")
-          (between? x 1027 1236)
-          (between? y 911 923))
+  (cond [(won-game? (system-territory-list model)
+                    (system-playerlist model)
+                    (system-player-turn model)
+                    )
+         ;WIN CONDITIONS
+         ;for now...
+         model]
+        [(and (equal? event "drag")
+              (between? x 1027 1236)
+              (between? y 911 923)
+              )
          (struct-copy system model
                       [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
-                                                   (player-reserved-armies (select-player (system-playerlist model)
-                                                                                          (system-player-turn model)))
-                                                   (- x 1027)
-                                                   0
-                                                   (slider-armies (system-slider-store model))
-                                                   ) ]
+                                     (player-reserved-armies (select-player (system-playerlist model)
+                                                                            (system-player-turn model)
+                                                                            )
+                                                             )
+                                     (- x 1027)
+                                     0
+                                     (slider-armies (system-slider-store model))
+                                     )]
                       [debug "Workin"]
                       )]
         [(and (equal? event "button-down")
@@ -2470,21 +2549,26 @@ We shoulda defined this sucker long ago:
               )
          (struct-copy system model
                       [territory-selected (tooltip x y model)]
+                      [territory-attacking (tooltip x y model)]
                       [x x]
                       [y y]
                       [territory-attacked "primed"]
                       [slider-store (create-slider (- (territory-armies (select-t-scan model))
-                                                           ;This signifies that it is one less than the territory's armies
-                                                           1)
-                                                    (- x 1027)
-                                                    0
-                                                    (slider-armies (system-slider-store model))
-                                                    )])]
+                                                      ;This signifies that it is one less than the territory's armies
+                                                      1)
+                                                   (- x 1027)
+                                                   0
+                                                   (slider-armies (system-slider-store model))
+                                                   )]
+                      )]
         [(and (equal? event "button-down")
               (equal? (system-territory-attacked model) "primed")
-              ;We will eventually need to check if we border the territory
               (not (equal? (system-territory-selected model) "null"))
-              (not (equal? player-pos (territory-owner (select-t-scan model)))))
+              (not (equal? player-pos (territory-owner (select-t-scan model))))
+              )
+         (struct-copy system model
+                      [territory-attacked (territory-selected model)]
+                      )]
          ;Actual attack
          ;What has to happen:
          ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
@@ -2495,12 +2579,23 @@ We shoulda defined this sucker long ago:
          ;NOTE FOR JOSH: The number of armies a player has chosen is invoked like so:
          ; (slider-armies (system-slider-store model) -> Number (armies selected by slider)
 
-             ;Dice functions, update armies, etc.
 
-         ]
 
-        ;'Move on to fortfiy' clause
          
+;Potential bug/exploit
+        [(and (not (equal? (system-territory-attacked model) "null"))
+              (not (equal? (system-territory-attacked model) "primed"))
+
+              ;Do stuff here, like with dice functs, updating armies, all that jazz
+
+
+              ;Do not forget at the end we need to set attacking and attacked both back to null.
+
+              )
+         ]
+              
+
+        ;'Move on to fortify' clause 
          
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
@@ -2519,13 +2614,20 @@ We shoulda defined this sucker long ago:
 (define (key-handler model key)
   (cond [(equal? key "escape")
          (stop-with model)]
+        [(equal? key "d")
+         (struct-copy system model
+                      [territory-list DEBUG-TERRITORY-LIST]
+                      [screen "gameplay"]
+                      [turn-stage "recruit"]
+                      [player-turn 0]
+                      )]
         [else model]
-        )
   )
+)
 
 
-  
-  
+
+
 ;Animation includes a mouse and draw handler, as well as an initial system model.
 (big-bang (make-system 
            ;No players at first, updated upon player selection
