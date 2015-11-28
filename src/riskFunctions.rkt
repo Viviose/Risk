@@ -2548,7 +2548,7 @@ We shoulda defined this sucker long ago:
               (equal? player-pos (territory-owner (select-t-scan model))) 
               )
          (struct-copy system model
-                      [territory-selected (tooltip x y model)]
+                      ;[territory-selected (tooltip x y model)]
                       [x x]
                       [y y]
                       [territory-attacked "primed"]
@@ -2561,6 +2561,7 @@ We shoulda defined this sucker long ago:
                                                    )]
                       )]
         [(and (equal? event "button-down")
+              
               (equal? (system-territory-attacked model) "primed")
               (not (equal? (system-territory-selected model) "null"))
               (not (equal? player-pos (territory-owner (select-t-scan model))))
@@ -2578,6 +2579,7 @@ We shoulda defined this sucker long ago:
              ;Dice functions, update armies, etc.
 
          ]
+        [
 
         ;'Move on to fortify' clause 
          
