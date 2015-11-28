@@ -2598,11 +2598,6 @@ We shoulda defined this sucker long ago:
 (define (key-handler model key)
   (cond [(equal? key "escape")
          (stop-with model)]
-<<<<<<< HEAD
-        #|[(equal? key "d")
-         (struct-copy system model|#
-                      
-=======
         [(equal? key "d")
          (struct-copy system model
                       [territory-list DEBUG-TERRITORY-LIST]
@@ -2610,11 +2605,6 @@ We shoulda defined this sucker long ago:
                       [turn-stage "recruit"]
                       [player-turn 0]
                       )]
-<<<<<<< HEAD
->>>>>>> 123f265545513a430f2286bcb924ec1f371927e2
->>>>>>> d6c876f06323c2cf468fa6969cfadb9fef5bf32e
-=======
->>>>>>> 18d96f7e6cd978eb1bda9dbaa1c77e8cf8606d71
         [else model]
   )
 )
