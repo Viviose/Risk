@@ -581,7 +581,10 @@ SAMPLE IMPLEMENTATION!
                         (overlay/align "center" "top"
           PLAYERSCRN
           (empty-scene 1250 1200)))]
-        [(equal? (system-screen model) "gameplay")
+        [(or
+          (equal? (system-screen model) "gameplay")
+          (equal? (system-screen model) "slider_warning")
+          )
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
@@ -635,6 +638,7 @@ SAMPLE IMPLEMENTATION!
             (toolbar model))
           )]
         [else model]
+        ;Nononononono bad bad bad: render cannot return a model, only an image.
         )
   )
 
@@ -1956,13 +1960,15 @@ We shoulda defined this sucker long ago:
 
 ;Attack Phase
 (define (attack-phase model x y event)
-  (cond [(won-game? (system-territory-list model)
-                    (system-playerlist model)
-                    (system-player-turn model)
-                    )
+  (cond
+  ;(cond [(won-game? (system-territory-list model)
+                    ;(system-playerlist model)
+                   ; (system-player-turn model)
+                   ; )
          ;WIN CONDITIONS
          ;for now...
-         model]
+        ; model]
+  ;Disabling the above for debug purposes
         [(and (equal? event "drag")
               (between? x 1027 1236)
               (between? y 911 923)
@@ -1981,15 +1987,17 @@ We shoulda defined this sucker long ago:
                       )]
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
-              (equal? player-pos (territory-owner (select-t-scan model))) 
+              (equal? (system-territory-attacked model) "null")
+              ;(equal? player-pos (territory-owner (select-t-scan model))) 
               )
+         ;Why isn't this clause evaluating to true? FOUND: Issue with player-pos.
          (struct-copy system model
                       ;[territory-selected (tooltip x y model)]
                       [x x]
                       [y y]
                       [screen "slider_warning"]
                       [territory-attacked "primed"]
-                      [slider-store (create-slider (- (territory-armies (select-t-scan model))
+                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-attacking model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
                                                       1)
                                                    (- x 1027)
