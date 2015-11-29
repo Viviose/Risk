@@ -169,6 +169,9 @@ Redefinition of these structs here can crash the program, and as thus they shoul
         )
   )
 
+;SLIDER CONSTANT:
+(define SLIDER-OFFSET 1000)
+
 
 ;SCREEN SECTION: Make screens here
 
@@ -412,12 +415,14 @@ SAMPLE IMPLEMENTATION!
 
 
 (define (calc-armies bar-width max-armies x)
-  (round 
+  (min
+   (round 
    (*
     (/
      x
      bar-width)
-    max-armies)))
+    max-armies))
+   max-armies))
     
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
@@ -1815,13 +1820,13 @@ Territory-selected and x + y coordinates must be updated in each clause.
         
 (define (recruit-phase model x y event)
   (cond  [(and (equal? event "drag")
-               (between? x 1027 1236)
+               (between? x SLIDER-OFFSET 1236)
                (between? y 910 935)
                )
           (struct-copy system model
                        [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
                                                                                            (system-player-turn model)))
-                                                    (- x 1027)
+                                                    (- x SLIDER-OFFSET)
                                                     0
                                                     (slider-armies (system-slider-store model))
                                                     )]
@@ -1986,8 +1991,8 @@ We shoulda defined this sucker long ago:
         ; model]
   ;Disabling the above for debug purposes
         [(and (equal? event "drag")
-              (between? x 1027 1236)
-              (between? y 911 923)
+              (between? x SLIDER-OFFSET 1236)
+              (between? y 800 1000)
               )
          (struct-copy system model
                       [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
@@ -1995,7 +2000,7 @@ We shoulda defined this sucker long ago:
                                                                             (system-player-turn model)
                                                                             )
                                                              )
-                                     (- x 1027)
+                                     (- x SLIDER-OFFSET)
                                      0
                                      (slider-armies (system-slider-store model))
                                      )]
@@ -2004,19 +2009,21 @@ We shoulda defined this sucker long ago:
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               (equal? (system-territory-attacked model) "null")
+              
               ;(equal? player-pos (territory-owner (select-t-scan model))) 
               )
          ;Why isn't this clause evaluating to true? FOUND: Issue with player-pos.
          (struct-copy system model
-                      ;[territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip x y model)]
+                      [territory-attacking (system-territory-selected model)]
                       [x x]
                       [y y]
-                      [screen "slider_warning"]
+                      ;[screen "slider_warning"]
                       [territory-attacked "primed"]
-                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-attacking model) (system-territory-list model)))
+                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
                                                       1)
-                                                   (- x 1027)
+                                                   (- x SLIDER-OFFSET)
                                                    0
                                                    (slider-armies (system-slider-store model))
                                                    )]
@@ -2028,7 +2035,7 @@ We shoulda defined this sucker long ago:
               )
          (struct-copy system model
 
-                      [territory-attacked (system-territory-attacked model)]
+                      [territory-attacked (system-territory-selected model)]
 
                       )]
          ;Actual attack
