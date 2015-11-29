@@ -1990,6 +1990,7 @@ We shoulda defined this sucker long ago:
          ;for now...
         ; model]
   ;Disabling the above for debug purposes
+    ;jash is puu
         [(and (equal? event "drag")
               (between? x SLIDER-OFFSET 1236)
               (between? y 800 1000)
