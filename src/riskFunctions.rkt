@@ -795,7 +795,10 @@ Max x: 933
                                      [x x]
                                      [y y])]
                   )]
-        [(equal? (system-screen model) "gameplay")
+        [(or
+          ;ADD NEW SCREENS HERE: (whenever game is played)
+          (equal? (system-screen model) "gameplay")
+          (equal? (system-screen model) "slider_warning"))
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
          (cond
@@ -2005,7 +2008,8 @@ We shoulda defined this sucker long ago:
                                      (- x SLIDER-OFFSET)
                                      0
                                      (slider-armies (system-slider-store model))
-                                     )]
+                                     )
+                                    ]
                       [debug "Workin"]
                       )]
         [(and (equal? event "button-down")
@@ -2020,7 +2024,7 @@ We shoulda defined this sucker long ago:
                       [territory-attacking (system-territory-selected model)]
                       [x x]
                       [y y]
-                      ;[screen "slider_warning"]
+                      [screen "slider_warning"]
                       [territory-attacked "primed"]
                       [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
