@@ -75,8 +75,8 @@ A sub-module for graphic design purposes that align with Material Design.
 
 Provided by matdes.rkt:
 **Functions**
-;BOOKMARK
-;ADD TEXTC PATRICK
+- textc: String (text) Number (size in pt) String/Color (color)
+    - Creates an image of text with the specifications in the Roboto style.
 - shadow-circle: Number (radius)
     - Builds a gradient shadow in a circular shape.
     - Dependent on color functions in the module.
@@ -2030,7 +2030,9 @@ We shoulda defined this sucker long ago:
                       )]
         [(and (equal? event "button-down")
               (equal? (system-territory-attacked model) "primed")
+              (borders-territory? (territory-scan (system-territory-attacking model) (system-territory-list model)) (select-t-scan model))
               (not (equal? (system-territory-selected model) "null"))
+              ;VVV DOESN'T WORK VVV
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
