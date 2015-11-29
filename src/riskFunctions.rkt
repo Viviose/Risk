@@ -75,6 +75,8 @@ A sub-module for graphic design purposes that align with Material Design.
 
 Provided by matdes.rkt:
 **Functions**
+;BOOKMARK
+;ADD TEXTC PATRICK
 - shadow-circle: Number (radius)
     - Builds a gradient shadow in a circular shape.
     - Dependent on color functions in the module.
@@ -89,6 +91,7 @@ Provided by matdes.rkt:
 
 (require "sys-lists.rkt")
 ;Module that contains all of the list variables necessary for the system, as well as the structs territory and card.
+;Struct definitions can be found in sys-lists.rkt, here in the struct definition portion of the file, or in the project wiki.
 
 (require picturing-programs)
 ;Picturing-Programs library contains all functions necessary for drawing images.
@@ -110,7 +113,20 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacking territory-attacked armies-attacking slider-store)
+(define-struct system (playerlist player-turn
+                                  turn-stage 
+                                  screen 
+                                  dicelist
+                                  territory-selected 
+                                  territory-list 
+                                  debug 
+                                  x y 
+                                  card-list 
+                                  cardsets-redeemed 
+                                  territory-attacking 
+                                  territory-attacked 
+                                  armies-attacking 
+                                  slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
