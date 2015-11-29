@@ -1885,6 +1885,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   [territory-selected (tooltip x y model)]
                                   )]
                )]
+        ;Test (delete this if you want to)
          [else (struct-copy system model
                             ;[slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
                              ;                                                              (system-player-turn model)))
