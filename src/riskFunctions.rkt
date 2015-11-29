@@ -658,7 +658,7 @@ SAMPLE IMPLEMENTATION!
                   [else BOARD])
             (toolbar model))
           )]
-        [else model]
+        [else (error "Well, this is embarassing: render could not detect a valid screen. Contact a developer and yell at them")]
         ;Nononononono bad bad bad: render cannot return a model, only an image.
         )
   )
