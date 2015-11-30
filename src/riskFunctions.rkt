@@ -65,7 +65,8 @@ Provided by graph.rkt:
 - in-ellipse?: number(x1) number(y1) number(x2) number(y2) number(x3) number(y3) number(x) number(y) -> boolean
     - Given the left, right, and top points of an ellipse, as well as a point to compare, checks to see if the point is inside of the given ellipse.
     - Dependencies on calc-angle and distance, both of which are local to sub-module.
-
+- between?: number(query) number(min) number(max) -> boolean
+    - Given a number to compare, and two numbers which represent bounds to compare, returns true if number is in bounds.
 |#
 
 (require "matdes.rkt")
@@ -74,6 +75,8 @@ A sub-module for graphic design purposes that align with Material Design.
 
 Provided by matdes.rkt:
 **Functions**
+- textc: String (text) Number (size in pt) String/Color (color)
+    - Creates an image of text with the specifications in the Roboto style.
 - shadow-circle: Number (radius)
     - Builds a gradient shadow in a circular shape.
     - Dependent on color functions in the module.
@@ -86,7 +89,9 @@ Provided by matdes.rkt:
     - The card button morphs into this button.
 |#
 
-
+(require "sys-lists.rkt")
+;Module that contains all of the list variables necessary for the system, as well as the structs territory and card.
+;Struct definitions can be found in sys-lists.rkt, here in the struct definition portion of the file, or in the project wiki.
 
 (require picturing-programs)
 ;Picturing-Programs library contains all functions necessary for drawing images.
@@ -108,13 +113,31 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked slider-store)
+(define-struct system (playerlist player-turn
+                                  turn-stage 
+                                  screen 
+                                  dicelist
+                                  territory-selected 
+                                  territory-list 
+                                  debug 
+                                  x y 
+                                  card-list 
+                                  cardsets-redeemed 
+                                  territory-attacking 
+                                  territory-attacked 
+                                  armies-attacking 
+                                  slider-store
+                                  roll-state)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
-;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (territories-owned reserved-armies status pos)
+;[Player] :  Number (armies) Number(pos)
+(define-struct player (reserved-armies pos)
   #:transparent) 
+
+#|
+Definition of structs as seen in sys-lists.rkt.
+Redefinition of these structs here can crash the program, and as thus they should be left commented out.
 
 ;Card struct (Holds the information for each card)
 ;[Card]: String(unit-name) String(territory-name) number(card-id) [Maybe number(owner-id)] string(card-state)-> card
@@ -126,335 +149,14 @@ Provided by matdes.rkt:
 (define-struct territory (name armies owner adjacent-territories)
   #:transparent)
 
+|#
+
 (define-struct slider (image armies)
   #:transparent)
 
-(define-struct posn (x y)
-  #:transparent)
 
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
-
-;The custom roboto fonted text function:
-;textc: Prints a text image with the defined font below
-;String (text to disp.) Number (height of text) String/Color (color of text) -> Image (text)
-(define (textc string size color)
-  (text/font string
-             size
-             color
-             "Roboto Light"
-             'default
-             'normal
-             'normal
-             #f)
-  )
-
-;List of all territories
-;[territory]: string(armies) number(armies) string(owner) [List String] -> territory
-(define INITIAL-TERRITORY-LIST (list 
-                                ;North America
-                                (territory "Alaska" 0 "null" (list "Northwest Territory"
-                                                                   "Alberta"
-                                                                   "Kamchatka")
-                                           )
-                                (territory "Alberta" 0 "null"(list "Ontario"
-                                                                   "Northwest Territory"
-                                                                   "Western United States"
-                                                                   "Alaska")
-                                           )
-                                (territory "Central America" 0 "null" (list "Venezuela"
-                                                                            "Eastern United States"
-                                                                            "Western United States"
-                                                                            )
-                                           )
-                                (territory "Eastern United States" 0 "null" (list "Western United States"
-                                                                                  "Ontario"
-                                                                                  "Quebec"
-                                                                                  "Central America"
-                                                                                  )
-                                           )
-                                (territory "Greenland" 0 "null" (list "Northwest Territory"
-                                                                      "Ontario"
-                                                                      "Quebec"
-                                                                      "Iceland"
-                                                                      )
-                                           )
-                                (territory "Northwest Territory" 0 "null" (list "Alaska"
-                                                                                "Alberta"
-                                                                                "Ontario"
-                                                                                "Greenland"
-                                                                                )
-                                           )
-                                (territory "Ontario" 0 "null" (list "Greenland"
-                                                                    "Quebec"
-                                                                    "Northwest Territory"
-                                                                    "Alberta"
-                                                                    "Western United States"
-                                                                    "Eastern United States"
-                                                                    )
-                                           )
-                                (territory "Quebec" 0 "null" (list "Greenland"
-                                                                   "Ontario"
-                                                                   "Eastern United States"
-                                                                   )
-                                           )
-                                (territory "Western United States" 0 "null" (list "Alberta"
-                                                                                  "Eastern United States"
-                                                                                  "Central America"
-                                                                                  "Ontario"
-                                                                                  )
-                                           )
-                                ;South America
-                                (territory "Argentina" 0 "null" (list "Brazil"
-                                                                      "Peru"
-                                                                      )
-                                           )
-                                (territory "Brazil" 0 "null" (list "Peru"
-                                                                   "Venezuela"
-                                                                   "Argentina"
-                                                                   "North Africa"
-                                                                   )
-                                           )
-                                (territory "Peru" 0 "null" (list "Argentina"
-                                                                 "Venezuela"
-                                                                 "Brazil"
-                                                                 )
-                                           )
-                                (territory "Venezuela" 0 "null" (list "Brazil"
-                                                                      "Peru"
-                                                                      "Central America"
-                                                                      )
-                                           )
-                                ;Europe
-                                (territory "Great Britain" 0 "null" (list "Iceland"
-                                                                          "Western Europe"
-                                                                          "Scandinavia"
-                                                                          "Northern Europe"
-                                                                          )
-                                           )
-                                (territory "Iceland" 0 "null" (list "Greenland"
-                                                                    "Great Britain"
-                                                                    "Scandinavia"
-                                                                    )
-                                           )
-                                (territory "Northern Europe" 0 "null" (list "Great Britain"
-                                                                            "Western Europe"
-                                                                            "Southern Europe"
-                                                                            "Ukraine"
-                                                                            )
-                                          )
-                                (territory "Scandinavia" 0 "null" (list "Iceland"
-                                                                        "Great Britain"
-                                                                        "Ukraine"
-                                                                        )
-                                           )
-                                (territory "Southern Europe" 0 "null" (list "Northern Europe"
-                                                                            "Western Europe"
-                                                                            "North Africa"
-                                                                            "Egypt"
-                                                                            "Middle East"
-                                                                            )
-                                           )
-                                (territory "Ukraine" 0 "null" (list "Northern Europe"
-                                                                    "Scandinavia"
-                                                                    "Southern Europe"
-                                                                    "Ural"
-                                                                    "Afghanistan"
-                                                                    "Middle East"
-                                                                    )
-                                           )
-                                (territory "Western Europe" 0 "null" (list "North Africa"
-                                                                           "Great Britain"
-                                                                           "Northern Europe"
-                                                                           "Southern Europe"
-                                                                           )
-                                           )
-                                ;Africa
-                                (territory "Congo" 0 "null" (list "North Africa"
-                                                                  "East Africa"
-                                                                  "South Africa"
-                                                                  )
-                                           )
-                                (territory "East Africa" 0 "null" (list "Egypt"
-                                                                        "Congo"
-                                                                        "South Africa"
-                                                                        "Madagascar"
-                                                                        "North Africa"
-                                                                        )
-                                           )
-                                (territory "Egypt" 0 "null" (list "Southern Europe"
-                                                                  "Middle East"
-                                                                  "North Africa"
-                                                                  "East Africa"
-                                                                  )
-                                           )
-                                (territory "Madagascar" 0 "null" (list "East Africa"
-                                                                       "South Africa"
-                                                                       )
-                                           )
-                                (territory "North Africa" 0 "null" (list "Brazil"
-                                                                         "Egypt"
-                                                                         "Western Europe"
-                                                                         "Congo"
-                                                                         "East Africa"
-                                                                         )
-                                           )
-                                (territory "South Africa" 0 "null" (list "Madagascar"
-                                                                         "Congo"
-                                                                         "East Africa"
-                                                                         )
-                                           )
-                                ;Asia
-                                (territory "Afganistan" 0 "null" (list "Middle East"
-                                                                        "India"
-                                                                        "China"
-                                                                        "Ural"
-                                                                        "Ukraine"
-                                                                        )
-                                           )
-                                (territory "China" 0 "null" (list "India"
-                                                                  "Siam"
-                                                                  "Afghanistan"
-                                                                  "Mongolia"
-                                                                  "Siberia"
-                                                                  "Ural"
-                                                                  )
-                                           )
-                                (territory "India" 0 "null" (list "Siam"
-                                                                  "Middle East"
-                                                                  "Afghanistan"
-                                                                  "China"
-                                                                  )
-                                           )
-                                (territory "Irkutsk" 0 "null" (list "Yakutsk"
-                                                                    "Kamchatka"
-                                                                    "Siberia"
-                                                                    "Mongolia"
-                                                                    )
-                                           )
-                                (territory "Japan" 0 "null" (list "Mongolia"
-                                                                  "Kamchatka"
-                                                                  )
-                                           )
-                                (territory "Kamchatka" 0 "null" (list "Yakutsk"
-                                                                      "Alaska"
-                                                                      "Irkutsk"
-                                                                      "Mongolia"
-                                                                      )
-                                           ) 
-                                (territory "Middle East" 0 "null" (list "Egypt"
-                                                                        "India"
-                                                                        "Afghanistan"
-                                                                        "Ukraine"
-                                                                        "Southern Europe"
-                                                                        )
-                                           )
-                                (territory "Mongolia" 0 "null" (list "China"
-                                                                     "Japan"
-                                                                     "Irkutsk"
-                                                                     "Kamchatka"
-                                                                     "Siberia"
-                                                                     )
-                                           )
-                                (territory "Siam" 0 "null" (list "Indonesia"
-                                                                 "China"
-                                                                 "India"
-                                                                 )
-                                           )
-                                (territory "Siberia" 0 "null" (list "Ural"
-                                                                    "China"
-                                                                    "Mongolia"
-                                                                    "Irkutsk"
-                                                                    "Yakutsk"
-                                                                    )
-                                           )
-                                (territory "Ural" 0 "null" (list "Ukraine"
-                                                                 "Afghanistan"
-                                                                 "Siberia"
-                                                                 "China"
-                                                                 )
-                                           )
-                                (territory "Yakutsk" 0 "null" (list "Siberia"
-                                                                    "Irkutsk"
-                                                                    "Kamchatka"
-                                                                    )
-                                           )
-                                ;Australia
-                                (territory "Eastern Australia" 0 "null" (list "Western Australia"
-                                                                              "New Guinea"
-                                                                              )
-                                           )
-                                (territory "Indonesia" 0 "null" (list "Western Australia"
-                                                                      "New Guinea"
-                                                                      "Siam"
-                                                                      )
-                                           )
-                                (territory "New Guinea" 0 "null" (list "Eastern Australia"
-                                                                       "Western Australia"
-                                                                       "Indonesia"
-                                                                       )
-                                           )
-                                (territory "Western Australia" 0 "null" (list "Eastern Australia"
-                                                                              "Indonesia"
-                                                                              "New Guinea"
-                                                                              )
-                                           )
-                                ;Null territory: For when territory scanning functions do not have a valid territory.
-                                (territory "null" 9001 404 '())
-                                )
-  )
-
-;Initial list of all cards and their values in the game.
-;[Card]: String(unit) String(territory) [Maybe-Number Owner] -> card
-(define INITIAL-CARD-LIST (list
-                           (card "infantry" "Afghanistan" 0 "null" "inactive")
-                           (card "infantry" "Alaska" 1 "null" "inactive")
-                           (card "infantry" "Alberta" 2 "null" "inactive")
-                           (card "infantry" "Argentina" 3 "null" "inactive")
-                           (card "artillery" "Brazil" 4 "null" "inactive")
-                           (card "calvary" "Central America" 5 "null" "inactive")
-                           (card "calvary" "China" 6 "null" "inactive")
-                           (card "calvary" "Congo" 7 "null" "inactive")
-                           (card "artillery" "East Africa" 8 "null" "inactive")
-                           (card "infantry" "Eastern Australia" 9 "null" "inactive")
-                           (card "artillery" "Eastern United States" 10 "null" "inactive")
-                           (card "infantry" "Egypt" 11 "null" "inactive")
-                           (card "calvary" "Great Britain" 12 "null" "inactive")
-                           (card "calvary" "Greenland" 13 "null" "inactive")
-                           (card "infantry" "India" 14 "null" "inactive")
-                           (card "calvary" "Indonesia" 15 "null" "inactive")
-                           (card "infantry" "Irkutsk" 16 "null" "inactive")
-                           (card "infantry" "Japan" 17 "null" "inactive")
-                           (card "calvary" "Kamchatka" 18 "null" "inactive")
-                           (card "infantry" "Madagascar" 19 "null" "inactive")
-                           (card "artillery" "Middle East" 20 "null" "inactive")
-                           (card "artillery" "Mongolia" 21 "null" "inactive")
-                           (card "calvary" "New Guinea" 22 "null" "inactive")
-                           (card "infantry" "North Africa" 23 "null" "inactive")
-                           (card "calvary" "Northern Europe" 24 "null" "inactive")
-                           (card "artillery" "Northwest Territory" 25 "null" "inactive")
-                           (card "calvary" "Ontario" 26 "null" "inactive")
-                           (card "calvary" "Peru" 27 "null" "inactive")
-                           (card "artillery" "Quebec" 28 "null" "inactive")
-                           (card "artillery" "Scandinavia" 29 "null" "inactive")
-                           (card "artillery" "Siam" 30 "null" "inactive")
-                           (card "artillery" "Siberia" 31 "null" "inactive")
-                           (card "artillery" "South Africa" 32 "null" "inactive")
-                           (card "calvary" "Southern Europe" 33 "null" "inactive")
-                           (card "artillery" "Ukraine" 34 "null" "inactive")
-                           (card "calvary" "Ural" 35 "null" "inactive")
-                           (card "artillery" "Venezuela" 36 "null" "inactive")
-                           (card "artillery" "Western Australia" 37 "null" "inactive")
-                           (card "infantry" "Western Europe" 38 "null" "inactive")
-                           (card "infantry" "Western United States" 39 "null" "inactive")
-                           (card "calvary" "Yakutsk" 40 "null" "inactive")
-                           ;Two Wild Cards
-                           (card "wild" "Wild Card 1" 41 "null" "inactive")
-                           (card "wild" "Wild Card 2" 42 "null" "inactive")
-                           )
-  )
-
-
 
 ;The number of armies per player
 ;Number -> Number
@@ -465,6 +167,9 @@ Provided by matdes.rkt:
         [(equal? players 6) 20]
         )
   )
+
+;SLIDER CONSTANT:
+(define SLIDER-OFFSET 1000)
 
 
 ;SCREEN SECTION: Make screens here
@@ -685,46 +390,53 @@ SAMPLE IMPLEMENTATION!
           (on-mouse mousey))
 |#
 
-(define (numberbar armies)
-  (beside
-   (overlay
-    (text "0" 12  "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay 
-    (text (number->string (round (/ armies 4))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string (round (/ armies 2))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string (round (/ (* 3 armies) 4))) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
-   (overlay
-    (text (number->string armies) 12 "black")
-    (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))))
-
+(define (numberbar armies selected)
+  (above
+   
+   (beside
+    (overlay
+     (textc "0" 12  "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay 
+     (textc (number->string (round (/ armies 4))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string (round (/ armies 2))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string (round (/ (* 3 armies) 4))) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0)))
+    (overlay
+     (textc (number->string armies) 12 "black")
+     (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0))))
+   (textc (number->string selected) 16 "black")))
+  
 
 
 (define (calc-armies bar-width max-armies x)
-  (round 
+  (min
+   (round 
    (*
     (/
      x
      bar-width)
-    max-armies)))
+    max-armies))
+   max-armies))
     
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
 ;the number of armies it's on with (slider-armies ...)
-(define (create-slider armies x y)
+(define (create-slider armies x y selected)
   (make-slider
    (above
     (place-image SLIDER-HEAD
                 x
                 y
                 SLIDER-BAR)
-    (numberbar armies))
+    (numberbar armies selected))
     (calc-armies SLIDER-WIDTH armies x)))
+
+;Slider needs a way to check if 
 ;_____________________________________________________________________________________________________
 
 ;This shows a variable number of die on the bar.
@@ -766,8 +478,12 @@ SAMPLE IMPLEMENTATION!
           [else (textc (system-debug model) 16 "black")])
     (square 75 "solid" (turncolor model))
     )
-   DICE-BUTTON
-   (die-bar (system-dicelist model))
+   ;No more dice button! Woohoo!
+   (cond [(equal? (system-screen model) "slider_warning" )
+          SLIDER-WARN
+          ]
+         [else (die-bar (system-dicelist model))]
+         )
    (overlay
     (textc (cond [(equal? (system-turn-stage model) "recruit")
                  "Recruit"]
@@ -808,7 +524,9 @@ SAMPLE IMPLEMENTATION!
           16 "orange")
           
     (rectangle 160 75 "solid" "purple"))
-   (cond [(equal? (system-turn-stage model) "attack") ;Adding more later to this [BOOKMARK] 
+   (cond [(or
+           (equal? (system-turn-stage model) "attack")
+           (equal? (system-turn-stage model) "recruit"));Adding more later to this [BOOKMARK] 
           (slider-image (system-slider-store model))
           ]
           
@@ -883,7 +601,10 @@ SAMPLE IMPLEMENTATION!
                         (overlay/align "center" "top"
           PLAYERSCRN
           (empty-scene 1250 1200)))]
-        [(equal? (system-screen model) "gameplay")
+        [(or
+          (equal? (system-screen model) "gameplay")
+          (equal? (system-screen model) "slider_warning")
+          )
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
@@ -936,7 +657,8 @@ SAMPLE IMPLEMENTATION!
                   [else BOARD])
             (toolbar model))
           )]
-        [else model]
+        [else (error "Well, this is embarassing: render could not detect a valid screen. Contact a developer and yell at them")]
+        ;Nononononono bad bad bad: render cannot return a model, only an image.
         )
   )
 
@@ -975,20 +697,20 @@ Max x: 933
 (define (which-card? x y)
   (cond [(and (>= y 415) (<= y 560))
          (cond [(and (>= x 313) (<= x 413))
-                1]
+                0]
                [(and (>= x 417) (<= x 517))
-                2]
+                1]
                [(and (>= x 521) (<= x 621))
-                3]
+                2]
                [(and (>= x 625) (<= x 725))
-                4]
+                3]
                [(and (>= x 729) (<= x 829))
-                5]
+                4]
                [(and (>= x 833) (<= x 933))
-                6]
-               [else null]
+                5]
+               [else -1]
                )]
-        [else null]
+        [else -1]
         )
   )
          
@@ -1013,9 +735,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 3) "alive" 0)
-                                                             (make-player (list)  (army-count 3) "alive" 1)
-                                                             (make-player (list)  (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (army-count 3) "alive" 0)
+                                                             (make-player (army-count 3) "alive" 1)
+                                                             (make-player (army-count 3) "alive" 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1025,10 +747,10 @@ Max x: 933
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 4) "alive" 0)
-                                                             (make-player (list)  (army-count 4) "alive" 1)
-                                                             (make-player (list)  (army-count 4) "alive" 2)
-                                                             (make-player (list)  (army-count 4) "alive" 3)
+                                           [playerlist (list (make-player (army-count 4)  0)
+                                                             (make-player (army-count 4)  1)
+                                                             (make-player (army-count 4)  2)
+                                                             (make-player (army-count 4)  3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1038,11 +760,11 @@ Max x: 933
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 5) "alive" 0)
-                                                             (make-player (list)  (army-count 5) "alive" 1)
-                                                             (make-player (list)  (army-count 5) "alive" 2)
-                                                             (make-player (list)  (army-count 5) "alive" 3)
-                                                             (make-player (list)  (army-count 5) "alive" 4)
+                                           [playerlist (list (make-player (army-count 5)  0)
+                                                             (make-player (army-count 5)  1)
+                                                             (make-player (army-count 5)  2)
+                                                             (make-player (army-count 5)  3)
+                                                             (make-player (army-count 5)  4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1052,12 +774,12 @@ Max x: 933
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (list)  (army-count 6) "alive" 0)
-                                                             (make-player (list)  (army-count 6) "alive" 1)
-                                                             (make-player (list)  (army-count 6) "alive" 2)
-                                                             (make-player (list)  (army-count 6) "alive" 3)
-                                                             (make-player (list)  (army-count 6) "alive" 4)
-                                                             (make-player (list)  (army-count 6) "alive" 5)
+                                           [playerlist (list (make-player (army-count 6)  0)
+                                                             (make-player (army-count 6)  1)
+                                                             (make-player (army-count 6)  2)
+                                                             (make-player (army-count 6)  3)
+                                                             (make-player (army-count 6)  4)
+                                                             (make-player (army-count 6)  5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1072,7 +794,10 @@ Max x: 933
                                      [x x]
                                      [y y])]
                   )]
-        [(equal? (system-screen model) "gameplay")
+        [(or
+          ;ADD NEW SCREENS HERE: (whenever game is played)
+          (equal? (system-screen model) "gameplay")
+          (equal? (system-screen model) "slider_warning"))
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
          (cond
@@ -1095,7 +820,7 @@ Max x: 933
                                (initial-recruit model x y event)]
                               ;Will work when recruit phase function is created
                               [(equal? (system-turn-stage model) "recruit")
-                               #;(recruit-phase model x y event)]
+                               (recruit-phase model x y event)]
                               ;Will work when attack phase function is created
                                [(equal? (system-turn-stage model) "attack")
                                   ;This will obviously be implemented into the attack function overall later
@@ -1116,31 +841,40 @@ Max x: 933
            )]
         [(equal? (system-screen model) "cards")
          (cond [(and (<= (distance 959 418 x y) 20)
-                  (equal? event "button-down")
-                  )
+                     (equal? event "button-down")
+                     )
                 ;Checks to see if mouse is on X and has clicked it, if so runs next function
                 (struct-copy system model
                              [screen "gameplay"]
                              )]
-               [(and (equal? event "button-down")
-                     (< (distance 923 925 x y) 37.5)
+               ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
+               [(and (not (equal? (which-card? x y)
+                                  -1)
+                          )
+                     (equal? event "button-down")
                      )
-                ;#############################################################################################
-                ;CALL YOUR RETURN CARDS STUFF HERE, OR MOVE IT TO MOUSE HANDLER HELPER FUNCTIONS, YOUR CHOICE!
-                ;#############################################################################################
-                (turn-in-cards model)]
-             ;If not true, then it returns model
-             [else (if (and (equal? event "button-down") (not (equal? (which-card? (system-x model) (system-y model)) null)))
-                 ;do something with that card index below
-                 model
-                 ;Else model
-                 model
-                 )]
-             )]
+                (change-card-selected (which-card? x y)
+                                      model
+                                      )] 
+                
+               ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
+               ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
+               ;The event discriminator will check to see if the button has been clicked.
+               ;The phase discriminator will check to see if the current phase is the recruit phase.
+               ;The system will check if the cards can be turned in AFTER all of these conditions are true, as it is the most specific of the conditions.
+               ;This order optimizes the performance of the function.
+               [(and (< (distance 923 925 x y) 37.5)
+                     (equal? event "button-down")
+                     (equal? (system-turn-stage model) "recruit")
+                     (can-turn-in? model)
+                     )
+                (get-card-bonus model)]
+               ;If not true, then it returns model
+               [else model]
+               )]
         [else model]
         )
   )
-
 
 ;tooltip: a central function to risk that determines what territory is selected given coords
 ;Number (x) Number (y) System (model) -> String (territory selected)
@@ -1171,7 +905,7 @@ Max x: 933
         [(in-ellipse? 802 779 846 694 802 733 x y) "Madagascar"]
         [(in-ellipse? 735 611 808 598 752 523 x y) "East Africa"]
         [(in-ellipse? 754 481 875 430 797 381 x y) "Middle East"]
-        [(in-ellipse? 821 327 928 306 852 261 x y) "Afganistan"]
+        [(in-ellipse? 821 327 928 306 852 261 x y) "Afghanistan"]
         [(in-ellipse? 906 465 995 461 934 371 x y) "India"]
         [(in-ellipse? 934 303 1074 448 1030 348 x y) "China"]
         [(in-ellipse? 986 301 1114 294 1047 258 x y) "Mongolia"]
@@ -1199,7 +933,9 @@ Max x: 933
   (cond [(empty? leest) (error "Territory not found!")]
         [(equal? (territory-name (first leest)) name)
          (first leest)]
-        [else (territory-scan name (rest leest))]))
+        [else (territory-scan name (rest leest))]
+        )
+  )
 
 ;Update-t is for the territory-update function. It just applies the changes
 (define (update-t territory name f armies owner)
@@ -1240,11 +976,12 @@ Max x: 933
     )
   )
 
+
+
 ;Card functions
 
 ;player-card-list: [List card] number(playerpos) -> [List card]
 ;Returns a list containing all the cards that a current player owns, given a list to compare and the pos of player.
-;Used in both front and back-end, but must be defined here for the program to work correctly.
 (define (player-card-list card-list playerpos)
   (cond [(empty? card-list) '()]
         [(equal? (card-owner (first card-list)) playerpos)
@@ -1261,7 +998,9 @@ Max x: 933
   (cond [(empty? leest) (error "Card not found!")]
         [(equal? (card-id (first leest)) id)
          (first leest)]
-        [else (card-scan id (rest leest))]))
+        [else (card-scan id (rest leest))]
+        )
+  )
 
 ;Update-c is for the card-update function. It just applies the changes
 (define (update-c tcard id state owner)
@@ -1274,14 +1013,34 @@ Max x: 933
   )
 
 ;Card-update is for changing aspects of a card based on an id.
-;Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
-  (define (card-update id owner state cardlist)
+;System(model) Number (id) Number (player) String (state) List [Cards] (card-list) -> Updated Cardlist
+  (define (card-update model id owner state cardlist)
   (local
     [(define
        (change-c card)
        (update-c card id state owner))]
-    (map change-c cardlist)
+    (struct-copy system model
+                 [card-list (map change-c cardlist)]
     )
+  )
+)
+
+;Change-card-selected is for changing the state of a player's card to selected based off of an index number.
+;Number (index) System(model) -> System(updated cardlist)
+
+(define (change-card-selected index model)
+  ;First clause is catch all for instances in which the player has no cards.
+  (cond [(empty? (cards-owned (system-card-list model)
+                              (system-player-turn model)
+                              )
+                 )
+         model]
+        [else (struct-copy card (list-ref (player-card-list (system-card-list model) (system-player-turn model))
+                                          index
+                                          )
+                           [state "active"]
+                           )]
+        )
   )
 
 ;***Initial Recruitment Phase***
@@ -1424,15 +1183,18 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                       [turn-stage "recruit"]
                       [player-turn 0]
                       ;Update Player 1's army count to have additional armies based on recruit functions.
-                      [playerlist (update-player-armies (system-playerlist model)
+                      [playerlist (player-update-armies (system-playerlist model)
                                                         +
                                                         (+ (base-armycount model)
-                                                           (continent-bonus-calc model)
+                                                           (continent-bonus-calc 0
+                                                                                 (system-territory-list model)
+                                                                                 )
                                                            )
                                                         0
                                                         )]
                       [x x]
                       [y y]
+                      [territory-selected (tooltip x y model)]
                       )]
         ;This clause checks to see if the current player has any troops to allocate.
         ;If they do not, then play will pass to the next player.
@@ -1443,7 +1205,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                       [territory-selected (tooltip x y model)]
                       [player-turn (turn-update model)]
                       )]
-        ;This clause will check to see if the player is not currrently hovering over a territory.
+        ;This clause will check to see if the player is not currently hovering over a territory.
         ;If they are not (this conditional will return true in this case), then the model will simply be returned with updated default attributes.
         [(equal? (system-territory-selected model) "null")
          (struct-copy system model
@@ -1522,12 +1284,11 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                              [territory-selected (tooltip x y model)]
                              )]
                ;If a territory cannot be claimed or fortified, then the model is updated with default attributes.
-               [else (struct-copy
-                      system model
-                      [x x]
-                      [y y]
-                      [territory-selected (tooltip x y model)]
-                      )]
+               [else (struct-copy system model
+                                  [x x]
+                                  [y y]
+                                  [territory-selected (tooltip x y model)]
+                                  )]
                )]
         ;If none of these cases apply, then the system will be updated with default attributes and initial recruitment will continue.
         [else (struct-copy system model
@@ -1607,6 +1368,11 @@ These include:
        (equal? (territory-owner (territory-scan "Yakutsk" tlist)) playerpos)
        )
   )
+
+(check-expect (owns-asia? 1 DEBUG-TERRITORY-LIST)
+              true)
+(check-expect (owns-asia? 0 DEBUG-TERRITORY-LIST)
+              false)
 
 ;owns-north-america? number(playerpos) [List(system-territory-list) territory] -> boolean
 ;Checks to see if the player of given playerpos owns territories that are contained in the continent of North America.
@@ -1764,12 +1530,26 @@ These include:
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
 ;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
 
+;cards-owned: [List card] number(playerpos) -> [List card]
+;Returns the cards owned by a particular player.
+(define (cards-owned card-list playerpos)
+  (cond [(empty? card-list) '()]
+        [(equal? (card-owner (first card-list))
+                 playerpos
+                 )
+         (cons (first card-list)
+               (cards-owned (rest card-list) playerpos)
+               )]
+        [else (cards-owned (rest card-list) playerpos)]
+        )
+  )
+
 ;num-cards-owned: [List card] number(playerpos) -> number(cards owned by specified player)
 ;Calculates how many cards a player owns given a list of cards and the numerical ID of the player.
 (define (num-cards-owned card-list playerpos)
   (cond [(empty? card-list) 0]
-        [(equal? (card-owner (first card-list)
-                             playerpos)
+        [(equal? (card-owner (first card-list))
+                 playerpos
                  )
          (+ 1
             (num-cards-owned (rest card-list) playerpos)
@@ -1870,25 +1650,40 @@ Players can turn in cards if one of these three cases is true:
 - The player has any 2 cards and a wild card
 - The player owns 3 cards of each unit type.
 - The player owns 3 cards of the same unit type.
+
+The system is being programmed to handle these cases:
+- If the player has a card list of three, the system will automatically select and turn in the three cards.
+- If the player has more than 3 cards, the system will only check the list of those which the player has selected.
+
+This discriminator, however, will always check for active cards, as the system will automatically set card sets of three to active.
 |#
 
 (define (can-turn-in? system)
+  ;Does the player have less than three cards?
   (cond [(< (num-cards-owned (system-card-list system) (system-player-turn system))
             3)
          false]
-        ;After this point, it is known that the user has 3+ cards.
-        ;Second condition checks to see if the player has a wild card in possession, 
-        [(and (has-wild-card? (system-card-list system) (system-player-turn system)) 
-              (has-two-reg-cards? (system-card-list system) (system-player-turn system))
+        ;After this point, it is known that the user has 4+ cards.
+        ;This condition checks to see if the player has a wild card in possession, 
+        [(and (has-wild-card? (active-card-list (system-card-list system))
+                              (system-player-turn system)
+                              ) 
+              (has-two-reg-cards? (active-card-list (system-card-list system))
+                                  (system-player-turn system)
+                                  )
               )
-         true]
+        true]
         ;Player doesn't have a wild card, so now we check for 3 cards of the same type.
-        [(has-three-same-unit? (system-card-list system) (system-player-turn system))
+        [(has-three-same-unit? (active-card-list (system-card-list system))
+                               (system-player-turn system)
+                               )
          true]
         ;They don't have three of the same type, now we check for one of each.
-        [(has-one-of-each-unit? (system-card-list system) (system-player-turn system))
+        [(has-one-of-each-unit? (active-card-list (system-card-list system))
+                                (system-player-turn system)
+                                )
          true]
-        ;They don't meet 
+        ;They don't meet any conditions.
         [else false]
         )
   )
@@ -1900,19 +1695,69 @@ Players can turn in cards if one of these three cases is true:
 ;Takes in a number which states how many card sets have been turned in and returns a number that shows how many troops
 ;the player should receive at that point.
 (define (cards-bonus sets)
-  ;First checks to see if the number of sets turned in is less than five.
-  ;The army result is the output of the function T_n = n + 
-  (cond [(<= sets
-            5)
-         "rip"]
-        [(> sets
-            5)
-         "kek"]
+  ;First set turned in is worth 4 armies.
+  (cond [(equal? sets 0)
+         4]
+        ;Second is 6.
+        [(equal? sets 1)
+         6]
+        ;Third is 8.
+        [(equal? sets 2)
+         8]
+        ;Fourth is 10;
+        [(equal? sets 3)
+        10]
+        ;Fifth is 12
+        [(equal? sets 4)
+         12]
+        ;Sixth is 15.
+        [(equal? sets 5)
+         15]
+        ;Every set after this is 5 more than the number gained by the last set turned in.
+        ;I.E. Seventh = 20, Eighth = 25...
+        [(> sets 5)
+         (+ 5
+            (cards-bonus (- sets 1))
+            )]
+        ;Otherwise, input to function must not be a number. Useful for debugging.
         [else (error "Invalid input.")]
         )
   )
 
-;turn-in-cards: system(model) -> system
+;nullify-card: System Card List[Card] -> System
+;Changes the given card's value to a set of null values.
+(define (nullify-card model card)
+  (card-update (card-id card) "null" "inactive" (system-card-list model)) 
+  )
+
+;Use with active-card-list!
+;turn-in-cards: System(model) [List card](active-cards) -> {no return type}
+;Searches master card list for cards in active list and resets both the active state and owner state to "inactive" and "null", respectively.
+;This function, while not returning anything, will update the cardlist in the given model. (Could be modified to return a model if needed)
+(define (turn-in-cards model active-cards)
+   (local
+     [(define
+        (nullcarder card)
+        (nullify-card model card)
+        )]
+     (for-each nullcarder active-cards)
+     )
+  )
+
+;active-card-list: [List card] -> [List card]
+;Takes in the system card list and returns a list of those which are active.
+(define (active-card-list cardlist)
+  (cond [(empty? cardlist) '()]
+        [(equal? (card-state (first cardlist))
+                 "active")
+         (cons (first cardlist)
+               (active-card-list (rest cardlist))
+               )]
+        [else (active-card-list (rest cardlist))]
+        )
+  )
+
+;get-card-bonus: system(model) -> system
 ;Takes in the system model and returns a system model with the current player's updated card list that removes the cards
 ;that they have turned in by choosing to turn in cards.
 
@@ -1923,8 +1768,20 @@ A few events happen when cards are turned in:
 - The player gains extra troops depending on how many sets have been turned in.
 - The system increments the total set count, which tracks how many card sets have been turned in.
 |#
-(define (turn-in-cards system)
-  "lmao"
+
+(define (get-card-bonus model)
+  (struct-copy system model
+               ;Turn in cards and add troops to player's army reserves
+               [card-list (turn-in-cards model 
+                                         (active-card-list (system-card-list model))
+                                         )]
+               [playerlist (player-update-armies (system-playerlist model) 
+                                                 + (cards-bonus (system-cardsets-redeemed model))
+                                                 (system-player-turn model)
+                                                 )]
+               ;Increment set count
+               [cardsets-redeemed (+ (system-cardsets-redeemed model) 1)]
+               )
   )
 
 ;The Recruit Phase Method
@@ -1952,6 +1809,7 @@ The conditions for adding troops to territories are as follows:
 - The player cannot add more troops than is in their reserves.
 
 Card conditions are mentioned in the comments concerning the "can-turn-in?" discriminator.
+Card functions are executed by the top-level mouse-handler function, and all conditions are checked there.
 
 Events that occur during recruit:
 - The User checks the card-list.
@@ -1959,56 +1817,243 @@ Events that occur during recruit:
 - The User clicks on a territory to add troops.
   - The aforementioned conditions for adding troops to territories now apply.
 
+Territory-selected and x + y coordinates must be updated in each clause.
 |#
         
 (define (recruit-phase model x y event)
-  (cond [(move-on-to-attack? model)
+  (cond  [(and (equal? event "drag")
+               (between? x SLIDER-OFFSET 1236)
+               (between? y 910 935)
+               )
+          (struct-copy system model
+                       [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                                                                                           (system-player-turn model)))
+                                                    (- x SLIDER-OFFSET)
+                                                    0
+                                                    (slider-armies (system-slider-store model))
+                                                    )]
+                       [debug "Workin"]
+                       [territory-selected (tooltip x y model)]
+                       [x x]
+                       [y y] 
+                       )]         
+         [(move-on-to-attack? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
          (struct-copy system model
                       [turn-stage "attack"]
+                      [territory-selected (tooltip x y model)]
                       [x x]
                       [y y]
                       )]
-        ;At this point, the system knows that the player doesn't
-        ;Add more clauses
-        
-        [else (cond [(can-turn-in? model)
-                     ;###Placeholder for algorithm###
-                     model
-                     ]
-                    [else  (struct-copy system model
-                                        [x x]
-                                        [y y]
-                                        )])]
+        ;This clause will check to see if the player is not currently hovering over a territory.
+        ;If they are not (this conditional will return true in this case), then the model will simply be returned with updated default attributes.
+        [(equal? (system-territory-selected model) "null")
+         (struct-copy system model
+                      [x x]
+                      [y y]
+                      [territory-selected (tooltip x y model)]
+                      )]
+        ;This clause checks to see if the player is clicking on a territory and can place troops there.
+        ;If they can, it will implement the slider interface to add troops.
+        [(and (equal? event "button-down")
+              (not (equal? (system-territory-selected model) "null"))
+              )
+         ;This clause checks to see if the player selecting the territory is the owner of that territory 
+         ;If they are, slider functions are implemented to add troops.
+         (cond [(equal? (territory-owner (territory-scan (system-territory-selected model)
+                                                         (system-territory-list model)
+                                                         )
+                                         )
+                        (system-player-turn model)
+                        )
+                (struct-copy system model
+                             [territory-list (territory-update +
+                                                               (slider-armies (system-slider-store model))
+                                                               (system-territory-selected model)
+                                                               (system-territory-list model)
+                                                               (territory-owner (territory-scan (system-territory-selected model)
+                                                                                                (system-territory-list model))))]
+                             [playerlist (player-update-armies (system-playerlist model)
+                                                               -
+                                                               (slider-armies (system-slider-store model))
+                                                               (system-player-turn model))]
+                             [x x]
+                             [y y]
+                             )]
+               ;If the territory is not owned by the user, then the model is updated with default attributes.
+               [else (struct-copy system model
+                                  [x x]
+                                  [y y]
+                                  [territory-selected (tooltip x y model)]
+                                  )]
+               )]
+         [else (struct-copy system model
+                            [territory-selected (tooltip x y model)]
+                            [x x]
+                            [y y]
+                            )]
+         )
+)
+
+;Attack Phase
+#|
+
+Time to get to the good stuff.
+
+The attack phase and fortification phase are unique in that they require the system to keep track of two
+selected territories, which may get a little complicated.
+
+Events that occur in the attack phase:
+- The player wins the game by defeating all the other players in the game (no one owns anymore territories).
+- The player rolls dice to attack the player.
+- The player chooses a territory to attack from and to attack.
+
+Attack Phase must check for win conditions first, then move on to fortify conditions.
+
+The win conditions are simple: no other players have armies left. |#
+
+;won-game?: [List territory] [List card] number(playerpos) -> boolean
+;Checks to see if all other players have no armies remaining.
+(define (won-game? t-list p-list playerpos)
+  (cond [(empty? p-list) true]
+        ;This clause is a catch for the current player so that the algorithm doesn't check them.
+        [(equal? (player-pos (first p-list))
+                 playerpos)
+         (won-game? t-list (rest p-list) playerpos)]
+        ;This clause checks to see if players in the list are out of territories (aka if the list is NOT empty, they are still in play).
+        [(not (empty? (territories-owned t-list playerpos)))
+         false]
+        [else (won-game? t-list (rest p-list) playerpos)]
         )
   )
 
-(define (between? query min max)
-  (and
-   (< query max)
-   (> query min)
-   )
+
+#|
+We shoulda defined this sucker long ago:
+|#
+
+;BOOKMARK
+;DEFINE CONTRACT AND PURPOSE STATEMENT
+(define (select-t-scan model)
+  (territory-scan (system-territory-selected model) (system-territory-list model))
   )
 
-;ATTACK PHASE
+;territories-owned: [List territory] number(playerpos) -> [List territory]
+;Takes in a list of territories and a player's ID and returns a list of territories owned by that player.
+(define (territories-owned t-list playerpos)
+  (cond [(empty? t-list) '()]
+        [(equal? (territory-owner (first t-list))
+                 playerpos)
+         (cons (first t-list)
+               (territories-owned (rest t-list) playerpos)
+               )]
+        [else (territories-owned (rest t-list) playerpos)]
+        )
+  )
 
-;can-attack?: Checks to see if the player can attack a selected territory by being next to it
-;
-;(define (can-attack? attacking target)
-  ;(if (equal?
-      ; (
+;___
+;bt-helper: [List string] territory -> boolean
+;Checks to see if a territory-name is in a list of strings, true if it is.
+(define (bt-helper str-list territory)
+  (cond [(empty? str-list) false]
+        [(equal? (first str-list)
+                 (territory-name territory)
+                 )
+         true]
+        [else (bt-helper (rest str-list)
+                         territory)]
+        )
+  )
 
+;borders-territory?: territory(home) territory(border) -> [List territory]
+;Takes in a home country and a country to check for bordering and returns if the countries border each other.
+(define (borders-territory? home border)
+  (bt-helper (territory-adjacent-territories home)
+             border
+             )
+  )
+;___
+
+;Attack Phase
 (define (attack-phase model x y event)
-  (cond [(and
-          (equal? event "drag")
-          (between? x 1027 1236)
-          (between? y 911 923))
+  (cond
+  ;(cond [(won-game? (system-territory-list model)
+                    ;(system-playerlist model)
+                   ; (system-player-turn model)
+                   ; )
+         ;WIN CONDITIONS
+         ;for now...
+        ; model]
+  ;Disabling the above for debug purposes
+    ;jash is puu
+        [(and (equal? event "drag")
+              (between? x SLIDER-OFFSET 1236)
+              (between? y 800 1000)
+              )
          (struct-copy system model
-                      [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
-                                                                                          (system-player-turn model)))
-                                                   (- x 1027)
-                                                   0) ]
-                      [debug "Workin"])]
+                      [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
+                                     (player-reserved-armies (select-player (system-playerlist model)
+                                                                            (system-player-turn model)
+                                                                            )
+                                                             )
+                                     (- x SLIDER-OFFSET)
+                                     0
+                                     (slider-armies (system-slider-store model))
+                                     )
+                                    ]
+                      [debug "Workin"]
+                      )]
+        [(and (equal? event "button-down")
+              (not (equal? (system-territory-selected model) "null"))
+              (equal? (system-territory-attacked model) "null")
+              
+              ;(equal? player-pos (territory-owner (select-t-scan model))) 
+              )
+         ;Why isn't this clause evaluating to true? FOUND: Issue with player-pos.
+         (struct-copy system model
+                      [territory-selected (tooltip x y model)]
+                      [territory-attacking (system-territory-selected model)]
+                      [x x]
+                      [y y]
+                      [screen "slider_warning"]
+                      [territory-attacked "primed"]
+                      [roll-state "active"]
+                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model)))
+                                                      ;This signifies that it is one less than the territory's armies
+                                                      1)
+                                                   (- x SLIDER-OFFSET)
+                                                   0
+                                                   (slider-armies (system-slider-store model))
+                                                   )]
+                      )]
+        [(and (equal? event "button-down")
+              (equal? (system-territory-attacked model) "primed")
+              (borders-territory? (territory-scan (system-territory-attacking model) (system-territory-list model)) (select-t-scan model))
+              (not (equal? (system-territory-selected model) "null"))
+              (not (equal? (system-player-turn model) (territory-owner (select-t-scan model))))
+              )
+         (struct-copy system model
+
+                      [territory-attacked (system-territory-selected model)]
+
+                      )]
+        [(and (not (equal? (system-territory-attacked model) "null"))
+              (not (equal? (system-territory-attacked model) "primed"))
+              
+         ;Actual attack
+         ;What has to happen:
+         ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
+         ;J:Dice are rolled, win loss stacked up <- This is what goes in this clause
+         ;P:Attacker chooses how many troops move on
+         ;P:Process can repeat, attacked-territory needs to be made null again.
+
+         ;NOTE FOR JOSH: The number of armies a player has chosen is invoked like so:
+         ; (slider-armies (system-slider-store model) -> Number (armies selected by slider)
+
+             ;Dice functions, update armies, etc.
+
+        ;'Move on to fortify' clause 
+         
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
@@ -2016,8 +2061,47 @@ Events that occur during recruit:
                            )]
         )
   )
-  
-  
+
+
+
+
+
+;KEY HANDLER
+;Stop the game using the escape key at anytime.
+(define (key-handler model key)
+  (cond [(equal? key "escape")
+         (stop-with model)]
+        [(equal? key "d")
+         (struct-copy system model
+                      [territory-list DEBUG-TERRITORY-LIST]
+                      [screen "gameplay"]
+                      [turn-stage "recruit"]
+                      [player-turn 0]
+                      )]
+        [(and
+          (equal? key "space")
+          (equal? (system-roll-state "active")))
+         (struct-copy system model
+                      [roll-state "inactive"])]
+        [else model]
+  )
+)
+
+;TICK HANDLER: For animations
+;Needslagfix
+#|
+(define (animation-handler model)
+  (cond [(equal? (system-roll-state model) "active")
+         (struct-copy system model
+                      [dicelist (list (make-die (roll-die "die1") "attack")
+                                     (make-die (roll-die "die2") "defend")
+                                     (make-die (roll-die "die3") "defend")
+                                     (make-die (roll-die "die4") "attack")
+                                     (make-die (roll-die "die5") "attack"))])]
+        [else model]))
+|#
+
+
 ;Animation includes a mouse and draw handler, as well as an initial system model.
 (big-bang (make-system 
            ;No players at first, updated upon player selection
@@ -2039,6 +2123,7 @@ Events that occur during recruit:
            ;Territory selected is initially null, and remains such unless a territory is selected
            "null"
            ;Initial Territory List is known as INITIAL-TERRITORY-LIST, found near the header
+           ;Can be swapped out for DEBUG-TERRITORY-LIST, which can be used to debug functions involving territories, but should always be INITIAL-CARD-LIST for release builds.
            INITIAL-TERRITORY-LIST
            ;Debug coordinates
            "LMAOBOX"
@@ -2047,66 +2132,29 @@ Events that occur during recruit:
            ;Mouse y coordinate
            0
            ;Initial Card List, INITIAL-CARD-LIST, holds all cards which are modified to include owners, with system owner of 404.
-           ;May be changed for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
+           ;May be changed to DEBUG-CARD-LIST for debugging purposes, but should always be INITIAL-CARD-LIST for release builds.
            INITIAL-CARD-LIST
-           ;Test List for debugging purposes.
-           #|(list (card "infantry" "Afghanistan" 0 0)
-                 (card "infantry" "Alaska" 1 0)
-                 (card "infantry" "Alberta" 2 "null")
-                 (card "infantry" "Argentina" 3 "null")
-                 (card "artillery" "Brazil" 4 "null")
-                 (card "calvary" "Central America" 5 "null")
-                 (card "calvary" "China" 6 "null")
-                 (card "calvary" "Congo" 7 "null")
-                 (card "artillery" "East Africa" 8 "null")
-                 (card "infantry" "Eastern Australia" 9 "null")
-                 (card "artillery" "Eastern United States" 10 "null")
-                 (card "infantry" "Egypt" 11 "null")
-                 (card "calvary" "Great Britain" 12 "null")
-                 (card "calvary" "Greenland" 13 "null")
-                 (card "infantry" "India" 14 "null")
-                 (card "calvary" "Indonesia" 15 "null")
-                 (card "infantry" "Irkutsk" 16 "null")
-                 (card "infantry" "Japan" 17 "null")
-                 (card "calvary" "Kamchatka" 18 "null")
-                 (card "infantry" "Madagascar" 19 "null")
-                 (card "artillery" "Middle East" 20 "null")
-                 (card "artillery" "Mongolia" 21 "null")
-                 (card "calvary" "New Guinea" 22 "null")
-                 (card "infantry" "North Africa" 23 "null")
-                 (card "calvary" "Northern Europe" 24 "null")
-                 (card "artillery" "Northwest Territory" 25 "null")
-                 (card "calvary" "Ontario" 26 "null")
-                 (card "calvary" "Peru" 27 "null")
-                 (card "artillery" "Quebec" 28 "null")
-                 (card "artillery" "Scandinavia" 29 "null")
-                 (card "artillery" "Siam" 30 "null")
-                 (card "artillery" "Siberia" 31 "null")
-                 (card "artillery" "South Africa" 32 "null")
-                 (card "calvary" "Southern Europe" 33 "null")
-                 (card "artillery" "Ukraine" 34 "null")
-                 (card "calvary" "Ural" 35 "null")
-                 (card "artillery" "Venezuela" 36 "null")
-                 (card "artillery" "Western Australia" 37 "null")
-                 (card "infantry" "Western Europe" 38 "null")
-                 (card "infantry" "Western United States" 39 "null")
-                 (card "calvary" "Yakutsk" 40 "null")
-                 ;Two Wild Cards
-                 (card "wild" "Wild Card 1" 41 "null")
-                 (card "wild" "Wild Card 2" 42 "null")
-                 )
-           |#
            ;Initial value of cardsets-redeemed is zero, and increases as a set of cards is turned in.
            0
+           ;Attacking territory is null too
+           "null"
            ;Territory attacked is initially null, and remains such until a territory is selected for attacking
            "null"
+           ;There are no armies attacking, initially
+           0
            ;Slider used in attributing armies
-           (create-slider 100 0 0)
+           (create-slider 100 0 0 0)
+           ;No roll initially
+           "inactive"
            )
           ;Draw Handler
           (to-draw render 1250 1200)
           ;Mouse Handler
           (on-mouse mouse-handler)
+          ;Key Handler
+          (on-key key-handler)
+          ;Tick Handler
+          ;(on-tick animation-handler .1)
           )
 
 (test)

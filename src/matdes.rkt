@@ -1,11 +1,25 @@
 #lang racket
 (require picturing-programs)
 (require "graph.rkt")
-(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON)
+(provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON SLIDER-WARN textc)
 
 (define DICE-ICO (bitmap "imgs/diceico.png"))
 (define CARD-ICO (bitmap "imgs/cardico.png"))
 (define SUBMIT-ICO (bitmap "imgs/submitico.png"))
+
+;The custom roboto fonted text function:
+;textc: Prints a text image with the defined font below
+;String (text to disp.) Number (height of text) String/Color (color of text) -> Image (text)
+(define (textc string size color)
+  (text/font string
+             size
+             color
+             "Roboto Light"
+             'default
+             'normal
+             'normal
+             #f)
+  )
 
 (define (r x y)
   128)
@@ -65,5 +79,11 @@
    (shadow-circle 50)
    )
   )
+
+(define SLIDER-WARN
+  (overlay
+   (textc "Make sure to select your armies with the slider before attacking!" 12 "black")
+   (rectangle 375 75 "solid" "green")))
+;Color will change
 
    

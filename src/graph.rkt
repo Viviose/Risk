@@ -6,7 +6,15 @@
 ;Provides access to all defined functions and variables in this file to other files.
 ;Currently, this will include the following functions:
 #| - distance   |#
-(provide distance slope calc-angle in-ellipse?)
+(provide between? distance slope calc-angle in-ellipse?)
+
+;between?: number(query) number(min) number(max) -> boolean
+;Checks to see if a number is within a specified bound.
+(define (between? query min max)
+  (and (< query max)
+       (> query min)
+       )
+  )
 
 ;distance: number(x1) number(y1) number(x2) number(y2) -> number(distance between coordinates)
 ;Takes in four numbers, which represent the x and y coordinates of two different coordinate pairs, and finds distance

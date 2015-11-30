@@ -12,33 +12,9 @@
 
 ;__________________________________________________________________________________________________________________
 
-(define-struct die (number type)
-  ;Transparent instance call was added by Josh Sanch on 5/14/15
-  ;Didn't know if you left it out by mistake or planned on adding it later, so I left this comment for you in case you wanted to keep it opaque.
-  #:transparent)
+(define-struct die (number type) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
-
-;roll-die: anything -> die
-;Rolls a die that returns a value 1-6. The input doesn't matter.
-(define (roll-die null)
-  (+ 1
-     (random 5)
-     )
-  )
-
-;roll-dice: number(armies defending/attackin) -> [Listof Numbers]
-;Creates a list of numbers that contains a value for each of the dice rolled.
-;Can take in any number.
-(define (roll-dice armies)
-  (cond [(equal? 0 armies) empty]
-        [else (cons 
-               (roll-die "roll-who-cares-which") 
-               (roll-dice (- armies 1))
-               ) 
-        ]
-   )
- )
 
 ;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
 ;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
@@ -85,6 +61,27 @@
               (list 2 3 5)
               )
 ;End Testing Suite
+
+;roll-die: anything -> die
+;Rolls a die that returns a value 1-6. The input doesn't matter.
+(define (roll-die null)
+  (+ 1
+     (random 5)
+     )
+  )
+
+;roll-dice: number(armies defending/attackin) -> [Listof Numbers]
+;Creates a list of numbers that contains a value for each of the dice rolled.
+;Can take in any number.
+(define (roll-dice armies)
+  (cond [(equal? 0 armies) empty]
+        [else (cons 
+               (roll-die "roll-who-cares-which") 
+               (roll-dice (- armies 1))
+               ) 
+        ]
+   )
+ )
 
 ;sort-rolls: [Listof Numbers] -> [Listof Numbers]
 ;Sorts a list of numbers so that the greatest numbers will be at the front of the list, with the least at the end.
