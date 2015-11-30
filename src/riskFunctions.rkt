@@ -126,7 +126,8 @@ Provided by matdes.rkt:
                                   territory-attacking 
                                   territory-attacked 
                                   armies-attacking 
-                                  slider-store)
+                                  slider-store
+                                  roll-state)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -746,10 +747,10 @@ Max x: 933
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 4) "alive" 0)
-                                                             (make-player (army-count 4) "alive" 1)
-                                                             (make-player (army-count 4) "alive" 2)
-                                                             (make-player (army-count 4) "alive" 3)
+                                           [playerlist (list (make-player (army-count 4)  0)
+                                                             (make-player (army-count 4)  1)
+                                                             (make-player (army-count 4)  2)
+                                                             (make-player (army-count 4)  3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -759,11 +760,11 @@ Max x: 933
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 5) "alive" 0)
-                                                             (make-player (army-count 5) "alive" 1)
-                                                             (make-player (army-count 5) "alive" 2)
-                                                             (make-player (army-count 5) "alive" 3)
-                                                             (make-player (army-count 5) "alive" 4)
+                                           [playerlist (list (make-player (army-count 5)  0)
+                                                             (make-player (army-count 5)  1)
+                                                             (make-player (army-count 5)  2)
+                                                             (make-player (army-count 5)  3)
+                                                             (make-player (army-count 5)  4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -773,12 +774,12 @@ Max x: 933
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 6) "alive" 0)
-                                                             (make-player (army-count 6) "alive" 1)
-                                                             (make-player (army-count 6) "alive" 2)
-                                                             (make-player (army-count 6) "alive" 3)
-                                                             (make-player (army-count 6) "alive" 4)
-                                                             (make-player (army-count 6) "alive" 5)
+                                           [playerlist (list (make-player (army-count 6)  0)
+                                                             (make-player (army-count 6)  1)
+                                                             (make-player (army-count 6)  2)
+                                                             (make-player (army-count 6)  3)
+                                                             (make-player (army-count 6)  4)
+                                                             (make-player (army-count 6)  5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -2024,6 +2025,7 @@ We shoulda defined this sucker long ago:
                       [y y]
                       [screen "slider_warning"]
                       [territory-attacked "primed"]
+                      [roll-state "active"]
                       [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
                                                       1)
@@ -2044,6 +2046,9 @@ We shoulda defined this sucker long ago:
                       [territory-attacked (system-territory-selected model)]
 
                       )]
+        [(and (not (equal? (system-territory-attacked model) "null"))
+              (not (equal? (system-territory-attacked model) "primed"))
+              
          ;Actual attack
          ;What has to happen:
          ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
@@ -2082,11 +2087,28 @@ We shoulda defined this sucker long ago:
                       [turn-stage "recruit"]
                       [player-turn 0]
                       )]
+        [(and
+          (equal? key "space")
+          (equal? (system-roll-state "active")))
+         (struct-copy system model
+                      [roll-state "inactive"])]
         [else model]
   )
 )
 
-
+;TICK HANDLER: For animations
+;Needslagfix
+#|
+(define (animation-handler model)
+  (cond [(equal? (system-roll-state model) "active")
+         (struct-copy system model
+                      [dicelist (list (make-die (roll-die "die1") "attack")
+                                     (make-die (roll-die "die2") "defend")
+                                     (make-die (roll-die "die3") "defend")
+                                     (make-die (roll-die "die4") "attack")
+                                     (make-die (roll-die "die5") "attack"))])]
+        [else model]))
+|#
 
 
 ;Animation includes a mouse and draw handler, as well as an initial system model.
@@ -2131,6 +2153,8 @@ We shoulda defined this sucker long ago:
            0
            ;Slider used in attributing armies
            (create-slider 100 0 0 0)
+           ;No roll initially
+           "inactive"
            )
           ;Draw Handler
           (to-draw render 1250 1200)
@@ -2138,6 +2162,8 @@ We shoulda defined this sucker long ago:
           (on-mouse mouse-handler)
           ;Key Handler
           (on-key key-handler)
+          ;Tick Handler
+          ;(on-tick animation-handler .1)
           )
 
 (test)
