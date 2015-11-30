@@ -110,7 +110,7 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacked armies-attacking slider-store)
+(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacking territory-attacked armies-attacking slider-store)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
@@ -142,20 +142,6 @@ Redefinition of these structs here can crash the program, and as thus they shoul
 
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
-
-;The custom roboto fonted text function:
-;textc: Prints a text image with the defined font below
-;String (text to disp.) Number (height of text) String/Color (color of text) -> Image (text)
-(define (textc string size color)
-  (text/font string
-             size
-             color
-             "Roboto Light"
-             'default
-             'normal
-             'normal
-             #f)
-  )
 
 ;The number of armies per player
 ;Number -> Number
@@ -595,7 +581,10 @@ SAMPLE IMPLEMENTATION!
                         (overlay/align "center" "top"
           PLAYERSCRN
           (empty-scene 1250 1200)))]
-        [(equal? (system-screen model) "gameplay")
+        [(or
+          (equal? (system-screen model) "gameplay")
+          (equal? (system-screen model) "slider_warning")
+          )
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
@@ -649,6 +638,7 @@ SAMPLE IMPLEMENTATION!
             (toolbar model))
           )]
         [else model]
+        ;Nononononono bad bad bad: render cannot return a model, only an image.
         )
   )
 
@@ -1970,13 +1960,15 @@ We shoulda defined this sucker long ago:
 
 ;Attack Phase
 (define (attack-phase model x y event)
-  (cond [(won-game? (system-territory-list model)
-                    (system-playerlist model)
-                    (system-player-turn model)
-                    )
+  (cond
+  ;(cond [(won-game? (system-territory-list model)
+                    ;(system-playerlist model)
+                   ; (system-player-turn model)
+                   ; )
          ;WIN CONDITIONS
          ;for now...
-         model]
+        ; model]
+  ;Disabling the above for debug purposes
         [(and (equal? event "drag")
               (between? x 1027 1236)
               (between? y 911 923)
@@ -1995,14 +1987,17 @@ We shoulda defined this sucker long ago:
                       )]
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
-              (equal? player-pos (territory-owner (select-t-scan model))) 
+              (equal? (system-territory-attacked model) "null")
+              ;(equal? player-pos (territory-owner (select-t-scan model))) 
               )
+         ;Why isn't this clause evaluating to true? FOUND: Issue with player-pos.
          (struct-copy system model
                       ;[territory-selected (tooltip x y model)]
                       [x x]
                       [y y]
+                      [screen "slider_warning"]
                       [territory-attacked "primed"]
-                      [slider-store (create-slider (- (territory-armies (select-t-scan model))
+                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-attacking model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
                                                       1)
                                                    (- x 1027)
@@ -2016,11 +2011,9 @@ We shoulda defined this sucker long ago:
               (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
-<<<<<<< HEAD
+
                       [territory-attacked (system-territory-attacked model)]
-=======
-                      [territory-attacked (system-territory-selected model)]
->>>>>>> 74797b3046485eb981b9b8df63b151400947b65d
+
                       )]
          ;Actual attack
          ;What has to happen:
