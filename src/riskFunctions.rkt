@@ -130,8 +130,8 @@ Provided by matdes.rkt:
   #:transparent)
 
 ;Player struct (Holds the information of each player)
-;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (reserved-armies status pos)
+;[Player] :  Number (armies) Number(pos)
+(define-struct player (reserved-armies pos)
   #:transparent) 
 
 #|
@@ -153,8 +153,6 @@ Redefinition of these structs here can crash the program, and as thus they shoul
 (define-struct slider (image armies)
   #:transparent)
 
-(define-struct posn (x y)
-  #:transparent)
 
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
