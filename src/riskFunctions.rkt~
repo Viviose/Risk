@@ -1887,7 +1887,16 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   [territory-selected (tooltip x y model)]
                                   )]
                )]
+        ;Test (delete this if you want to)
          [else (struct-copy system model
+                            ;[slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
+                             ;                                                              (system-player-turn model)))
+                              ;                      60
+                               ;                     0
+                                ;                    (slider-armies (system-slider-store model))
+                                 ;                   )]
+                            ;(struct-copy slider (system-slider-store model)
+                             ;            [
                             [territory-selected (tooltip x y model)]
                             [x x]
                             [y y]
@@ -1932,7 +1941,6 @@ The win conditions are simple: no other players have armies left. |#
 We shoulda defined this sucker long ago:
 |#
 
-;BOOKMARK
 ;DEFINE CONTRACT AND PURPOSE STATEMENT
 (define (select-t-scan model)
   (territory-scan (system-territory-selected model) (system-territory-list model))
@@ -2030,7 +2038,8 @@ We shoulda defined this sucker long ago:
               (equal? (system-territory-attacked model) "primed")
               (borders-territory? (territory-scan (system-territory-attacking model) (system-territory-list model)) (select-t-scan model))
               (not (equal? (system-territory-selected model) "null"))
-              (not (equal? (system-player-turn model) (territory-owner (select-t-scan model))))
+              ;VVV DOESN'T WORK VVV
+              (not (equal? player-pos (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
 
