@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 1.5a
+Version 1.6a
 
 Project Name - Risk: Racket Edition
 
@@ -30,21 +30,21 @@ Included libraries, modules, and definitions files:
   (Note: The "compiled" library is often created by the DrRacket Racket IDE when creating errortrace files, but is not tracked by the repository using .gitignore.)
 
   - "dice-functs.rkt" module contains functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
-      - To require module: (require "dice-functs.rkt")
   - "graph.rkt" module contains functions that are used for animation purposes such as point comparisons.
-      - To require module: (require "graph.rkt")
   - "ellipse.rkt" module provides important ellipse functions used for hitboxes and math throughout programs.
-      - To require sub-module: (require "ellipse.rkt")
   - "hit-box-determiner.rkt" program allows hitboxes to be made for all territories in the game using ellipses, and outputs results to a file inside of Map-Positions lib.
   - "test-animations.rkt" contains tests for any animations thought to require tests outside of their host files.
+  - "matdes.rkt" module contains material design functions used to construct the UI.
+  - "sys-lists.rkt" contains constants used to power the system model.
+  - "riskFunctions.rkt" is the main thread that calls all of the modules above to create Risk, and is used to create the executable for any build.
 
-To require particular files using the Racket language follows the syntax:
+To require particular files, such as the modules listed above, using the Racket language follows the syntax:
 (require [String path])
 
 To require a library follows the syntax:
 (require [identifier lib-name])
 
-To provide functions in Racket uses the syntax:
+To provide functions for use in other programs upon request in Racket uses the syntax:
 (provide function-name-1 ... function-name-x)
 
 To provide a struct in Racket uses the syntax:

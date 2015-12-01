@@ -1,9 +1,11 @@
-Current Version: 1.5.3a
+Current Version: 1.6a
 BUILD IS NOW IN ALPHA
+
 Version 1.6a
 - Removed deprecated parameters from structs
 - Reworked initial troop allocation to account for deprecated parameters
 - Added victory checking conditions
+
 Version 1.5.3a
 - Finished card redemption functions, and implemented them in the appropriate locations
 
@@ -220,5 +222,3 @@ Version 0.1.1 (5/5/15)
 - Established "src" and "img" libraries to optimize project efficiency and prevent corruption errors
 - Defined structs for early gameplay
 - Initialized Draw and Mouse handlers for early gameplay
-
-
