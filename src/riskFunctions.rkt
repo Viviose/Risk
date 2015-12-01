@@ -735,9 +735,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 3) "alive" 0)
-                                                             (make-player (army-count 3) "alive" 1)
-                                                             (make-player (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (army-count 3) 0)
+                                                             (make-player (army-count 3) 1)
+                                                             (make-player (army-count 3) 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -2053,7 +2053,8 @@ We shoulda defined this sucker long ago:
              ;Dice functions, update armies, etc.
 
         ;'Move on to fortify' clause 
-         
+         )
+         model]
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
