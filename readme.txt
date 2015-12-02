@@ -13,7 +13,7 @@ _________________________________________________________________________
 Risk: The Game of World Domination
 (Racket Edition)
 
-Version 1.6a
+Version 1.6.10a
 
 Project Name - Risk: Racket Edition
 

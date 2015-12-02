@@ -1,12 +1,76 @@
-Current Version: 1.6a
+Current Version: 1.6.10a
 BUILD IS NOW IN ALPHA
-Version 1.6a (11/23/15)
+Version 1.6.10 "The Developer's Update" (12/1/15)
+- Updated README to match latest project info, including links, more modules, and version update
+- Updated DevVLog to much better reflect progress each commit period in order provide a more useful development history
+- Updated back-up files
+- Added new-line to .gitignore file
+
+Version 1.6.9 (11/30/15)
+- Fixed issue in attack-phase clause (https://github.com/Viviose/Risk/issues/3)
+
+Version 1.6.8 (11/29/15)
+- .gitignored errortrace files
+- Defined SLIDER-OFFSET constant for ease in redefining slider hitboxes and implemented in appropriate locations legal
+- Updated calc-armies function
+- Added in conditions for territory bordering in attack-phase clauses
+- Added an error message for render for use in debugging that alerts users when render breaks due to incorrect screens (https://github.com/Viviose/Risk/issues/2)
+- Fixed bugs occurring as a result of screen issues (https://github.com/Viviose/Risk/issues/5)
+- Fixed inconsistencies in spelling of keywords in card lists
+- Added tick handler for potential use in animations for dice and attacks, results in heavy lag as of now
+- jash is puu
+
+Version 1.6.7 (11/28/15)
+- Added SLIDER-WARN constant to render and matdes.rkt to remind players to select troops before launching attack
+- Moved INITIAL-CARD-LIST, INITIAL-TERRITORY-LIST, and DEBUG-CARD-LIST to sys-lists.rkt, which stores these constants
+- Moved card and territory structs to sys-lists.rkt and provided/required them as necessary for compatibility
+- Moved textc roboto function into matdes.rkt
+- Updated DEBUG-TERRITORY-LIST for debugging purposes
+- Added "slider_warning" screen to implement SLIDER-WARN
+- Updated conditionals in attack-phase
+- Finished first functioning build of attack-phase (definitely not free of bugs)
+
+Version 1.6.6 (11/27/15)
+- Added return values for some attack-phase clauses
+- Added territory-attacking and territory-attacked parameters to system struct to streamline comparisons in attack-phase
+
+***MOVED PROJECT TO GITHUB 11/24/15***
+
+Version 1.6.5a (11/23/15)
 - Removed deprecated parameters from structs
 - Reworked initial troop allocation to account for deprecated parameters
-- Added victory checking conditions
+- Added victory checking conditions to attack phase
+- Finalized debug button in key-handler **ONLY FOR USE IN 5 PLAYERS MODE**
+
+Version 1.6.4a (11/21/15)
+- Added a catch for which-card function that allows no cards to be selected without errors
+- Fixed conditional bug that prevented card selection
+- Added catch for change-card-selected function that ran into issues when the card-list was empty
+- Created a function that returns the cards owned by a player as a list
+- Began debug button clause for key-handler
+
+Version 1.6.3a (11/20/15)
+- Added armies-attacking parameter to system struct in order to count how many armies are being used in an attack, used in creating and implementing slider
+- Fixed more bugs in recruit-phase, creating a stable usage
+- Created a function that grabs territories from the territory list given the model
+- Added in conditions for attack-phase
+- Defined initial value for armies-attacking in big-bang
+
+Version 1.6.2a (11/18/15)
+- Fixed function return bugs in recruit-phase
+- Improved slider struct to make it function more dynamically and stable
+
+Version 1.6.1a (11/17/15)
+- Moved between? discrminator to graph.rkt
+- Began work on attack-phase
+- Added key handler that closes the game on pressing the escape button
+
+Version 1.6a (11/15/15)
+- Finished first functioning usage of recruit-phase
 
 Version 1.5.3a (11/1/15)
 - Finished card redemption functions, and implemented them in the appropriate locations
+- Fixed bugs in recruit-phase and added final clauses
 
 Version 1.5.2a (10/26/15)
 - Created more card redemption functions that set cards into an active state when clicked on and turn in cards
