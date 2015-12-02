@@ -1905,8 +1905,8 @@ selected territories, which may get a little complicated.
 
 Events that occur in the attack phase:
 - The player wins the game by defeating all the other players in the game (no one owns anymore territories).
+- The player rolls dice to attack the player.
 - The player chooses a territory to attack from and to attack.
-  - Dice are rolled once the user has chosen 
 
 Attack Phase must check for win conditions first, then move on to fortify conditions.
 
@@ -1982,7 +1982,8 @@ We shoulda defined this sucker long ago:
                     (system-playerlist model)
                     (system-player-turn model)
                     )
-         ;Checks to see if a player has won the game, the first condition.
+         ;WIN CONDITIONS
+         ;for now...
          (struct-copy system model
                       [screen "victory"]
                       [debug "A player has won!"]
@@ -1991,7 +1992,6 @@ We shoulda defined this sucker long ago:
               (between? x SLIDER-OFFSET 1236)
               (between? y 800 1000)
               )
-         ;Slides the slider.
          (struct-copy system model
                       [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
                                      (player-reserved-armies (select-player (system-playerlist model)
@@ -2005,20 +2005,6 @@ We shoulda defined this sucker long ago:
                                     ]
                       [debug "Workin"]
                       )]
-        #| Here begins the conditions for attacking territories. 
-           Here's what happens that we use to check things.
-           - Players are clicking when the clause (equal? event "button-down) evaluates to true.
-           - Players are hovering a territory they own when 
-             (equal? (system-player-turn (territory-owner (select-t-scan model)))) evaluates to true.
-           - Players are not hovering a territory when (equal? (system-territory-selected model) "null") evaluates
-             to true.
-           - The player has selected a territory to attack from but not to attack when 
-             (equal? (system-territory-attacked model) "primed") evaluates to true.
-           - The player has not selected a territory to attack from if 
-             (equal? (system-territory-attacked model) "null") evaluates to true.
-           - The player has selected all territories if
-
-        |#
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               (equal? (system-territory-attacked model) "null")

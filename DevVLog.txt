@@ -1,15 +1,20 @@
 Current Version: 1.6.10a
 BUILD IS NOW IN ALPHA
-Version 1.6.10 "The Developer's Update" (12/1/15)
+Version 1.6.11a (12/2/15)
+- Added conditionals to attack-phase
+- Added win clause to attack-phase
+- Added conditional index for attack-phase
+
+Version 1.6.10a "The Developer's Update" (12/1/15)
 - Updated README to match latest project info, including links, more modules, and version update
 - Updated DevVLog to much better reflect progress each commit period in order provide a more useful development history
 - Updated back-up files
 - Added new-line to .gitignore file
 
-Version 1.6.9 (11/30/15)
+Version 1.6.9a (11/30/15)
 - Fixed issue in attack-phase clause (https://github.com/Viviose/Risk/issues/3)
 
-Version 1.6.8 (11/29/15)
+Version 1.6.8a (11/29/15)
 - .gitignored errortrace files
 - Defined SLIDER-OFFSET constant for ease in redefining slider hitboxes and implemented in appropriate locations legal
 - Updated calc-armies function
@@ -20,7 +25,7 @@ Version 1.6.8 (11/29/15)
 - Added tick handler for potential use in animations for dice and attacks, results in heavy lag as of now
 - jash is puu
 
-Version 1.6.7 (11/28/15)
+Version 1.6.7a (11/28/15)
 - Added SLIDER-WARN constant to render and matdes.rkt to remind players to select troops before launching attack
 - Moved INITIAL-CARD-LIST, INITIAL-TERRITORY-LIST, and DEBUG-CARD-LIST to sys-lists.rkt, which stores these constants
 - Moved card and territory structs to sys-lists.rkt and provided/required them as necessary for compatibility
@@ -30,7 +35,7 @@ Version 1.6.7 (11/28/15)
 - Updated conditionals in attack-phase
 - Finished first functioning build of attack-phase (definitely not free of bugs)
 
-Version 1.6.6 (11/27/15)
+Version 1.6.6a (11/27/15)
 - Added return values for some attack-phase clauses
 - Added territory-attacking and territory-attacked parameters to system struct to streamline comparisons in attack-phase
 
