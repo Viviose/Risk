@@ -1,17 +1,18 @@
 Current Version: 1.5.3a
 BUILD IS NOW IN ALPHA
-Version 1.6a
+Version 1.6a (11/23/15)
 - Removed deprecated parameters from structs
 - Reworked initial troop allocation to account for deprecated parameters
 - Added victory checking conditions
-Version 1.5.3a
+
+Version 1.5.3a (11/1/15)
 - Finished card redemption functions, and implemented them in the appropriate locations
 
-Version 1.5.2a
+Version 1.5.2a (10/26/15)
 - Created more card redemption functions that set cards into an active state when clicked on and turn in cards
 - Fixed bugs relating to transition between init-recruit and recruit phase
 
-Version 1.5.1a
+Version 1.5.1a (10/19/15)
 - Added troop recruitment to the end of the initial-recruit phase so that P1 starts recruit with appropriate troops
 - Finished first clause of recruit-phase
 
@@ -220,5 +221,3 @@ Version 0.1.1 (5/5/15)
 - Established "src" and "img" libraries to optimize project efficiency and prevent corruption errors
 - Defined structs for early gameplay
 - Initialized Draw and Mouse handlers for early gameplay
-
-
