@@ -1,4 +1,4 @@
-Current Version: 1.5.3a
+Current Version: 1.6a
 BUILD IS NOW IN ALPHA
 Version 1.6a (11/23/15)
 - Removed deprecated parameters from structs
