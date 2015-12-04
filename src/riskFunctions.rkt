@@ -1976,6 +1976,16 @@ We shoulda defined this sucker long ago:
 
 ;***************
 
+;start-attack?: system(model) -> boolean
+;Checks to see if the system is ready to initiate an attack.
+;This means that territory-attacked is not either primed or null.
+(define (start-attack? model)
+  (cond [(equal? (system-territory-attacked model) "null") false]
+        [(equal? (system-territory-attacked model) "primed") false]
+        [else true]
+        )
+  )
+
 ;Attack Phase
 (define (attack-phase model x y event)
   (cond [(won-game? (system-territory-list model)
@@ -2006,7 +2016,7 @@ We shoulda defined this sucker long ago:
                       [debug "Workin"]
                       )]
         #| Here begins the conditions for attacking territories. 
-           Here's what happens that we use to check things.
+           Conditions index:
            - Players are clicking when the clause (equal? event "button-down) evaluates to true.
            - Players are hovering a territory they own when 
              (equal? (system-player-turn (territory-owner (select-t-scan model)))) evaluates to true.
@@ -2016,17 +2026,24 @@ We shoulda defined this sucker long ago:
              (equal? (system-territory-attacked model) "primed") evaluates to true.
            - The player has not selected a territory to attack from if 
              (equal? (system-territory-attacked model) "null") evaluates to true.
-           - The player has selected all territories if
+           - The player has selected all territories if 
+             (or (not (equal? (system-territory-attacked model) "null")))
+                 (not (equal? (system-territory-attacked model) "primed")))
+                 ) evaluates to true.
 
         |#
+        ;First clause checks to see if the user is selecting the territory to attack from.
+        ;The territory attack status must be "null", and the player must be clicking on a territory.
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               (equal? (system-territory-attacked model) "null")
               (not (equal? (system-player-turn (territory-owner (select-t-scan model))))) 
               )
+         ;IF this is true, we should change the screen to our slider warning, then change the status to primed.
+         ;We should then activate the rolls (if there is a tick handler) and update the slider with that territories army count.
          (struct-copy system model
                       [territory-selected (tooltip x y model)]
-                      [territory-attacking (system-territory-selected model)]
+                      [territory-attacking (tooltip x y model)]
                       [x x]
                       [y y]
                       [screen "slider_warning"]
@@ -2040,6 +2057,9 @@ We shoulda defined this sucker long ago:
                                                    (slider-armies (system-slider-store model))
                                                    )]
                       )]
+        ;This clause checks to see if the user is selecting a territory to attack.
+        ;The territory attack status should be primed, and the user should be clicking on a territory that they do not own.
+        ;This territory must border the territory that they are attacking from.
         [(and (equal? event "button-down")
               (equal? (system-territory-attacked model) "primed")
               (borders-territory? (territory-scan (system-territory-attacking model) (system-territory-list model)) (select-t-scan model))
@@ -2047,13 +2067,12 @@ We shoulda defined this sucker long ago:
               (not (equal? (system-player-turn model) (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
-
                       [territory-attacked (system-territory-selected model)]
-
+                      [x x]
+                      [y y]
+                      [territory-selected (tooltip x y model)]
                       )]
-        [(and (not (equal? (system-territory-attacked model) "null"))
-              (not (equal? (system-territory-attacked model) "primed"))
-              
+        [(start-attack? model)
          ;Actual attack
          ;What has to happen:
          ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
@@ -2067,7 +2086,7 @@ We shoulda defined this sucker long ago:
              ;Dice functions, update armies, etc.
 
         ;'Move on to fortify' clause 
-         )
+         
          model]
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
