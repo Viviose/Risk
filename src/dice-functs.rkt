@@ -6,7 +6,7 @@
 (require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
-(provide roll-die roll-dice sort-rolls produce-roll)
+(provide roll-die roll-dice random-roll)
 
 ;Dice struct is provided to other files here
 (provide (struct-out die))
@@ -67,11 +67,11 @@ Call get-defense-deaths to determine how
               )
 ;End Testing Suite
 
-;produce-rolls: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
+;random-roll: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
 ;Creates a list that contains two lists of attack and defense dice.
-(define (produce-rolls attackers defenders)
-  (list (roll-dice attackers)
-        (roll-dice defenders)
+(define (random-roll attackers defenders)
+  (list (sort-rolls (roll-dice attackers))
+        (sort-rolls (roll-dice defenders))
         )
   )
 
