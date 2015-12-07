@@ -6,7 +6,7 @@
 (require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
-(provide roll-die roll-dice find-sup-inf remove-max-or-min sort-rolls produce-rolls tally-deaths create-die-list)
+(provide roll-die roll-dice sort-rolls produce-rolls tally-deaths create-die-list)
 
 ;Dice struct is provided to other files here
 (provide (struct-out die))
@@ -17,14 +17,6 @@
 
 ;Dice functions to be called when dice are rolled in-game
 
-;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
-;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
-(define (find-sup-inf operator value lon)
-  (cond [(empty? lon) value]
-        [(operator (first lon) value) (find-sup-inf operator (first lon) (rest lon))]
-        [else (find-sup-inf operator value (rest lon))]
-        )
-  )
 
 ;Testing Suite for find-sup-inf
 (check-expect (find-sup-inf > 0 (list 2 3 4))
@@ -37,19 +29,6 @@
               6)
 ;End Testing Suite
 
-;remove-max-or-min: function(comparison operator) [Listof Numbers] -> [Listof Numbers]
-;Returns the given list without the first instance of its greatest or least character included.
-(define (remove-max-or-min operator lon)
-  (cond [(empty? lon) '()]
-        [(equal? (first lon)
-                 (find-sup-inf operator 0 lon)
-                 )
-         (rest lon)]
-        [else (cons (first lon)
-                    (remove-max-or-min operator (rest lon))
-                    )]
-        )
-  )
 
 ;Testing Suite for remove-max-or-min
 (check-expect (remove-max-or-min > (list 2 3 4))

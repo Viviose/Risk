@@ -117,6 +117,8 @@ Provided by matdes.rkt:
       )
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
+(define WOOD-BG (crop 0 0 display-w display-h (bitmap "imgs/woodbg.jpg")))
+
 ;System struct (Holds all game information and statuses)
 (define-struct system (playerlist player-turn
                                   turn-stage 
@@ -611,10 +613,12 @@ SAMPLE IMPLEMENTATION!
           (equal? (system-screen model) "slider_warning")
           )
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
-         (above
+         (overlay
+          (above
           (cond [(not (equal? (system-territory-selected model) "null"))
                  ;*****************************************************!!!!!!Work on null is needed.
-                 (place-image (overlay
+                 (overlay
+                  (place-image (overlay
                                (above
                                 (textc (system-territory-selected model) 16 "black")
                                 (textc (who-owns? model) 12 "black")
@@ -632,10 +636,11 @@ SAMPLE IMPLEMENTATION!
                                (rectangle (tooltip-width (system-territory-selected model)) 50 "solid" (playercolor model))
                                )
                               (system-x model) (system-y model)
-                              BOARD)]
+                              BOARD))]
                 [else BOARD]
                 )          
-          (toolbar model))]
+          (toolbar model))
+          WOOD-BG)]
         [(equal? (system-screen model) "cards")
           (overlay
            (overlay/align "right" "top" X
