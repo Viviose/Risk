@@ -123,23 +123,23 @@
 ;as a result of number comparisons.
 ;Note that the input [Listof [Listof Numbers]] must be in the format [List [Attacking] [Defending]]
 
-(define (tally-deaths-a/d roll-list operator)
-  (cond [(or (empty? (first roll-list))
-             (empty? (second roll-list))
+(define (tally-deaths-a/d army-list operator)
+  (cond [(or (empty? (first army-list))
+             (empty? (second army-list))
              )
          0]
-        [(operator (first (first roll-list)) 
-            (first (second roll-list))
+        [(operator (first (first army-list)) 
+            (first (second army-list))
             )
          (+ 1
-            (tally-deaths-a/d (list (rest (first roll-list))
-                                  (rest (second roll-list))
+            (tally-deaths-a/d (list (rest (first army-list))
+                                  (rest (second army-list))
                                )
                               operator
                             )
             )]
-        [else (tally-deaths-a/d (list (rest (first roll-list))
-                                    (rest (second roll-list))
+        [else (tally-deaths-a/d (list (rest (first army-list))
+                                    (rest (second army-list))
                                     )
                                 operator
                               )]
@@ -150,54 +150,54 @@
 
 ;Subsuite for defense, denoted by the input >
 (check-expect (tally-deaths-a/d (list (list 4 3)
-                                      (list 5)
-                                      )
+                                    (list 5)
+                                 )
                                 >
-                                )
+               )
               0)
 (check-expect (tally-deaths-a/d (list (list 3)
-                                      '()
-                                      )
+                                    '()
+                                 )
                                 >
-                                )
+               )
               0)
 (check-expect (tally-deaths-a/d (list (list 5 4 3)
-                                      (list 6 3)
-                                      )
-                                >
+                                    (list 6 3)
                                 )
+                                >
+               )
               1)
 (check-expect (tally-deaths-a/d (list (list 6 5)
-                                      (list 6 5)
-                                      )
+                                    (list 6 5)
+                                 )
                                 >
-                                )
+               )
               0)
 
 ;Subsuite for attacking, denoted by the input <=
 (check-expect (tally-deaths-a/d (list (list 4 3)
-                                      (list 5)
-                                      )
+                                    (list 5)
+                                 )
                                 <=
-                                )
+               )
               1)
 (check-expect (tally-deaths-a/d (list (list 3)
-                                      '()
-                                      )
+                                    '()
+                                 )
                                 <=
-                                )
+               )
               0)
 (check-expect (tally-deaths-a/d (list (list 5 4 3)
-                                      (list 6 3)
-                                      )
-                                <=
-                                )
+                                    (list 6 3)
+                                 )
+                                 <=
+               )
               1)
 (check-expect (tally-deaths-a/d (list (list 6 5)
-                                      (list 6 5)
-                                      )
-                                <=
-                                )
+                                    (list 6 5)
+                                 )
+                                 <=
+               )
               2)
 ;End Testing Suite
 
@@ -206,17 +206,15 @@
 ;The first number in the new list will represent the deaths sustained by attacking players.
 ;The second number in the new list will represent the deaths sustained by defending players.
 ;The only change is the use of tally-deaths-a/d
-(define (tally-deaths roll-list)
-  (list (tally-deaths-a/d roll-list <=)
-        (tally-deaths-a/d roll-list >)
-        )
-  )
+(define (tally-deaths army-list)
+  (list (tally-deaths-a/d army-list <=)
+        (tally-deaths-a/d army-list >)))
 
 ;Testing Suite for tally-deaths-redux
 (check-expect (tally-deaths (list (list 6 5)
-                                  (list 6 6)
+                                        (list 6 6)
+                                        )
                                   )
-                            )
               (list 2 0)
               )
 ;End Testing Suite
@@ -225,12 +223,12 @@
 
 ;create-attack-die: [Listof [Listof Numbers]] -> die
 ;Creates a die that uses the results of produce-rolls to create a die with type "attack".
-(define (create-attack-die roll-list)
-  (cond [(empty? (first roll-list)) '()]
-        [else (cons (make-die (first (first roll-list))
+(define (create-attack-die army-list)
+  (cond [(empty? (first army-list)) '()]
+        [else (cons (make-die (first (first army-list))
                               "attack")
-                    (create-attack-die (list (rest (first roll-list))
-                                             (second roll-list)
+                    (create-attack-die (list (rest (first army-list))
+                                             (second army-list)
                                              )
                                        )
                     )]
@@ -272,12 +270,12 @@
 
 ;create-defense-die: [Listof [Listof Numbers]] -> die
 ;Creates a die that uses the results of produce-rolls to create a die with type "defend".
-(define (create-defense-die roll-list)
-  (cond [(empty? (second roll-list)) '()]
-        [else (cons (make-die (first (second roll-list))
+(define (create-defense-die army-list)
+  (cond [(empty? (second army-list)) '()]
+        [else (cons (make-die (first (second army-list))
                               "defend")
-                    (create-defense-die (list (first roll-list)
-                                             (rest (second roll-list))
+                    (create-defense-die (list (first army-list)
+                                             (rest (second army-list))
                                              )
                                        )
                     )]
@@ -310,9 +308,9 @@
 
 ;create-die-list: [Listof [Listof Numbers]] -> [Listof Die]
 ;Creates a list of die that represent the values of either attacking or defending die and their numerical values
-(define (create-die-list roll-list)
-  (append (create-attack-die roll-list)
-          (create-defense-die roll-list)
+(define (create-die-list army-list)
+  (append (create-attack-die army-list)
+          (create-defense-die army-list)
           )
   )
 
@@ -326,13 +324,5 @@
                     (make-die 2 "defend")
                     )
               )
-
-;create-rand-roll: [Listof [Listof Numbers]] -> [Listof Die]
-;Creates a random list of rolled dice. Used for rolling dice in the game AKA master dice roller.
-(define (create-rand-roll roll-list)
-  (create-die-list (list)
-                   (list)
-                   )
-  )
 
 (test)
