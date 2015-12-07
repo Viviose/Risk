@@ -1,1 +1,0 @@
-("6.2" ("3a6fb2c0edf3e06055ce20c4257d6c9ba955a788" . "cbb8edf4bdc4c545dd2bc180f855607eae7506cd") (collects #"racket" #"main.rkt") (collects #"test-engine" #"racket-tests.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"picturing-programs" #"main.rkt"))

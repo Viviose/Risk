@@ -1,1 +1,0 @@
-("6.2" ("51a6c7f243272d6c5287bfd488ff37b59856b448" . "b9ea527998bd8f7adb0686aabfdac40d9b01f103") #"C:\\Users\\Patrick\\Documents\\risk\\src\\graph.rkt" (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"picturing-programs" #"main.rkt"))

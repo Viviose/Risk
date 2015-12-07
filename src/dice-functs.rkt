@@ -3,6 +3,7 @@
 #lang racket
 (require picturing-programs)
 (require test-engine/racket-tests)
+(require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
 (provide roll-die roll-dice find-sup-inf remove-max-or-min sort-rolls produce-rolls tally-deaths create-die-list)
@@ -270,7 +271,7 @@
               )
 ;End Testing Suite
 
-;create-defense-die: [Listof [Listof Numbers]] -> die
+;create-defense-die: [Listof [Listof Numbers]] -> [List die]
 ;Creates a die that uses the results of produce-rolls to create a die with type "defend".
 (define (create-defense-die roll-list)
   (cond [(empty? (second roll-list)) '()]
@@ -330,8 +331,8 @@
 ;create-rand-roll: [Listof [Listof Numbers]] -> [Listof Die]
 ;Creates a random list of rolled dice. Used for rolling dice in the game AKA master dice roller.
 (define (create-rand-roll roll-list)
-  (create-die-list (list)
-                   (list)
+  (create-die-list (create-attack-die roll-list)
+                   (create-defense-die roll-list)
                    )
   )
 

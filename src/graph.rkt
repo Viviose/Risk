@@ -6,7 +6,7 @@
 ;Provides access to all defined functions and variables in this file to other files.
 ;Currently, this will include the following functions:
 #| - distance   |#
-(provide between? distance slope calc-angle in-ellipse?)
+(provide between? distance slope calc-angle in-ellipse? find-sup-inf remove-max-or-min)
 
 ;between?: number(query) number(min) number(max) -> boolean
 ;Checks to see if a number is within a specified bound.
@@ -152,6 +152,52 @@
 (check-expect (in-ellipse? 689 578 552 480 647 495 610 518)
               #t)
 
+;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
+;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
+(define (find-sup-inf operator value lon)
+  (cond [(empty? lon) value]
+        [(operator (first lon) value) (find-sup-inf operator (first lon) (rest lon))]
+        [else (find-sup-inf operator value (rest lon))]
+        )
+  )
+
+;Testing Suite for find-sup-inf
+(check-expect (find-sup-inf > 0 (list 2 3 4))
+              4)
+(check-expect (find-sup-inf > 0 (list 2 3 6))
+              6)
+(check-expect (find-sup-inf > 0 (list 1))
+              1)
+(check-expect (find-sup-inf > 6 '())
+              6)
+;End Testing Suite
+
+
+;remove-max-or-min: function(comparison operator) [Listof Numbers] -> [Listof Numbers]
+;Returns the given list without the first instance of its greatest or least character included.
+(define (remove-max-or-min operator lon)
+  (cond [(empty? lon) '()]
+        [(equal? (first lon)
+                 (find-sup-inf operator 0 lon)
+                 )
+         (rest lon)]
+        [else (cons (first lon)
+                    (remove-max-or-min operator (rest lon))
+                    )]
+        )
+  )
+
+;Testing Suite for remove-max-or-min
+(check-expect (remove-max-or-min > (list 2 3 4))
+              (list 2 3)
+              )
+(check-expect (remove-max-or-min > (list 6 2 1))
+              (list 2 1)
+              )
+(check-expect (remove-max-or-min > (list 2 3 5 5))
+              (list 2 3 5)
+              )
+;End Testing Suite
 
 
 (test)
