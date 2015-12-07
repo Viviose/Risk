@@ -6,7 +6,7 @@
 (require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
-(provide roll-die roll-dice sort-rolls produce-rolls tally-deaths create-dice-list)
+(provide roll-die roll-dice sort-rolls produce-roll)
 
 ;Dice struct is provided to other files here
 (provide (struct-out die))
