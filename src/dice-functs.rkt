@@ -6,62 +6,39 @@
 (require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
-(provide roll-die roll-dice find-sup-inf remove-max-or-min sort-rolls produce-rolls tally-deaths create-die-list)
+(provide roll-die roll-dice find-sup-inf remove-max-or-min sort-rolls produce-rolls tally-deaths create-dice-list)
 
 ;Dice struct is provided to other files here
 (provide (struct-out die))
 
 ;__________________________________________________________________________________________________________________
 
+
+#|
+
+Dice function hierarchy:
+
+Lowest level:
+roll-die
+
+Second level:
+roll-dice
+
+Third level:
+sort-rolls
+
+Fourth level:
+produce-rolls
+
+Fifth level:
+tally-deaths-a/d
+
+Sixth level:
+tally-deaths
+|#
 (define-struct die (number type) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
-
-;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
-;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
-(define (find-sup-inf operator value lon)
-  (cond [(empty? lon) value]
-        [(operator (first lon) value) (find-sup-inf operator (first lon) (rest lon))]
-        [else (find-sup-inf operator value (rest lon))]
-        )
-  )
-
-;Testing Suite for find-sup-inf
-(check-expect (find-sup-inf > 0 (list 2 3 4))
-              4)
-(check-expect (find-sup-inf > 0 (list 2 3 6))
-              6)
-(check-expect (find-sup-inf > 0 (list 1))
-              1)
-(check-expect (find-sup-inf > 6 '())
-              6)
-;End Testing Suite
-
-;remove-max-or-min: function(comparison operator) [Listof Numbers] -> [Listof Numbers]
-;Returns the given list without the first instance of its greatest or least character included.
-(define (remove-max-or-min operator lon)
-  (cond [(empty? lon) '()]
-        [(equal? (first lon)
-                 (find-sup-inf operator 0 lon)
-                 )
-         (rest lon)]
-        [else (cons (first lon)
-                    (remove-max-or-min operator (rest lon))
-                    )]
-        )
-  )
-
-;Testing Suite for remove-max-or-min
-(check-expect (remove-max-or-min > (list 2 3 4))
-              (list 2 3)
-              )
-(check-expect (remove-max-or-min > (list 6 2 1))
-              (list 2 1)
-              )
-(check-expect (remove-max-or-min > (list 2 3 5 5))
-              (list 2 3 5)
-              )
-;End Testing Suite
 
 ;roll-die: anything -> die
 ;Rolls a die that returns a value 1-6. The input doesn't matter.
@@ -79,10 +56,9 @@
         [else (cons 
                (roll-die "roll-who-cares-which") 
                (roll-dice (- armies 1))
-               ) 
-        ]
-   )
- )
+               )]
+        )
+  )
 
 ;sort-rolls: [Listof Numbers] -> [Listof Numbers]
 ;Sorts a list of numbers so that the greatest numbers will be at the front of the list, with the least at the end.
@@ -130,20 +106,20 @@
              )
          0]
         [(operator (first (first roll-list)) 
-            (first (second roll-list))
-            )
+                   (first (second roll-list))
+                   )
          (+ 1
             (tally-deaths-a/d (list (rest (first roll-list))
-                                  (rest (second roll-list))
-                               )
-                              operator
-                            )
-            )]
-        [else (tally-deaths-a/d (list (rest (first roll-list))
                                     (rest (second roll-list))
                                     )
+                              operator
+                              )
+            )]
+        [else (tally-deaths-a/d (list (rest (first roll-list))
+                                      (rest (second roll-list))
+                                      )
                                 operator
-                              )]
+                                )]
         )
   )
 
@@ -208,8 +184,8 @@
 ;The second number in the new list will represent the deaths sustained by defending players.
 ;The only change is the use of tally-deaths-a/d
 (define (tally-deaths roll-list)
-  (list (tally-deaths-a/d roll-list <=)
-        (tally-deaths-a/d roll-list >)
+  (list (tally-deaths-a/d (list (sort-rolls (first roll-list)) (sort-rolls (second roll-list))) <=)
+        (tally-deaths-a/d (list (sort-rolls (first roll-list)) (sort-rolls (second roll-list))) >)
         )
   )
 
@@ -224,84 +200,46 @@
 
 ;Die struct functions to create compatibility with animation functions in main methods
 
-;create-attack-die: [Listof [Listof Numbers]] -> die
+;create-attack-dice: [Listof [Listof Numbers]] -> die
 ;Creates a die that uses the results of produce-rolls to create a die with type "attack".
-(define (create-attack-die roll-list)
+(define (create-attack-dice roll-list)
   (cond [(empty? (first roll-list)) '()]
         [else (cons (make-die (first (first roll-list))
                               "attack")
-                    (create-attack-die (list (rest (first roll-list))
-                                             (second roll-list)
-                                             )
-                                       )
+                    (create-attack-dice (list (rest (first roll-list))
+                                              (second roll-list)
+                                              )
+                                        )
                     )]
         )
   )
 
-;Testing Suite for create-attack-die
-(check-expect (create-attack-die (list (list 6 5 4)
-                                       (list 2 3)
-                                       )
-                                 )
+;Testing Suite for create-attack-dice
+(check-expect (create-attack-dice (list (list 6 5 4)
+                                        (list 2 3)
+                                        )
+                                  )
               (list (make-die 6 "attack")
                     (make-die 5 "attack")
                     (make-die 4 "attack")
                     )
               )
-(check-expect (create-attack-die (list (list 5 4)
-                                       (list 3)
-                                       )
-                                 )
+(check-expect (create-attack-dice (list (list 5 4)
+                                        (list 3)
+                                        )
+                                  )
               (list (make-die 5 "attack")
                     (make-die 4 "attack")
                     )
               )
-(check-expect (create-attack-die (list (list 3)
-                                       '()
-                                       )
-                                 )
+(check-expect (create-attack-dice (list (list 3)
+                                        '()
+                                        )
+                                  )
               (list (make-die 3 "attack")
                     )
               )
-(check-expect (create-attack-die (list '()
-                                       '()
-                                       )
-                                 )
-              '()
-              )
-;End Testing Suite
-
-;create-defense-die: [Listof [Listof Numbers]] -> [List die]
-;Creates a die that uses the results of produce-rolls to create a die with type "defend".
-(define (create-defense-die roll-list)
-  (cond [(empty? (second roll-list)) '()]
-        [else (cons (make-die (first (second roll-list))
-                              "defend")
-                    (create-defense-die (list (first roll-list)
-                                             (rest (second roll-list))
-                                             )
-                                       )
-                    )]
-        )
-  )
-
-;Testing Suite for create-attack-die
-(check-expect (create-defense-die (list (list 6 5 4)
-                                        (list 2 3)
-                                       )
-                                  )
-              (list (make-die 2 "defend")
-                    (make-die 3 "defend")
-                    )
-              )
-(check-expect (create-defense-die (list (list 5 4)
-                                        (list 3)
-                                        )
-                                  )
-              (list (make-die 3 "defend")
-                    )
-              )
-(check-expect (create-defense-die (list '()
+(check-expect (create-attack-dice (list '()
                                         '()
                                         )
                                   )
@@ -309,19 +247,57 @@
               )
 ;End Testing Suite
 
+;create-defense-dice: [Listof [Listof Numbers]] -> [List die]
+;Creates a die that uses the results of produce-rolls to create a die with type "defend".
+(define (create-defense-dice roll-list)
+  (cond [(empty? (second roll-list)) '()]
+        [else (cons (make-die (first (second roll-list))
+                              "defend")
+                    (create-defense-dice (list (first roll-list)
+                                               (rest (second roll-list))
+                                               )
+                                         )
+                    )]
+        )
+  )
+
+;Testing Suite for create-attack-dice
+(check-expect (create-defense-dice (list (list 6 5 4)
+                                         (list 2 3)
+                                         )
+                                   )
+              (list (make-die 2 "defend")
+                    (make-die 3 "defend")
+                    )
+              )
+(check-expect (create-defense-dice (list (list 5 4)
+                                         (list 3)
+                                         )
+                                   )
+              (list (make-die 3 "defend")
+                    )
+              )
+(check-expect (create-defense-dice (list '()
+                                         '()
+                                         )
+                                   )
+              '()
+              )
+;End Testing Suite
+
 ;create-die-list: [Listof [Listof Numbers]] -> [Listof Die]
 ;Creates a list of die that represent the values of either attacking or defending die and their numerical values
-(define (create-die-list roll-list)
-  (append (create-attack-die roll-list)
-          (create-defense-die roll-list)
+(define (create-dice-list roll-list)
+  (append (create-attack-dice roll-list)
+          (create-defense-dice roll-list)
           )
   )
 
 ;Testing Suite for create-die-list
-(check-expect (create-die-list (list (list 3 2)
-                                     (list 2)
-                                     )
-                               )
+(check-expect (create-dice-list (list (list 3 2)
+                                      (list 2)
+                                      )
+                                )
               (list (make-die 3 "attack")
                     (make-die 2 "attack")
                     (make-die 2 "defend")
@@ -331,9 +307,9 @@
 ;create-rand-roll: [Listof [Listof Numbers]] -> [Listof Die]
 ;Creates a random list of rolled dice. Used for rolling dice in the game AKA master dice roller.
 (define (create-rand-roll roll-list)
-  (create-die-list (create-attack-die roll-list)
-                   (create-defense-die roll-list)
-                   )
+  (create-dice-list (create-attack-dice (first roll-list))
+                    (create-defense-dice (second roll-list))
+                    )
   )
 
 (test)
