@@ -95,7 +95,6 @@ Provided by matdes.rkt:
 
 (require picturing-programs)
 ;Picturing-Programs library contains all functions necessary for drawing images.
-;All references can be found at this location by default: (file:///C:/Program%20Files/Racket/doc/picturing-programs/index.html)
 ;It can also be found by looking up the picturing-programs module at the Racket Help Desk.
 
 (require test-engine/racket-tests)

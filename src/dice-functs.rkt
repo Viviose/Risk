@@ -6,7 +6,7 @@
 (require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
-(provide roll-die roll-dice find-sup-inf remove-max-or-min sort-rolls produce-rolls tally-deaths create-dice-list)
+(provide roll-die roll-dice sort-rolls produce-rolls tally-deaths create-dice-list)
 
 ;Dice struct is provided to other files here
 (provide (struct-out die))
@@ -16,25 +16,9 @@
 
 #|
 
-Dice function hierarchy:
-
-Lowest level:
-roll-die
-
-Second level:
-roll-dice
-
-Third level:
-sort-rolls
-
-Fourth level:
-produce-rolls
-
-Fifth level:
-tally-deaths-a/d
-
-Sixth level:
-tally-deaths
+Call create-rand-roll to form a random roll of dice in play.
+Call get-attack-deaths to determine how many attacking troops have died, given a roll.
+Call get-defense-deaths to determine how
 |#
 (define-struct die (number type) #:transparent)
 
@@ -86,8 +70,8 @@ tally-deaths
 ;produce-rolls: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
 ;Creates a list that contains two lists of attack and defense dice.
 (define (produce-rolls attackers defenders)
-  (list (sort-rolls (roll-dice attackers))
-        (sort-rolls (roll-dice defenders))
+  (list (roll-dice attackers)
+        (roll-dice defenders)
         )
   )
 
@@ -198,6 +182,18 @@ tally-deaths
               )
 ;End Testing Suite
 
+;get-attack-deaths: [Listof [Listof Numbers]] -> number
+;Takes in a list containing all the dice rolls from tally deaths and returns the first number in the list of deaths.
+(define (get-attack-deaths roll-list)
+  (first (tally-deaths roll-list))
+  )
+
+;get-defense-deaths: [Listof [Listof Numbers]] -> number
+;Takes in a list containing all the dice rolls from tally deaths and returns the second number in the list of deaths.
+(define (get-defense-deaths roll-list)
+  (second (tally-deaths roll-list))
+  )
+
 ;Die struct functions to create compatibility with animation functions in main methods
 
 ;create-attack-dice: [Listof [Listof Numbers]] -> die
@@ -306,10 +302,10 @@ tally-deaths
 
 ;create-rand-roll: [Listof [Listof Numbers]] -> [Listof Die]
 ;Creates a random list of rolled dice. Used for rolling dice in the game AKA master dice roller.
-(define (create-rand-roll roll-list)
-  (create-dice-list (create-attack-dice (first roll-list))
-                    (create-defense-dice (second roll-list))
-                    )
+(define (create-rand-roll attackers defenders)
+  (list (create-attack-dice (produce-rolls attackers defenders))
+        (create-defense-dice (produce-rolls attackers defenders))
+        )
   )
 
 (test)
