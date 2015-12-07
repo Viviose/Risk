@@ -2016,7 +2016,10 @@ We shoulda defined this sucker long ago:
              (equal? (system-territory-attacked model) "primed") evaluates to true.
            - The player has not selected a territory to attack from if 
              (equal? (system-territory-attacked model) "null") evaluates to true.
-           - The player has selected all territories if
+           - The player has selected all territories if 
+             (or (not (equal? (system-territory-attacked model) "null")))
+                 (not (equal? (system-territory-attacked model) "primed")))
+                 ) evaluates to true.
 
         |#
         [(and (equal? event "button-down")
