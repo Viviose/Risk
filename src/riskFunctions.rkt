@@ -1,6 +1,6 @@
 ;__________________________________________________________________________________________________________________________________________________
 
-#lang racket/gui
+#lang racket
 (require "dice-functs.rkt")
 #|
 A sub-module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
@@ -108,13 +108,8 @@ Provided by matdes.rkt:
 ;When set to 1, it will run debug mode to find points on the map found in imgs folder to be used in functions.
 (define DEBUG 0)
 
-;Screensize
-;This constant is the size of the users screen
-(define-values (display-w display-h)
-      (get-display-size))
 ;__________________________________________________________________________________________________________________________________________________
-(define BOARD (scale .6 (bitmap "imgs/board.png"))
-      )
+(define BOARD (scale .6 (bitmap "imgs/board.png")))
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
@@ -2187,8 +2182,7 @@ We shoulda defined this sucker long ago:
            "inactive"
            )
           ;Draw Handler
-          ;(to-draw render 1250 1200)
-          (to-draw render display-w display-h)
+          (to-draw render 1250 1200)
           ;Mouse Handler
           (on-mouse mouse-handler)
           ;Key Handler
