@@ -668,7 +668,6 @@ SAMPLE IMPLEMENTATION!
             (toolbar model))
           )]
         [else (error "Well, this is embarassing: render could not detect a valid screen. Contact a developer and yell at them")]
-        ;Nononononono bad bad bad: render cannot return a model, only an image.
         )
   )
 
@@ -724,7 +723,10 @@ Max x: 933
         )
   )
          
+;Mouse x offset function:
 
+(define (x/o x)
+  (- x (/ (- display-w (image-width BOARD)) 2)))
 
 (define (mouse-handler model x y event)
   (cond [(equal? (system-screen model) "splash")
@@ -1204,7 +1206,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                                                         )]
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
-                      [territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
                       )]
         ;This clause checks to see if the current player has any troops to allocate.
         ;If they do not, then play will pass to the next player.
@@ -1212,7 +1214,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
          (struct-copy system model
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
-                      [territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
                       [player-turn (turn-update model)]
                       )]
         ;This clause will check to see if the player is not currently hovering over a territory.
@@ -1221,7 +1223,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
          (struct-copy system model
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
-                      [territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
                       )]
         ;This clause checks to see if a territory is clicked that is not equal to "null".
         ;If so, it will check to see if the player can either claim or fortify this territory.
@@ -1251,7 +1253,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                                                                (system-territory-list model)
                                                                (system-player-turn model)
                                                                )]
-                             [territory-selected (tooltip x y model)]
+                             [territory-selected (tooltip (x/o x) y model)]
                              [x (- x (/ (- display-w (image-width BOARD)) 2))]
                              [y y]
                              [playerlist (player-update-armies (system-playerlist model)
@@ -1291,18 +1293,18 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                              [player-turn (turn-update model)]
                              [x (- x (/ (- display-w (image-width BOARD)) 2))]
                              [y y]
-                             [territory-selected (tooltip x y model)]
+                             [territory-selected (tooltip (x/o x) y model)]
                              )]
                ;If a territory cannot be claimed or fortified, then the model is updated with default attributes.
                [else (struct-copy system model
                                   [x (- x (/ (- display-w (image-width BOARD)) 2))]
                                   [y y]
-                                  [territory-selected (tooltip x y model)]
+                                  [territory-selected (tooltip (x/o x) y model)]
                                   )]
                )]
         ;If none of these cases apply, then the system will be updated with default attributes and initial recruitment will continue.
         [else (struct-copy system model
-                           [territory-selected (tooltip x y model)]
+                           [territory-selected (tooltip (x/o x) y model)]
                            [x (- x (/ (- display-w (image-width BOARD)) 2))]
                            [y y]
                            )]
@@ -1843,7 +1845,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                                     (slider-armies (system-slider-store model))
                                                     )]
                        [debug "Workin"]
-                       [territory-selected (tooltip x y model)]
+                       [territory-selected (tooltip (x/o x) y model)]
                        [x (- x (/ (- display-w (image-width BOARD)) 2))]
                        [y y] 
                        )]         
@@ -1851,7 +1853,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
          (struct-copy system model
                       [turn-stage "attack"]
-                      [territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
                       )]
@@ -1861,7 +1863,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
          (struct-copy system model
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
-                      [territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
                       )]
         ;This clause checks to see if the player is clicking on a territory and can place troops there.
         ;If they can, it will implement the slider interface to add troops.
@@ -1894,11 +1896,11 @@ Territory-selected and x + y coordinates must be updated in each clause.
                [else (struct-copy system model
                                   [x (- x (/ (- display-w (image-width BOARD)) 2))]
                                   [y y]
-                                  [territory-selected (tooltip x y model)]
+                                  [territory-selected (tooltip (x/o x) y model)]
                                   )]
                )]
          [else (struct-copy system model
-                            [territory-selected (tooltip x y model)]
+                            [territory-selected (tooltip (x/o x) y model)]
                             [x (- x (/ (- display-w (image-width BOARD)) 2))]
                             [y y]
                             )]
@@ -2052,8 +2054,8 @@ We shoulda defined this sucker long ago:
          ;IF this is true, we should change the screen to our slider warning, then change the status to primed.
          ;We should then activate the rolls (if there is a tick handler) and update the slider with that territories army count.
          (struct-copy system model
-                      [territory-selected (tooltip x y model)]
-                      [territory-attacking (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
+                      [territory-attacking (tooltip (x/o x) y model)]
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
                       [screen "slider_warning"]
@@ -2080,7 +2082,7 @@ We shoulda defined this sucker long ago:
                       [territory-attacked (system-territory-selected model)]
                       [x (- x (/ (- display-w (image-width BOARD)) 2))]
                       [y y]
-                      [territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip (x/o x) y model)]
                       )]
         [(start-attack? model)
          ;Actual attack
@@ -2099,7 +2101,7 @@ We shoulda defined this sucker long ago:
          
          model]
         [else (struct-copy system model
-                           [territory-selected (tooltip x y model)]
+                           [territory-selected (tooltip (x/o x) y model)]
                            [x (- x (/ (- display-w (image-width BOARD)) 2))]
                            [y y]
                            )]
