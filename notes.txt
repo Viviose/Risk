@@ -4,3 +4,6 @@ Project notes on work that occurs out of the sphere of this library.
 Both Patty G and I have spent this period creating a shell script + executable that speeds up the process of logging on by putting the 
 H-drive mounting script into a new file, making it work so that it will not close upon executing another script, and putting in our usernames
 by default, as well as running "git pull" after completing H-drive mount.
+
+12/17/15 - Joshua Sanchez
+Used myself editing this file as part of a film for VP.
