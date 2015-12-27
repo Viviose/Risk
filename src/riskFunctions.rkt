@@ -23,7 +23,7 @@ Provided by dice-functs.rkt:
 - remove-max-or-min: Function(operator) [Listof Numbers] -> [Listof Numbers]
     - Takes in a list of numbers and an operator and returns a list absent of either its least or greatest number, whichever is specified.
     - Has dependency of find-sup-inf function. Removes only the largest/smallest.
-- find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number 
+- find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
     - Takes in a comparison operator, a number in which to compare numbers to, and a list of numbers to be compared to the comparison value.
     - Returns the greatest or least (depending on the given operator) number in a list, or the comparison value given, whichever is greater/lesser.
     - No dependencies.
@@ -112,6 +112,7 @@ Provided by matdes.rkt:
 ;This constant is the size of the users screen
 (define-values (display-w display-h)
       (get-display-size))
+
 ;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png"))
       )
@@ -119,20 +120,58 @@ Provided by matdes.rkt:
 
 (define WOOD-BG (crop 0 0 display-w display-h (bitmap "imgs/woodbg.jpg")))
 
+;Expanded posn constants are defined here for ease of use later on.
+(define BOARD-AND-TOOLBAR-Y
+    (+
+        (image-height BOARD)
+        75 ;Could be made a variable, too lazy right now
+      )
+  )
+
+(define BOARD-X
+    (image-width BOARD)
+  )
+
+(define (toolbar-x model)
+    (image-width (toolbar model))
+  )
+
+
+(define VERTICAL-PADDING
+    (/  (- display-h BOARD-AND-TOOLBAR-Y) 2)
+    )
+
+(define (HORIZONTAL-TOOLBAR-PADDING model)
+    (/  (- display-w (image-width (toolbar model))) 2)
+  )
+(define CARD-TOOLBAR-Y
+    (-  display-h
+        VERTICAL-PADDING
+        37.5 ;To radius
+        )
+  )
+(define (CARD-TOOLBAR-X model)
+    (+ (HORIZONTAL-TOOLBAR-PADDING model) (+ (* 8 75) 37.5) ; This seemengly random number represents how many pixels away from the start of the toolbar the button is
+    )
+  )
+
+
+
+
 ;System struct (Holds all game information and statuses)
 (define-struct system (playerlist player-turn
-                                  turn-stage 
-                                  screen 
+                                  turn-stage
+                                  screen
                                   dicelist
-                                  territory-selected 
-                                  territory-list 
-                                  debug 
-                                  x y 
-                                  card-list 
-                                  cardsets-redeemed 
-                                  territory-attacking 
-                                  territory-attacked 
-                                  armies-attacking 
+                                  territory-selected
+                                  territory-list
+                                  debug
+                                  x y
+                                  card-list
+                                  cardsets-redeemed
+                                  territory-attacking
+                                  territory-attacked
+                                  armies-attacking
                                   slider-store
                                   roll-state)
   #:transparent)
@@ -140,7 +179,7 @@ Provided by matdes.rkt:
 ;Player struct (Holds the information of each player)
 ;[Player] :  Number (armies) Number(pos)
 (define-struct player (reserved-armies pos)
-  #:transparent) 
+  #:transparent)
 
 #|
 Definition of structs as seen in sys-lists.rkt.
@@ -199,7 +238,7 @@ Redefinition of these structs here can crash the program, and as thus they shoul
             (rectangle 700 100 "solid" (make-color 26 35 126 150)))
            (scale 1.8 TITLESCRN)
            )
-  ) 
+  )
 
 ;The player selection screen with player buttons
 (define PLAYERSCRN
@@ -399,12 +438,12 @@ SAMPLE IMPLEMENTATION!
 
 (define (numberbar armies selected)
   (above
-   
+
    (beside
     (overlay
      (textc "0" 12  "black")
      (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
-    (overlay 
+    (overlay
      (textc (number->string (round (/ armies 4))) 12 "black")
      (rectangle (/ SLIDER-WIDTH 5) 0 "solid" (make-color 0 0 0 0)))
     (overlay
@@ -417,19 +456,19 @@ SAMPLE IMPLEMENTATION!
      (textc (number->string armies) 12 "black")
      (rectangle (/ SLIDER-WIDTH 4) 0 "solid" (make-color 0 0 0 0))))
    (textc (number->string selected) 16 "black")))
-  
+
 
 
 (define (calc-armies bar-width max-armies x)
   (min
-   (round 
+   (round
    (*
     (/
      x
      bar-width)
     max-armies))
    max-armies))
-    
+
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
 ;the number of armies it's on with (slider-armies ...)
@@ -443,14 +482,14 @@ SAMPLE IMPLEMENTATION!
     (numberbar armies selected))
     (calc-armies SLIDER-WIDTH armies x)))
 
-;Slider needs a way to check if 
+;Slider needs a way to check if
 ;_____________________________________________________________________________________________________
 
 ;This shows a variable number of die on the bar.
 ;Dicelist (dice structs) -> Image (die)
 (define (die-bar leest)
   (cond [(empty? leest) (square 0 "outline" "white")]
-        [else (beside (dice-face (die-number (first leest)) 
+        [else (beside (dice-face (die-number (first leest))
                                  (die-type (first leest))
                                  )
                       (die-bar (rest leest))
@@ -501,7 +540,7 @@ SAMPLE IMPLEMENTATION!
                 [(equal? (system-turn-stage model) "init-recruit")
                  "Initial Recruitment"]
                 )
-          16 "black")                                              
+          16 "black")
     (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "recruit")
                                          (equal? (system-turn-stage model) "init-recruit")
                                          )
@@ -512,7 +551,7 @@ SAMPLE IMPLEMENTATION!
                                      "yellow"]
                                     [else "white"]
                                     )
-               ) 
+               )
     )
    (cond [(equal? (system-screen model) "cards")
           SUBMIT-BUTTON]
@@ -527,16 +566,16 @@ SAMPLE IMPLEMENTATION!
                   [else " armies in reserves."]
                   )
             )
-           
+
           16 "orange")
-          
+
     (rectangle 160 75 "solid" "purple"))
    (cond [(or
            (equal? (system-turn-stage model) "attack")
-           (equal? (system-turn-stage model) "recruit"));Adding more later to this [BOOKMARK] 
+           (equal? (system-turn-stage model) "recruit"));Adding more later to this [BOOKMARK]
           (slider-image (system-slider-store model))
           ]
-          
+
          [else empty-image])
    )
   )
@@ -555,8 +594,8 @@ SAMPLE IMPLEMENTATION!
 ;Card-Buncher - Stack images of cards next to each other
 (define (card-buncher cardleest)
   (cond [(empty? cardleest) (empty-scene 0 0)]
-        [else (beside (card-create (first cardleest)) 
-                      (square 4 "solid" (make-color 128 0 0)) 
+        [else (beside (card-create (first cardleest))
+                      (square 4 "solid" (make-color 128 0 0))
                       (card-buncher (rest cardleest))
                       )]
         )
@@ -569,9 +608,9 @@ SAMPLE IMPLEMENTATION!
                             (system-territory-selected model) (system-territory-list model)))))
      "Unclaimed!"]
     [else (string-append "Owned by Player " (number->string
-                                             (+ 1 
-                                                (territory-owner 
-                                                 (territory-scan 
+                                             (+ 1
+                                                (territory-owner
+                                                 (territory-scan
                                                   (system-territory-selected model) (system-territory-list model))
                                                  )
                                                 )
@@ -591,7 +630,7 @@ SAMPLE IMPLEMENTATION!
   131)
   )
 
- 
+
 
 ;HANDLERS
 (define (render model)
@@ -617,7 +656,7 @@ SAMPLE IMPLEMENTATION!
           (above
           (cond [(not (equal? (system-territory-selected model) "null"))
                  ;*****************************************************!!!!!!Work on null is needed.
-                 
+
                   (place-image (overlay
                                (above
                                 (textc (system-territory-selected model) 16 "black")
@@ -631,31 +670,32 @@ SAMPLE IMPLEMENTATION!
                                        " Armies")
                                       12
                                       "black"
-                                      )    
+                                      )
                                 )
                                (rectangle (tooltip-width (system-territory-selected model)) 50 "solid" (playercolor model))
                                )
                               (system-x model) (system-y model)
                               BOARD)]
                 [else BOARD]
-                )          
+                )
           (toolbar model))
           WOOD-BG)]
         [(equal? (system-screen model) "cards")
           (overlay
            (overlay/align "right" "top" X
-                          
+
                           (overlay/align "left" "center"
-                                         (beside (rectangle 10 0 "solid" "black") 
-                                                 (card-buncher 
+                                         (beside (rectangle 10 0 "solid" "black")
+                                                 (card-buncher
                                                   (player-card-list (system-card-list model) (system-player-turn model))
                                                   )
                                                  )
                                          (rectangle 700 200 "solid" (make-color 128 0 0))
                                          )
                           )
-           
-           (above
+
+           (overlay
+             (above
             (cond [(not (equal? (system-territory-selected model) "null"))
                    (place-image (overlay
                                  (above
@@ -666,6 +706,7 @@ SAMPLE IMPLEMENTATION!
                                 BOARD)]
                   [else BOARD])
             (toolbar model))
+            WOOD-BG)
           )]
         [else (error "Well, this is embarassing: render could not detect a valid screen. Contact a developer and yell at them")]
         )
@@ -680,7 +721,7 @@ Min x: 313
 Max x: 413
 
 Card 2:
-Min x: 417 
+Min x: 417
 Max x: 517
 
 Card 3:
@@ -722,7 +763,7 @@ Max x: 933
         [else -1]
         )
   )
-         
+
 ;Mouse x offset function:
 
 (define (x/o x)
@@ -818,15 +859,15 @@ Max x: 933
                  (button-down? event)
                  (hover-near-cards? x y))
             (model-screen->cards model)]|#
-                 
-           [(equal? DEBUG 0)                 
-            (cond [(and 
+
+           [(equal? DEBUG 0)
+            (cond [(and
                     (equal? event "button-down")
-                    (< (distance 923 925 x y) 37.5))
+                    (< (distance (CARD-TOOLBAR-X model) CARD-TOOLBAR-Y x y) 37.5))
                     (struct-copy
                      system model
                      [screen "cards"]
-                    
+
                      )]
                   [else (cond [(equal? (system-turn-stage model) "init-recruit")
                                (initial-recruit model x y event)]
@@ -843,7 +884,7 @@ Max x: 933
                               )
                         ]
                   )]
-           ;THIS IS USED IN DEBUG TO DISPLAY A POSN                
+           ;THIS IS USED IN DEBUG TO DISPLAY A POSN
            [(equal? DEBUG 1)
             (struct-copy
              system model
@@ -859,7 +900,7 @@ Max x: 933
                 (struct-copy system model
                              [screen "gameplay"]
                              )]
-               ;Here, we see if a card has indeed been clicked on, and we use its index to change its state. 
+               ;Here, we see if a card has indeed been clicked on, and we use its index to change its state.
                [(and (not (equal? (which-card? x y)
                                   -1)
                           )
@@ -867,8 +908,8 @@ Max x: 933
                      )
                 (change-card-selected (which-card? x y)
                                       model
-                                      )] 
-                
+                                      )]
+
                ;This next part is a bit more complex. Because cards can only be turned in during the recruit phase, the game will check for it here.
                ;The distance discriminator will check if the mouse is within the boundaries of the turn-in-cards button.
                ;The event discriminator will check to see if the button has been clicked.
@@ -897,7 +938,7 @@ Max x: 933
         [(< (distance x y 384 216) 20) "Quebec"]
         [(< (distance x y 297 218) 20) "Ontario"]
         [(< (distance x y 228 198) 20) "Alberta"]
-        [(< (distance x y 229 297) 20) "Western United States"] 
+        [(< (distance x y 229 297) 20) "Western United States"]
         [(< (distance x y 315 315) 20) "Eastern United States"]
         [(< (distance x y 224 372) 20) "Central America"]
         [(< (distance x y 318 480) 10) "Venezuela"]
@@ -938,7 +979,7 @@ Max x: 933
         [else  "null"]
         )
   )
-  
+
 ;territory-scan: Selects a territory struct based on a keyword given.
 ;String (territory-name) -> Territory (of that struct)
 (define (territory-scan name leest)
@@ -1062,7 +1103,7 @@ Max x: 933
 (define (make-boolean-list plist)
    (cond [(empty? plist) '()]
          [(equal? (player-reserved-armies (first plist)) 0)
-         (append (list true) 
+         (append (list true)
                  (make-boolean-list (rest plist))
                  )]
          [else (append (list false)
@@ -1101,7 +1142,7 @@ Max x: 933
      ;                              )
       ;        false)
 
-;Takes helper functions move-on-to-recruit-main and make-boolean-list and returns a boolean depending on whether or not all armies have been used 
+;Takes helper functions move-on-to-recruit-main and make-boolean-list and returns a boolean depending on whether or not all armies have been used
 ;by all players.
 ;move-on-to-recruit?: system -> boolean
 ;Checks to see if all players have no troops left to place and if all territories are claimed. True if so, else false.
@@ -1135,13 +1176,13 @@ Max x: 933
 ;Checks to see if the current player has any troops in their reserves, defined as having an amount of armies greater than 0.
 ;True if they do, else false.
 (define (troops-to-allocate? model)
-  (> (player-reserved-armies (select-player (system-playerlist model) 
+  (> (player-reserved-armies (select-player (system-playerlist model)
                                             (system-player-turn model)
                                             )
                              )
      0)
   )
-     
+
 ;turn-update: system -> number
 ;If the current player is the last, then play will continue with the first player.
 ;Else, the next player is up.
@@ -1157,7 +1198,7 @@ Max x: 933
       (+ (system-player-turn model)
          1)
       )
-  )                         
+  )
 
 ;initial-recruit: Adds one army to any one territory of a specific player based on territory selected
 ;System (model) -> System (model)
@@ -1310,7 +1351,7 @@ ALL clauses should update the x and y coordinates, as well as territory-selected
                            )]
         )
   )
-  
+
 ;***RECRUITMENT PHASE***
 
 #|
@@ -1325,7 +1366,7 @@ The following factor into the amount of armies given to players:
 (define (count-territories playerpos tlist)
   (cond [(empty? tlist) 0]
         [(equal? (territory-owner (first tlist)) playerpos)
-         (+ 1 
+         (+ 1
             (count-territories playerpos (rest tlist))
             )]
         [else (count-territories playerpos (rest tlist))]
@@ -1538,7 +1579,7 @@ These include:
 ;A card menu will be drawn when clicked by the player, and hitboxes will become available when the menu is pulled up.
 ;The screen parameter of the system struct will be string "cards".
 ;I.E. (equal? (system-screen system) "cards") returns true.
- 
+
 ;Some card functions will be found towards the beginning of this file in order to use them in the draw handler.
 ;Some card functions will be found towards the middle of this file in order to use them in the mouse handler.
 
@@ -1590,7 +1631,7 @@ These include:
                  "wild"
                  )
          (find-reg-cards card-list playerpos)]
-        [else (cons (first card-list) 
+        [else (cons (first card-list)
                     (find-reg-cards card-list playerpos)
                     )]
         )
@@ -1606,7 +1647,7 @@ These include:
       false
       )
   )
-      
+
 ;return-same-unit: [List card] number(playerpos) string(unit) -> [List card]
 ;Goes through a given list of cards and returns cards with the unit type specified.
 (define (return-same-unit card-list playerpos unit)
@@ -1676,10 +1717,10 @@ This discriminator, however, will always check for active cards, as the system w
             3)
          false]
         ;After this point, it is known that the user has 4+ cards.
-        ;This condition checks to see if the player has a wild card in possession, 
+        ;This condition checks to see if the player has a wild card in possession,
         [(and (has-wild-card? (active-card-list (system-card-list system))
                               (system-player-turn system)
-                              ) 
+                              )
               (has-two-reg-cards? (active-card-list (system-card-list system))
                                   (system-player-turn system)
                                   )
@@ -1739,7 +1780,7 @@ This discriminator, however, will always check for active cards, as the system w
 ;nullify-card: System Card List[Card] -> System
 ;Changes the given card's value to a set of null values.
 (define (nullify-card model card)
-  (card-update (card-id card) "null" "inactive" (system-card-list model)) 
+  (card-update (card-id card) "null" "inactive" (system-card-list model))
   )
 
 ;Use with active-card-list!
@@ -1784,10 +1825,10 @@ A few events happen when cards are turned in:
 (define (get-card-bonus model)
   (struct-copy system model
                ;Turn in cards and add troops to player's army reserves
-               [card-list (turn-in-cards model 
+               [card-list (turn-in-cards model
                                          (active-card-list (system-card-list model))
                                          )]
-               [playerlist (player-update-armies (system-playerlist model) 
+               [playerlist (player-update-armies (system-playerlist model)
                                                  + (cards-bonus (system-cardsets-redeemed model))
                                                  (system-player-turn model)
                                                  )]
@@ -1831,7 +1872,7 @@ Events that occur during recruit:
 
 Territory-selected and x + y coordinates must be updated in each clause.
 |#
-        
+
 (define (recruit-phase model x y event)
   (cond  [(and (equal? event "drag")
                (between? x SLIDER-OFFSET 1236)
@@ -1847,8 +1888,8 @@ Territory-selected and x + y coordinates must be updated in each clause.
                        [debug "Workin"]
                        [territory-selected (tooltip (x/o x) y model)]
                        [x (- x (/ (- display-w (image-width BOARD)) 2))]
-                       [y y] 
-                       )]         
+                       [y y]
+                       )]
          [(move-on-to-attack? model)
          ;If the conditions for moving on to the next phase are met, then the turn-stage will be changed to attack.
          (struct-copy system model
@@ -1870,7 +1911,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               )
-         ;This clause checks to see if the player selecting the territory is the owner of that territory 
+         ;This clause checks to see if the player selecting the territory is the owner of that territory
          ;If they are, slider functions are implemented to add troops.
          (cond [(equal? (territory-owner (territory-scan (system-territory-selected model)
                                                          (system-territory-list model)
@@ -1918,7 +1959,7 @@ selected territories, which may get a little complicated.
 Events that occur in the attack phase:
 - The player wins the game by defeating all the other players in the game (no one owns anymore territories).
 - The player chooses a territory to attack from and to attack.
-  - Dice are rolled once the user has chosen 
+  - Dice are rolled once the user has chosen
 
 Attack Phase must check for win conditions first, then move on to fortify conditions.
 
@@ -2027,18 +2068,18 @@ We shoulda defined this sucker long ago:
                                     ]
                       [debug "Workin"]
                       )]
-        #| Here begins the conditions for attacking territories. 
+        #| Here begins the conditions for attacking territories.
            Conditions index:
            - Players are clicking when the clause (equal? event "button-down) evaluates to true.
-           - Players are hovering a territory they own when 
+           - Players are hovering a territory they own when
              (equal? (system-player-turn (territory-owner (select-t-scan model)))) evaluates to true.
            - Players are not hovering a territory when (equal? (system-territory-selected model) "null") evaluates
              to true.
-           - The player has selected a territory to attack from but not to attack when 
+           - The player has selected a territory to attack from but not to attack when
              (equal? (system-territory-attacked model) "primed") evaluates to true.
-           - The player has not selected a territory to attack from if 
+           - The player has not selected a territory to attack from if
              (equal? (system-territory-attacked model) "null") evaluates to true.
-           - The player has selected all territories if 
+           - The player has selected all territories if
              (or (not (equal? (system-territory-attacked model) "null")))
                  (not (equal? (system-territory-attacked model) "primed")))
                  ) evaluates to true.
@@ -2049,7 +2090,7 @@ We shoulda defined this sucker long ago:
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               (equal? (system-territory-attacked model) "null")
-              (not (equal? (system-player-turn (territory-owner (select-t-scan model))))) 
+              (not (equal? (system-player-turn (territory-owner (select-t-scan model)))))
               )
          ;IF this is true, we should change the screen to our slider warning, then change the status to primed.
          ;We should then activate the rolls (if there is a tick handler) and update the slider with that territories army count.
@@ -2097,8 +2138,8 @@ We shoulda defined this sucker long ago:
 
              ;Dice functions, update armies, etc.
 
-        ;'Move on to fortify' clause 
-         
+        ;'Move on to fortify' clause
+
          model]
         [else (struct-copy system model
                            [territory-selected (tooltip (x/o x) y model)]
@@ -2149,7 +2190,7 @@ We shoulda defined this sucker long ago:
 
 
 ;Animation includes a mouse and draw handler, as well as an initial system model.
-(big-bang (make-system 
+(big-bang (make-system
            ;No players at first, updated upon player selection
            (list)
            ;Turn starts at 0, first player
@@ -2203,5 +2244,7 @@ We shoulda defined this sucker long ago:
           ;Tick Handler
           ;(on-tick animation-handler .1)
           )
+CARD-TOOLBAR-Y
+(+ 6 7)
 
 (test)
