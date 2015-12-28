@@ -8,19 +8,20 @@
 ;All functions defined in this file and provided here can be accessed by other files upon request.
 (provide roll-die roll-dice random-roll)
 
-;Dice struct is provided to other files here
-(provide (struct-out die))
+;Die struct is provided to other files here
+(provide (struct-out die)
+         (struct-out dice-lists)
+         )
 
 ;__________________________________________________________________________________________________________________
 
-
-#|
-
-Call create-rand-roll to form a random roll of dice in play.
-Call get-attack-deaths to determine how many attacking troops have died, given a roll.
-Call get-defense-deaths to determine how
-|#
+;die: number(roll value) string(attack or defend type) -> die
+;Stores values for die that are used in rolls.
 (define-struct die (number type) #:transparent)
+
+;dice-lists: [List die(attack)] [List die(defend)] -> dice-lists
+;Stores two lists, one filled with attack die and one with defense die.
+(define-struct dice-lists (attack defend) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
 
@@ -75,4 +76,5 @@ Call get-defense-deaths to determine how
         )
   )
 
+;attack-deaths
 (test)
