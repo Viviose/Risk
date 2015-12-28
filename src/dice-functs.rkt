@@ -71,9 +71,9 @@
 ;random-roll: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
 ;Creates a list that contains two lists of attack and defense dice.
 (define (random-roll attackers defenders)
-  (list (sort-rolls (roll-dice attackers))
-        (sort-rolls (roll-dice defenders))
-        )
+  (dice-lists (sort-rolls (roll-dice attackers))
+              (sort-rolls (roll-dice defenders))
+              )
   )
 
 ;attack-deaths
