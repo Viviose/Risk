@@ -119,6 +119,8 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 (define WOOD-BG (crop 0 0 display-w display-h (bitmap "imgs/woodbg.jpg")))
+;The 'X' image for closing things
+(define X (scale .5 (bitmap "imgs/close.png")))
 
 ;Expanded posn constants are defined here for ease of use later on.
 (define BOARD-AND-TOOLBAR-Y
@@ -144,6 +146,10 @@ Provided by matdes.rkt:
 (define (HORIZONTAL-TOOLBAR-PADDING model)
     (/  (- display-w (image-width (toolbar model))) 2)
   )
+
+  (define HORIZONTAL-PADDING
+    (/ (- display-w (image-width BOARD)) 2)
+    )
 (define CARD-TOOLBAR-Y
     (-  display-h
         VERTICAL-PADDING
@@ -155,6 +161,19 @@ Provided by matdes.rkt:
     )
   )
 
+(define CARD-EXIT-Y
+    (+ VERTICAL-PADDING
+      (/ (- (image-height BOARD) 200 ) 2)
+      (/ (image-height X) 2)
+       37.5)
+  )
+
+  (define CARD-EXIT-X
+      (+ HORIZONTAL-PADDING
+        (/ (- (image-width BOARD) 700) 2)
+        (- 700 (/ (image-width X) 2))
+        )
+    )
 
 
 
@@ -201,8 +220,7 @@ Redefinition of these structs here can crash the program, and as thus they shoul
   #:transparent)
 
 
-;The 'X' image for closing things
-(define X (scale .5 (bitmap "imgs/close.png")))
+
 
 ;The number of armies per player
 ;Number -> Number
@@ -215,7 +233,11 @@ Redefinition of these structs here can crash the program, and as thus they shoul
   )
 
 ;SLIDER CONSTANT:
-(define SLIDER-OFFSET 1000)
+(define (SLIDER-OFFSET model)
+    (-  display-w
+        (HORIZONTAL-TOOLBAR-PADDING model)
+        SLIDER-WIDTH)
+)
 
 
 ;SCREEN SECTION: Make screens here
@@ -893,7 +915,7 @@ Max x: 933
            [else model]
            )]
         [(equal? (system-screen model) "cards")
-         (cond [(and (<= (distance 959 418 x y) 20)
+         (cond [(and (<= (distance CARD-EXIT-X CARD-EXIT-Y x y) 20)
                      (equal? event "button-down")
                      )
                 ;Checks to see if mouse is on X and has clicked it, if so runs next function
@@ -1875,13 +1897,13 @@ Territory-selected and x + y coordinates must be updated in each clause.
 
 (define (recruit-phase model x y event)
   (cond  [(and (equal? event "drag")
-               (between? x SLIDER-OFFSET 1236)
-               (between? y 910 935)
+               (between? x (SLIDER-OFFSET model) (+ (SLIDER-OFFSET model) SLIDER-WIDTH))
+               (between? y (+ VERTICAL-PADDING (image-height BOARD) 15) (+ VERTICAL-PADDING (image-height BOARD) 25))
                )
           (struct-copy system model
                        [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
                                                                                            (system-player-turn model)))
-                                                    (- x SLIDER-OFFSET)
+                                                    (- x (SLIDER-OFFSET model))
                                                     0
                                                     (slider-armies (system-slider-store model))
                                                     )]
@@ -2051,7 +2073,7 @@ We shoulda defined this sucker long ago:
                       [debug "A player has won!"]
                       )]
         [(and (equal? event "drag")
-              (between? x SLIDER-OFFSET 1236)
+              (between? x (SLIDER-OFFSET model) 1236)
               (between? y 800 1000)
               )
          ;Slides the slider.
@@ -2061,7 +2083,7 @@ We shoulda defined this sucker long ago:
                                                                             (system-player-turn model)
                                                                             )
                                                              )
-                                     (- x SLIDER-OFFSET)
+                                     (- x (SLIDER-OFFSET model))
                                      0
                                      (slider-armies (system-slider-store model))
                                      )
@@ -2105,7 +2127,7 @@ We shoulda defined this sucker long ago:
                       [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
                                                       1)
-                                                   (- x SLIDER-OFFSET)
+                                                   (- x ( model))
                                                    0
                                                    (slider-armies (system-slider-store model))
                                                    )]
@@ -2165,6 +2187,11 @@ We shoulda defined this sucker long ago:
                       [turn-stage "recruit"]
                       [player-turn 0]
                       )]
+        [(equal? key "p")
+          (struct-copy system model
+            [debug (SLIDER-OFFSET model)])
+          ]
+
         [(and
           (equal? key "space")
           (equal? (system-roll-state "active")))
@@ -2188,9 +2215,11 @@ We shoulda defined this sucker long ago:
         [else model]))
 |#
 
+;__________________________________________________________________________________________________________________________________________________
+;The default system
 
-;Animation includes a mouse and draw handler, as well as an initial system model.
-(big-bang (make-system
+(define SYSTEM-DEFAULT
+  (make-system
            ;No players at first, updated upon player selection
            (list)
            ;Turn starts at 0, first player
@@ -2234,6 +2263,9 @@ We shoulda defined this sucker long ago:
            ;No roll initially
            "inactive"
            )
+)
+;Animation includes a mouse and draw handler, as well as an initial system model.
+(big-bang SYSTEM-DEFAULT
           ;Draw Handler
           ;(to-draw render 1250 1200)
           (to-draw render display-w display-h)
