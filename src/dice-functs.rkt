@@ -6,7 +6,9 @@
 (require "graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
+
 (provide roll-die roll-dice random-roll)
+
 
 ;Die struct is provided to other files here
 (provide (struct-out die)
@@ -19,11 +21,23 @@
 ;Stores values for die that are used in rolls.
 (define-struct die (number type) #:transparent)
 
-;dice-lists: [List die(attack)] [List die(defend)] -> dice-lists
-;Stores two lists, one filled with attack die and one with defense die.
-(define-struct dice-lists (attack defend) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
+
+
+;Testing Suite for find-sup-inf
+(check-expect (find-sup-inf > 0 (list 2 3 4))
+              4)
+(check-expect (find-sup-inf > 0 (list 2 3 6))
+              6)
+(check-expect (find-sup-inf > 0 (list 1))
+              1)
+(check-expect (find-sup-inf > 6 '())
+              6)
+;End Testing Suite
+
+
+
 
 ;roll-die: anything -> die
 ;Rolls a die that returns a value 1-6. The input doesn't matter.
