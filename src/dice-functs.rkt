@@ -10,7 +10,7 @@
 
 ;Die struct is provided to other files here
 (provide (struct-out die)
-         (struct-out dice-lists)
+         (struct-out roll)
          )
 
 ;__________________________________________________________________________________________________________________
@@ -19,9 +19,9 @@
 ;Stores values for die that are used in rolls.
 (define-struct die (number type) #:transparent)
 
-;dice-lists: [List die(attack)] [List die(defend)] -> dice-lists
+;roll: [List die(attack)] [List die(defend)] -> roll
 ;Stores two lists, one filled with attack die and one with defense die.
-(define-struct dice-lists (attack defend) #:transparent)
+(define-struct roll (attack defend) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
 
@@ -68,13 +68,21 @@
               )
 ;End Testing Suite
 
-;random-roll: number(attacking armies) number(defending armies) -> [Listof [Listof Numbers]]
-;Creates a list that contains two lists of attack and defense dice.
+;random-roll: number(attacking armies) number(defending armies) -> roll
+;Creates a roll struct that contains two lists of attack and defense dice.
 (define (random-roll attackers defenders)
-  (dice-lists (sort-rolls (roll-dice attackers))
-              (sort-rolls (roll-dice defenders))
-              )
+  (roll (sort-rolls (roll-dice attackers))
+        (sort-rolls (roll-dice defenders))
+        )
   )
 
+;determine-deaths: string(attack/defend) roll(die lists) -> number
+;Takes in a roll struct and a string to determine which deaths to count, and returns the amount of deaths sustained.
+(define (determine-deaths type roll)
+  (cond [(equal? type "attack") (compare-dice ]
+        [(equal? type "defend")]
+        [else (error "determine-deaths: Type parameter given is not 'attack' or 'defend.'")]
+  )
+  
 ;attack-deaths
 (test)
