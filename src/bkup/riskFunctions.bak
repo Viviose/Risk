@@ -75,6 +75,8 @@ A sub-module for graphic design purposes that align with Material Design.
 
 Provided by matdes.rkt:
 **Functions**
+- textc: String (text) Number (size in pt) String/Color (color)
+    - Creates an image of text with the specifications in the Roboto style.
 - shadow-circle: Number (radius)
     - Builds a gradient shadow in a circular shape.
     - Dependent on color functions in the module.
@@ -89,6 +91,7 @@ Provided by matdes.rkt:
 
 (require "sys-lists.rkt")
 ;Module that contains all of the list variables necessary for the system, as well as the structs territory and card.
+;Struct definitions can be found in sys-lists.rkt, here in the struct definition portion of the file, or in the project wiki.
 
 (require picturing-programs)
 ;Picturing-Programs library contains all functions necessary for drawing images.
@@ -110,12 +113,26 @@ Provided by matdes.rkt:
 (define TITLESCRN (scale .6 (bitmap "imgs/titlescreen.jpg")))
 
 ;System struct (Holds all game information and statuses)
-(define-struct system (playerlist player-turn turn-stage screen dicelist territory-selected territory-list debug x y card-list cardsets-redeemed territory-attacking territory-attacked armies-attacking slider-store)
+(define-struct system (playerlist player-turn
+                                  turn-stage 
+                                  screen 
+                                  dicelist
+                                  territory-selected 
+                                  territory-list 
+                                  debug 
+                                  x y 
+                                  card-list 
+                                  cardsets-redeemed 
+                                  territory-attacking 
+                                  territory-attacked 
+                                  armies-attacking 
+                                  slider-store
+                                  roll-state)
   #:transparent)
 
 ;Player struct (Holds the information of each player)
-;[Player] : List (card structs) List (strings) Number (armies) String (status) Number(pos)
-(define-struct player (reserved-armies status pos)
+;[Player] :  Number (armies) Number(pos)
+(define-struct player (reserved-armies pos)
   #:transparent) 
 
 #|
@@ -137,8 +154,6 @@ Redefinition of these structs here can crash the program, and as thus they shoul
 (define-struct slider (image armies)
   #:transparent)
 
-(define-struct posn (x y)
-  #:transparent)
 
 ;The 'X' image for closing things
 (define X (scale .5 (bitmap "imgs/close.png")))
@@ -152,6 +167,9 @@ Redefinition of these structs here can crash the program, and as thus they shoul
         [(equal? players 6) 20]
         )
   )
+
+;SLIDER CONSTANT:
+(define SLIDER-OFFSET 1000)
 
 
 ;SCREEN SECTION: Make screens here
@@ -396,12 +414,14 @@ SAMPLE IMPLEMENTATION!
 
 
 (define (calc-armies bar-width max-armies x)
-  (round 
+  (min
+   (round 
    (*
     (/
      x
      bar-width)
-    max-armies)))
+    max-armies))
+   max-armies))
     
 ;This is what you call to implement the slider. It returns a slider
 ;struct. You get the image from calling (slider-image ...) and
@@ -637,7 +657,7 @@ SAMPLE IMPLEMENTATION!
                   [else BOARD])
             (toolbar model))
           )]
-        [else model]
+        [else (error "Well, this is embarassing: render could not detect a valid screen. Contact a developer and yell at them")]
         ;Nononononono bad bad bad: render cannot return a model, only an image.
         )
   )
@@ -715,9 +735,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 3) "alive" 0)
-                                                             (make-player (army-count 3) "alive" 1)
-                                                             (make-player (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (army-count 3) 0)
+                                                             (make-player (army-count 3) 1)
+                                                             (make-player (army-count 3) 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -727,10 +747,10 @@ Max x: 933
                                (<= y 374)
                                (> y 274))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 4) "alive" 0)
-                                                             (make-player (army-count 4) "alive" 1)
-                                                             (make-player (army-count 4) "alive" 2)
-                                                             (make-player (army-count 4) "alive" 3)
+                                           [playerlist (list (make-player (army-count 4)  0)
+                                                             (make-player (army-count 4)  1)
+                                                             (make-player (army-count 4)  2)
+                                                             (make-player (army-count 4)  3)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -740,11 +760,11 @@ Max x: 933
                                (<= y 474)
                                (> y 374))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 5) "alive" 0)
-                                                             (make-player (army-count 5) "alive" 1)
-                                                             (make-player (army-count 5) "alive" 2)
-                                                             (make-player (army-count 5) "alive" 3)
-                                                             (make-player (army-count 5) "alive" 4)
+                                           [playerlist (list (make-player (army-count 5)  0)
+                                                             (make-player (army-count 5)  1)
+                                                             (make-player (army-count 5)  2)
+                                                             (make-player (army-count 5)  3)
+                                                             (make-player (army-count 5)  4)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -754,12 +774,12 @@ Max x: 933
                                (<= y 574)
                                (> y 474))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 6) "alive" 0)
-                                                             (make-player (army-count 6) "alive" 1)
-                                                             (make-player (army-count 6) "alive" 2)
-                                                             (make-player (army-count 6) "alive" 3)
-                                                             (make-player (army-count 6) "alive" 4)
-                                                             (make-player (army-count 6) "alive" 5)
+                                           [playerlist (list (make-player (army-count 6)  0)
+                                                             (make-player (army-count 6)  1)
+                                                             (make-player (army-count 6)  2)
+                                                             (make-player (army-count 6)  3)
+                                                             (make-player (army-count 6)  4)
+                                                             (make-player (army-count 6)  5)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -774,7 +794,10 @@ Max x: 933
                                      [x x]
                                      [y y])]
                   )]
-        [(equal? (system-screen model) "gameplay")
+        [(or
+          ;ADD NEW SCREENS HERE: (whenever game is played)
+          (equal? (system-screen model) "gameplay")
+          (equal? (system-screen model) "slider_warning"))
          ;This begins the tooltip function, which looks for an x and y coord, and modifies the territory-selected part of the
          ;model, so render knows what and where to draw in the tooltip.
          (cond
@@ -1799,13 +1822,13 @@ Territory-selected and x + y coordinates must be updated in each clause.
         
 (define (recruit-phase model x y event)
   (cond  [(and (equal? event "drag")
-               (between? x 1027 1236)
+               (between? x SLIDER-OFFSET 1236)
                (between? y 910 935)
                )
           (struct-copy system model
                        [slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
                                                                                            (system-player-turn model)))
-                                                    (- x 1027)
+                                                    (- x SLIDER-OFFSET)
                                                     0
                                                     (slider-armies (system-slider-store model))
                                                     )]
@@ -1865,14 +1888,6 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   )]
                )]
          [else (struct-copy system model
-                            ;[slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
-                             ;                                                              (system-player-turn model)))
-                              ;                      60
-                               ;                     0
-                                ;                    (slider-armies (system-slider-store model))
-                                 ;                   )]
-                            ;(struct-copy slider (system-slider-store model)
-                             ;            [
                             [territory-selected (tooltip x y model)]
                             [x x]
                             [y y]
@@ -1890,8 +1905,8 @@ selected territories, which may get a little complicated.
 
 Events that occur in the attack phase:
 - The player wins the game by defeating all the other players in the game (no one owns anymore territories).
-- The player rolls dice to attack the player.
 - The player chooses a territory to attack from and to attack.
+  - Dice are rolled once the user has chosen 
 
 Attack Phase must check for win conditions first, then move on to fortify conditions.
 
@@ -1917,6 +1932,7 @@ The win conditions are simple: no other players have armies left. |#
 We shoulda defined this sucker long ago:
 |#
 
+;BOOKMARK
 ;DEFINE CONTRACT AND PURPOSE STATEMENT
 (define (select-t-scan model)
   (territory-scan (system-territory-selected model) (system-territory-list model))
@@ -1935,7 +1951,8 @@ We shoulda defined this sucker long ago:
         )
   )
 
-;___
+;***************
+
 ;bt-helper: [List string] territory -> boolean
 ;Checks to see if a territory-name is in a list of strings, true if it is.
 (define (bt-helper str-list territory)
@@ -1956,65 +1973,87 @@ We shoulda defined this sucker long ago:
              border
              )
   )
-;___
+
+;***************
 
 ;Attack Phase
 (define (attack-phase model x y event)
-  (cond
-  ;(cond [(won-game? (system-territory-list model)
-                    ;(system-playerlist model)
-                   ; (system-player-turn model)
-                   ; )
-         ;WIN CONDITIONS
-         ;for now...
-        ; model]
-  ;Disabling the above for debug purposes
+  (cond [(won-game? (system-territory-list model)
+                    (system-playerlist model)
+                    (system-player-turn model)
+                    )
+         ;Checks to see if a player has won the game, the first condition.
+         (struct-copy system model
+                      [screen "victory"]
+                      [debug "A player has won!"]
+                      )]
         [(and (equal? event "drag")
-              (between? x 1027 1236)
-              (between? y 911 923)
+              (between? x SLIDER-OFFSET 1236)
+              (between? y 800 1000)
               )
+         ;Slides the slider.
          (struct-copy system model
                       [slider-store (create-slider ;This should someday be replaced with a placeholder for the slider whilst it is not needed
                                      (player-reserved-armies (select-player (system-playerlist model)
                                                                             (system-player-turn model)
                                                                             )
                                                              )
-                                     (- x 1027)
+                                     (- x SLIDER-OFFSET)
                                      0
                                      (slider-armies (system-slider-store model))
-                                     )]
+                                     )
+                                    ]
                       [debug "Workin"]
                       )]
+        #| Here begins the conditions for attacking territories. 
+           Here's what happens that we use to check things.
+           - Players are clicking when the clause (equal? event "button-down) evaluates to true.
+           - Players are hovering a territory they own when 
+             (equal? (system-player-turn (territory-owner (select-t-scan model)))) evaluates to true.
+           - Players are not hovering a territory when (equal? (system-territory-selected model) "null") evaluates
+             to true.
+           - The player has selected a territory to attack from but not to attack when 
+             (equal? (system-territory-attacked model) "primed") evaluates to true.
+           - The player has not selected a territory to attack from if 
+             (equal? (system-territory-attacked model) "null") evaluates to true.
+           - The player has selected all territories if
+
+        |#
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               (equal? (system-territory-attacked model) "null")
-              ;(equal? player-pos (territory-owner (select-t-scan model))) 
+              (not (equal? (system-player-turn (territory-owner (select-t-scan model))))) 
               )
-         ;Why isn't this clause evaluating to true? FOUND: Issue with player-pos.
          (struct-copy system model
-                      ;[territory-selected (tooltip x y model)]
+                      [territory-selected (tooltip x y model)]
+                      [territory-attacking (system-territory-selected model)]
                       [x x]
                       [y y]
                       [screen "slider_warning"]
                       [territory-attacked "primed"]
-                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-attacking model) (system-territory-list model)))
+                      [roll-state "active"]
+                      [slider-store (create-slider (- (territory-armies (territory-scan (system-territory-selected model) (system-territory-list model)))
                                                       ;This signifies that it is one less than the territory's armies
                                                       1)
-                                                   (- x 1027)
+                                                   (- x SLIDER-OFFSET)
                                                    0
                                                    (slider-armies (system-slider-store model))
                                                    )]
                       )]
         [(and (equal? event "button-down")
               (equal? (system-territory-attacked model) "primed")
+              (borders-territory? (territory-scan (system-territory-attacking model) (system-territory-list model)) (select-t-scan model))
               (not (equal? (system-territory-selected model) "null"))
-              (not (equal? player-pos (territory-owner (select-t-scan model))))
+              (not (equal? (system-player-turn model) (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
 
-                      [territory-attacked (system-territory-attacked model)]
+                      [territory-attacked (system-territory-selected model)]
 
                       )]
+        [(and (not (equal? (system-territory-attacked model) "null"))
+              (not (equal? (system-territory-attacked model) "primed"))
+              
          ;Actual attack
          ;What has to happen:
          ;P:Attacker allocates how many troops are attacking <- THIS HAS ALREADY BEEN DONE BY THE USER
@@ -2028,7 +2067,8 @@ We shoulda defined this sucker long ago:
              ;Dice functions, update armies, etc.
 
         ;'Move on to fortify' clause 
-         
+         )
+         model]
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
@@ -2053,11 +2093,28 @@ We shoulda defined this sucker long ago:
                       [turn-stage "recruit"]
                       [player-turn 0]
                       )]
+        [(and
+          (equal? key "space")
+          (equal? (system-roll-state "active")))
+         (struct-copy system model
+                      [roll-state "inactive"])]
         [else model]
   )
 )
 
-
+;TICK HANDLER: For animations
+;Needslagfix
+#|
+(define (animation-handler model)
+  (cond [(equal? (system-roll-state model) "active")
+         (struct-copy system model
+                      [dicelist (list (make-die (roll-die "die1") "attack")
+                                     (make-die (roll-die "die2") "defend")
+                                     (make-die (roll-die "die3") "defend")
+                                     (make-die (roll-die "die4") "attack")
+                                     (make-die (roll-die "die5") "attack"))])]
+        [else model]))
+|#
 
 
 ;Animation includes a mouse and draw handler, as well as an initial system model.
@@ -2102,6 +2159,8 @@ We shoulda defined this sucker long ago:
            0
            ;Slider used in attributing armies
            (create-slider 100 0 0 0)
+           ;No roll initially
+           "inactive"
            )
           ;Draw Handler
           (to-draw render 1250 1200)
@@ -2109,6 +2168,8 @@ We shoulda defined this sucker long ago:
           (on-mouse mouse-handler)
           ;Key Handler
           (on-key key-handler)
+          ;Tick Handler
+          ;(on-tick animation-handler .1)
           )
 
 (test)

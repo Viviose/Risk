@@ -735,9 +735,9 @@ Max x: 933
                                (<= y 274)
                                (> y 174))
                               (struct-copy system model
-                                           [playerlist (list (make-player (army-count 3) "alive" 0)
-                                                             (make-player (army-count 3) "alive" 1)
-                                                             (make-player (army-count 3) "alive" 2)
+                                           [playerlist (list (make-player (army-count 3) 0)
+                                                             (make-player (army-count 3) 1)
+                                                             (make-player (army-count 3) 2)
                                                              )
                                                        ]
                                            [screen "gameplay"]
@@ -1887,16 +1887,7 @@ Territory-selected and x + y coordinates must be updated in each clause.
                                   [territory-selected (tooltip x y model)]
                                   )]
                )]
-        ;Test (delete this if you want to)
          [else (struct-copy system model
-                            ;[slider-store (create-slider (player-reserved-armies (select-player (system-playerlist model)
-                             ;                                                              (system-player-turn model)))
-                              ;                      60
-                               ;                     0
-                                ;                    (slider-armies (system-slider-store model))
-                                 ;                   )]
-                            ;(struct-copy slider (system-slider-store model)
-                             ;            [
                             [territory-selected (tooltip x y model)]
                             [x x]
                             [y y]
@@ -1941,6 +1932,7 @@ The win conditions are simple: no other players have armies left. |#
 We shoulda defined this sucker long ago:
 |#
 
+;BOOKMARK
 ;DEFINE CONTRACT AND PURPOSE STATEMENT
 (define (select-t-scan model)
   (territory-scan (system-territory-selected model) (system-territory-list model))
@@ -1959,7 +1951,8 @@ We shoulda defined this sucker long ago:
         )
   )
 
-;___
+;***************
+
 ;bt-helper: [List string] territory -> boolean
 ;Checks to see if a territory-name is in a list of strings, true if it is.
 (define (bt-helper str-list territory)
@@ -1980,20 +1973,21 @@ We shoulda defined this sucker long ago:
              border
              )
   )
-;___
+
+;***************
 
 ;Attack Phase
 (define (attack-phase model x y event)
-  (cond
-  ;(cond [(won-game? (system-territory-list model)
-                    ;(system-playerlist model)
-                   ; (system-player-turn model)
-                   ; )
+  (cond [(won-game? (system-territory-list model)
+                    (system-playerlist model)
+                    (system-player-turn model)
+                    )
          ;WIN CONDITIONS
          ;for now...
-        ; model]
-  ;Disabling the above for debug purposes
-    ;jash is puu
+         (struct-copy system model
+                      [screen "victory"]
+                      [debug "A player has won!"]
+                      )]
         [(and (equal? event "drag")
               (between? x SLIDER-OFFSET 1236)
               (between? y 800 1000)
@@ -2014,10 +2008,8 @@ We shoulda defined this sucker long ago:
         [(and (equal? event "button-down")
               (not (equal? (system-territory-selected model) "null"))
               (equal? (system-territory-attacked model) "null")
-              
-              ;(equal? player-pos (territory-owner (select-t-scan model))) 
+              (not (equal? (system-player-turn (territory-owner (select-t-scan model))))) 
               )
-         ;Why isn't this clause evaluating to true? FOUND: Issue with player-pos.
          (struct-copy system model
                       [territory-selected (tooltip x y model)]
                       [territory-attacking (system-territory-selected model)]
@@ -2038,8 +2030,7 @@ We shoulda defined this sucker long ago:
               (equal? (system-territory-attacked model) "primed")
               (borders-territory? (territory-scan (system-territory-attacking model) (system-territory-list model)) (select-t-scan model))
               (not (equal? (system-territory-selected model) "null"))
-              ;VVV DOESN'T WORK VVV
-              (not (equal? player-pos (territory-owner (select-t-scan model))))
+              (not (equal? (system-player-turn model) (territory-owner (select-t-scan model))))
               )
          (struct-copy system model
 
@@ -2062,7 +2053,8 @@ We shoulda defined this sucker long ago:
              ;Dice functions, update armies, etc.
 
         ;'Move on to fortify' clause 
-         
+         )
+         model]
         [else (struct-copy system model
                            [territory-selected (tooltip x y model)]
                            [x x]
