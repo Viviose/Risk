@@ -96,10 +96,14 @@
 ;determine-deaths: string(attack/defend) roll(die lists) -> number
 ;Takes in a roll struct and a string to determine which deaths to count, and returns the amount of deaths sustained.
 (define (determine-deaths type roll)
-  (cond [(equal? type "attack") (compare-dice ]
+  (cond [(equal? type "attack") (compare-dice)]
         [(equal? type "defend")]
         [else (error "determine-deaths: Type parameter given is not 'attack' or 'defend.'")]
   )
+)
+
+;placeholder
+(define (compare-dice) (print "placeholder"))
 
 ;attack-deaths
 (test)
