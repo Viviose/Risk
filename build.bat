@@ -1,6 +1,6 @@
 @ECHO OFF
 CD "%~dp0"
-SET racketdir=%~dp0Racket
+SET racketdir="C:\Program Files\Racket"
 
 IF EXIST "%~dp0dist\windows" rmdir /s /q "%~dp0dist\windows"
 IF EXIST "%~dp0dist\windows" exit 1
@@ -15,6 +15,6 @@ mkdir "%~dp0dist\windows"
 "%racketdir%\raco.exe" distribute "%~dp0dist\windows" "%~dp0src\risk.exe"
 del /F "%~dp0src\risk.exe" 
 ECHO "Zipping package..."
-"%~dp0Racket\Racket.exe" "compress.rkt"
+"%racketdir%\Racket.exe" "compress.rkt"
 ECHO "Binaries in %~dp0\dist\windows\bin, packages in %~dp0\release"
 ECHO "Finished."
