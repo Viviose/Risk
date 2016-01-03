@@ -1,2 +1,13 @@
+*.rkt~
+*.rkt#* 
+*.1
+*.2
+*.bak
+*.dep
+*.zo
+compiled/
+Racket/
+dist/
+release/
 src/compiled/*
 src/compiled
