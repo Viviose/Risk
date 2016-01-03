@@ -2,6 +2,7 @@
 
 #lang racket/gui
 (require "dice-functs.rkt")
+(require rsound)
 #|
 A sub-module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
 
