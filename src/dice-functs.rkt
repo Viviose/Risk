@@ -93,17 +93,24 @@
         )
   )
 
+;Implements find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
 ;determine-deaths: string(attack/defend) roll(die lists) -> number
 ;Takes in a roll struct and a string to determine which deaths to count, and returns the amount of deaths sustained.
 (define (determine-deaths type roll)
-  (cond [(equal? type "attack") (compare-dice)]
+  (cond [(or (empty? (roll-attack roll)
+                     (roll-defend roll)
+                     )
+            )]
+        []
+        [else]
+        )
+  )
+  #|
+  (cond [(equal? type "attack")]
         [(equal? type "defend")]
         [else (error "determine-deaths: Type parameter given is not 'attack' or 'defend.'")]
-  )
+  )|#
 )
-
-;placeholder
-(define (compare-dice) (print "placeholder"))
 
 ;attack-deaths
 (test)
