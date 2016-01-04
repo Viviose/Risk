@@ -1,10 +1,14 @@
 ;__________________________________________________________________________________________________________________________________________________
 
 #lang racket/gui
-(require "dice-functs.rkt")
+
 (require rsound)
+;Contains sound compatibility and implementation functions for Racket.
+;Currently unimplemented in the project, see documentation for details.
+
+(require "dice-functs.rkt")
 #|
-A sub-module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
+Module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
 
 Provided by dice-functs.rkt:
 
@@ -50,7 +54,7 @@ die: number(die value) string(type of die) -> die
 
 (require "graph.rkt")
 #|
-A sub-module which contains functions that are used for animation purposes such as point comparisons.
+Module which contains functions that are used for animation purposes such as point comparisons.
 
 Provided by graph.rkt:
 **Functions**
@@ -72,7 +76,7 @@ Provided by graph.rkt:
 
 (require "matdes.rkt")
 #|
-A sub-module for graphic design purposes that align with Material Design.
+Module for graphic design purposes that align with Material Design.
 
 Provided by matdes.rkt:
 **Functions**
