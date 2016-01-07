@@ -2,7 +2,10 @@ Joshua Sanchez (Project Co-Leader and Founder)
 Patrick Gallagher (Project Co-Leader)
 Griffin Lynch (Project Specialist, creator of mappositions program.)
 
+Pull request contributions:
+Edward Yang (Build and compress game files)
+
 Special Thanks to:
 Mr. Dr. Professor Andrew Mauer-Oats - For making us do huge projects and not giving us extra credit.
 Megan Poulosophos - For the inspirational naps and keeping Joshua from going insane, as well as 
-					some legitimate small coding contributions. 
+					some legitimate small coding contributions.

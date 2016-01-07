@@ -1,9 +1,15 @@
+
 BUILD IS NOW IN ALPHA
 Current Version: 1.7a
 Version 1.7a (12/28/15)
 - Made the window dynamic to the user's screen size
 - Fixed hitboxes to be dynamic as well
 - Made new constant variables to help with positioning
+
+Version 1.6.12a (12/27/15)
+- Scrapping existing dice-functs functions for redo
+- Implementing new structs for dice and new functions for compatibility and usage
+
 
 Version 1.6.11a (12/2/15)
 - Added conditionals to attack-phase

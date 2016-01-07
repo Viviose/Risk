@@ -3,9 +3,7 @@
 (require picturing-programs)
 (require test-engine/racket-tests)
 
-;Provides access to all defined functions and variables in this file to other files.
-;Currently, this will include the following functions:
-#| - distance   |#
+;Provides access to all specified functions and variables in this file to other files.
 (provide between? distance slope calc-angle in-ellipse? find-sup-inf remove-max-or-min)
 
 ;between?: number(query) number(min) number(max) -> boolean
@@ -47,7 +45,7 @@
 
 ;calc-angle: number() number() number() number() -> number(angle in degrees)
 (define (calc-angle x1 y1 x2 y2)
-  (real->int (atan 
+  (real->int (atan
               (slope x1 y1 x2 y2))
              )
   )
@@ -68,7 +66,7 @@
 
 ;in-ellipse?: number(x1) number(y1) number(x2) number(y2) number(x3) number(y3) number(mouse-x) number(mouse-y) -> boolean
 ;Determines whether a given point is inside of a defined ellipse.
-(define (in-ellipse? 
+(define (in-ellipse?
          ;rightmost coord pair
          x1
          y1
@@ -116,7 +114,7 @@
                  )
         ;b
             (sqr
-             (distance 
+             (distance
               (h x1 x2)
               (k y1 y2)
               x3
