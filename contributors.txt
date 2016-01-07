@@ -3,7 +3,7 @@ Patrick Gallagher (Project Co-Leader)
 Griffin Lynch (Project Specialist, creator of mappositions program.)
 
 Pull request contributions:
-Edward Yang (Build and compress game files)
+Edward Yang (Build and compress game files, game optimization)
 
 Special Thanks to:
 Mr. Dr. Professor Andrew Mauer-Oats - For making us do huge projects and not giving us extra credit.
