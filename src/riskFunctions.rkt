@@ -2,7 +2,7 @@
 
 #lang racket/gui
 
-(require rsound)
+;(require rsound)
 ;Contains sound compatibility and implementation functions for Racket.
 ;Currently unimplemented in the project, see documentation for details.
 
@@ -2166,7 +2166,7 @@ We shoulda defined this sucker long ago:
 ;Animation includes a mouse and draw handler, as well as an initial system model.
 (big-bang SYSTEM-DEFAULT
           ;Draw Handler
-          (to-draw render 1250 1200)
+          (to-draw render display-w display-h)
           ;Mouse Handler
           (on-mouse mouse-handler)
           ;Key Handler
