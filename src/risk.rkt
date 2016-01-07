@@ -1,3 +1,3 @@
 #lang racket
 
-(require "riskFunctions.rkt")
+(require "main.rkt")
