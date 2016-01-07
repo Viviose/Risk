@@ -1,7 +1,7 @@
 #lang racket/gui
 (require picturing-programs)
 (require test-engine/racket-tests)
-(require "ellipse.rkt")
+(require "animations/ellipse.rkt")
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
 
 ;For use: click to the left of the name, then to the right, then to the top
@@ -188,7 +188,7 @@
                    (location-posn-to-string (first listy))
                    "\n"
                    (put-in-file (rest listy)))]))
-                   
+
 ;writes the current-ellipse-list to the file
 (define (write-list-to-file model)
   (begin

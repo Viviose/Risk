@@ -72,7 +72,7 @@ Images in the "imgs" library will be utilized with the bitmap function provided 
 ```
 These images will be defined as global variables in the source code that they are used in.
 
-## Installation
+## Contributing
 The project is located [here](https://github.com/Viviose/Risk.git).
 Persons interested in being an official member of this team can contact the developers at any time for more information. This will allow users read and write access to the repo at any time.
 Anyone that wishes to contribute anything to this project can fork the project and create a pull request that will be reviewed before implementation.
@@ -84,6 +84,10 @@ git clone https://github.com/Viviose/Risk.git
 ```
 
 The home page for the project can be found [here](https://github.com/Viviose/Risk).
+
+## Installation 
+To build the game executable on Windows, run the build.bat batch file located in the root game folder.
+To build the game executable on Mac/Linux, run the build.sh shell script located in the root game folder.
 
 ## Authors
 Joshua Sanchez & Patrick "Patty G" Gallagher
