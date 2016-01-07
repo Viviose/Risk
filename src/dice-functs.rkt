@@ -7,7 +7,7 @@
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
 
-(provide roll-die roll-dice random-roll)
+(provide (all-defined-out))
 
 
 ;Die struct is provided to other files here
@@ -26,22 +26,6 @@
 (define-struct roll (attack defend) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
-
-
-;Testing Suite for find-sup-inf
-(check-expect (find-sup-inf > 0 (list 2 3 4))
-              4)
-(check-expect (find-sup-inf > 0 (list 2 3 6))
-              6)
-(check-expect (find-sup-inf > 0 (list 1))
-              1)
-(check-expect (find-sup-inf > 6 '())
-              6)
-;End Testing Suite
-
-
-
-
 ;roll-die: anything -> die
 ;Rolls a die that returns a value 1-6. The input doesn't matter.
 (define (roll-die null)
@@ -73,17 +57,7 @@
         )
   )
 
-;Testing Suite for sort-rolls
-(check-expect (sort-rolls (list 2 5 1))
-              (list 5 2 1)
-              )
-(check-expect (sort-rolls (list 1 4))
-              (list 4 1)
-              )
-(check-expect (sort-rolls (list 1))
-              (list 1)
-              )
-;End Testing Suite
+
 
 ;random-roll: number(attacking armies) number(defending armies) -> roll
 ;Creates a roll struct that contains two lists of attack and defense dice.
@@ -101,8 +75,8 @@
                      (roll-defend roll)
                      )
             )]
-        []
-        [else]
+        #|[]|#
+        [else (print "placeholder")]
         )
   )
   #|
@@ -110,7 +84,85 @@
         [(equal? type "defend")]
         [else (error "determine-deaths: Type parameter given is not 'attack' or 'defend.'")]
   )|#
-)
+#|)|#
 
 ;attack-deaths
 (test)
+
+;defines easily editable constants for dice rendering
+;default dice size in pixels
+(define DICESIZE 75)
+;the amount of pixels from the sides
+(define DOTSPACING 5)
+;the default dice circle
+(define DICECIRCLE (circle 9 "solid" "white"))
+;the rounded size of the corners
+(define CORNERSIZE 10)
+;the positions of the corners - used in rounded-square
+(define CORNERPOSNS (list (list "right" "top")
+                          (list "right" "bottom")
+                          (list "left" "top")
+                          (list "left" "bottom")))
+;recursively (with foldl) add multiple overlay/align items to a base canvas
+(define (overlay/align-foldl basecanvas item posns)
+  (foldl (lambda (a result)
+           (overlay/align (list-ref a 0)
+                          (list-ref a 1)
+                          item
+                          result))
+         basecanvas
+         posns))
+;creates a rounded square with a total size of width,
+;with a corner radius of cornersize,
+;mode and color as in other functions
+(define (rounded-square width cornersize mode color)
+  (local [(define straightlen (- width (* 2 cornersize)))
+          (define basecanvas (square width "solid" "transparent"))
+          (define r1 (rectangle width straightlen mode color))
+          (define r2 (rectangle straightlen width mode color))
+          (define cornercircle (circle cornersize mode color))
+          (define cornercircles (overlay/align-foldl basecanvas cornercircle CORNERPOSNS))]
+    (overlay cornercircles
+             r1
+             r2
+             basecanvas)))
+;defines the default locations of the dots on a dice for dice-render
+(define DOTPOSNS (list
+                   ;1
+                   (list (list "center" "center"))
+                   ;2
+                   (list (list "right" "top")
+                         (list "left" "bottom"))
+                   ;3
+                   (list (list "center" "center")
+                         (list "right" "top")
+                         (list "left" "bottom"))
+                   ;4
+                   (list (list "right" "top")
+                         (list "right" "bottom")
+                         (list "left" "top")
+                         (list "left" "bottom"))
+                   ;5
+                   (list (list "center" "center")
+                         (list "right" "top")
+                         (list "right" "bottom")
+                         (list "left" "top")
+                         (list "left" "bottom"))
+                   ;6
+                   (list (list "right" "top")
+                         (list "right" "bottom")
+                         (list "left" "top")
+                         (list "left" "bottom")
+                         (list "left" "center")
+                         (list "right" "center"))))
+;renders the dice - intended to be able to be dropped in in place of dice-face
+;number - 1-6
+;type - "attack" or "defend"
+;returns image of dice face
+(define (render-dice number type)
+  (local [(define dcolor (match type ["attack" "red"] ["defend" "black"]))
+          (define basedice (rounded-square DICESIZE CORNERSIZE "solid" dcolor))
+          (define dotcanvas (square (max 1 (- DICESIZE (* DOTSPACING 2))) "solid" dcolor))
+          (define dicecircles (overlay/align-foldl dotcanvas DICECIRCLE (list-ref DOTPOSNS (- number 1))))]
+  (overlay dicecircles
+           basedice)))
