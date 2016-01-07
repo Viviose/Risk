@@ -3,7 +3,7 @@
 #lang racket
 (require picturing-programs)
 (require test-engine/racket-tests)
-(require "graph.rkt")
+(require "animations/graph.rkt")
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
 
@@ -85,9 +85,6 @@
         [else (error "determine-deaths: Type parameter given is not 'attack' or 'defend.'")]
   )|#
 #|)|#
-
-;attack-deaths
-(test)
 
 ;defines easily editable constants for dice rendering
 ;default dice size in pixels

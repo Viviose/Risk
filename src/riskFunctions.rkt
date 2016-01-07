@@ -53,7 +53,7 @@ die: number(die value) string(type of die) -> die
         - This string is used in dice comparison functions and to display the correct color die in the GUI.
 |#
 
-(require "graph.rkt")
+(require "animations/graph.rkt")
 #|
 Module which contains functions that are used for animation purposes such as point comparisons.
 
@@ -75,7 +75,7 @@ Provided by graph.rkt:
     - Given a number to compare, and two numbers which represent bounds to compare, returns true if number is in bounds.
 |#
 
-(require "matdes.rkt")
+(require "animations/matdes.rkt")
 #|
 Module for graphic design purposes that align with Material Design.
 
