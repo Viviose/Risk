@@ -1343,10 +1343,7 @@ These include:
        )
   )
 
-(check-expect (owns-asia? 1 DEBUG-TERRITORY-LIST)
-              true)
-(check-expect (owns-asia? 0 DEBUG-TERRITORY-LIST)
-              false)
+
 
 ;owns-north-america? number(playerpos) [List(system-territory-list) territory] -> boolean
 ;Checks to see if the player of given playerpos owns territories that are contained in the continent of North America.
@@ -2174,7 +2171,5 @@ We shoulda defined this sucker long ago:
           ;Tick Handler
           ;(on-tick animation-handler .1)
           )
-CARD-TOOLBAR-Y
-(+ 6 7)
 
 (test)

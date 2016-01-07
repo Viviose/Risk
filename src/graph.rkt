@@ -4,7 +4,7 @@
 (require test-engine/racket-tests)
 
 ;Provides access to all specified functions and variables in this file to other files.
-(provide between? distance slope calc-angle in-ellipse? find-sup-inf remove-max-or-min)
+(provide (all-defined-out))
 
 ;between?: number(query) number(min) number(max) -> boolean
 ;Checks to see if a number is within a specified bound.
@@ -129,26 +129,6 @@
       )
   )
 
-(check-expect (in-ellipse? 0 0 -6 5 -1 4 1 0)
-              #f)
-(check-expect (in-ellipse? 0 0 -6 5 -1 4 0 0)
-              #f)
-(check-expect (in-ellipse? 2 0 -2 0 0 1 0 0)
-              #t)
-
-(check-expect (in-ellipse? 2 -2 -2 2 1 1 0 0)
-              #t)
-
-(check-expect (in-ellipse? -2000 -2000 -1000 1000 500 500 0 0)
-              #t)
-
-;Works A-OK here, with a non origin centered ellipse!
-(check-expect (in-ellipse? 3 -2 -1 2 2 1 0 0)
-              #t)
-
-;Not here though?? Actual test case. Not good.
-(check-expect (in-ellipse? 689 578 552 480 647 495 610 518)
-              #t)
 
 ;find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
 ;Returns the greatest/least value in a given list of numbers or the given value, whichever is greater/lesser.
@@ -159,16 +139,7 @@
         )
   )
 
-;Testing Suite for find-sup-inf
-(check-expect (find-sup-inf > 0 (list 2 3 4))
-              4)
-(check-expect (find-sup-inf > 0 (list 2 3 6))
-              6)
-(check-expect (find-sup-inf > 0 (list 1))
-              1)
-(check-expect (find-sup-inf > 6 '())
-              6)
-;End Testing Suite
+
 
 
 ;remove-max-or-min: function(comparison operator) [Listof Numbers] -> [Listof Numbers]

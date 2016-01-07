@@ -7,7 +7,7 @@
 
 ;All functions defined in this file and provided here can be accessed by other files upon request.
 
-(provide roll-die roll-dice random-roll render-dice)
+(provide (all-defined-out))
 
 
 ;Die struct is provided to other files here
@@ -26,22 +26,6 @@
 (define-struct roll (attack defend) #:transparent)
 
 ;Dice functions to be called when dice are rolled in-game
-
-
-;Testing Suite for find-sup-inf
-(check-expect (find-sup-inf > 0 (list 2 3 4))
-              4)
-(check-expect (find-sup-inf > 0 (list 2 3 6))
-              6)
-(check-expect (find-sup-inf > 0 (list 1))
-              1)
-(check-expect (find-sup-inf > 6 '())
-              6)
-;End Testing Suite
-
-
-
-
 ;roll-die: anything -> die
 ;Rolls a die that returns a value 1-6. The input doesn't matter.
 (define (roll-die null)
@@ -73,17 +57,7 @@
         )
   )
 
-;Testing Suite for sort-rolls
-(check-expect (sort-rolls (list 2 5 1))
-              (list 5 2 1)
-              )
-(check-expect (sort-rolls (list 1 4))
-              (list 4 1)
-              )
-(check-expect (sort-rolls (list 1))
-              (list 1)
-              )
-;End Testing Suite
+
 
 ;random-roll: number(attacking armies) number(defending armies) -> roll
 ;Creates a roll struct that contains two lists of attack and defense dice.
@@ -138,7 +112,7 @@
                           result))
          basecanvas
          posns))
-;creates a rounded square with a total size of width, 
+;creates a rounded square with a total size of width,
 ;with a corner radius of cornersize,
 ;mode and color as in other functions
 (define (rounded-square width cornersize mode color)
@@ -153,8 +127,8 @@
              r2
              basecanvas)))
 ;defines the default locations of the dots on a dice for dice-render
-(define DOTPOSNS (list 
-                   ;1 
+(define DOTPOSNS (list
+                   ;1
                    (list (list "center" "center"))
                    ;2
                    (list (list "right" "top")
