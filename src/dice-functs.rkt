@@ -172,6 +172,7 @@
         )
   )
 ;Implements find-sup-inf: function(comparison operator) number(comparison value) [Listof Numbers] -> Number
+;  
 ;fight-battle: string(type) [Listof die(attack)] [Listof die(defend)] -> 
 (define (fight-battle type attack defend)
   (find-sup-inf (cond []
