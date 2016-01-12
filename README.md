@@ -14,7 +14,7 @@
 # Risk: The Game of World Domination
 ##### (Racket Edition)
 
-##### Version 1.6.10a
+##### Version 1.8a
 
 (**Note**: Racket v6.3 is **required** to run this program. The latest version can be found [here](https://download.racket-lang.org/))
 
