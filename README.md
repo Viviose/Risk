@@ -16,7 +16,7 @@
 
 ##### Version 1.8a
 
-(**Note**: Racket v6.3 is **required** to run this program. The latest version can be found [here](https://download.racket-lang.org/))
+(**Note to Developers**: Racket v6.3 is **required** to run this program. The latest version can be found [here](https://download.racket-lang.org/))
 
 Project Name - Risk: *Racket Edition*
 
