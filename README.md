@@ -16,6 +16,8 @@
 
 ##### Version 1.6.10a
 
+(**Note**: Racket v6.3 is **required** to run this program. The latest version can be found [here](https://download.racket-lang.org/))
+
 Project Name - Risk: *Racket Edition*
 
 Included libraries, modules, and definitions files:
@@ -85,7 +87,7 @@ git clone https://github.com/Viviose/Risk.git
 
 The home page for the project can be found [here](https://github.com/Viviose/Risk).
 
-## Installation 
+## Installation
 To build the game executable on Windows, run the build.bat batch file located in the root game folder.
 To build the game executable on Mac/Linux, run the build.sh shell script located in the root game folder.
 

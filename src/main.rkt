@@ -6,7 +6,7 @@
 ;Contains sound compatibility and implementation functions for Racket.
 ;Currently unimplemented in the project, see documentation for details.
 
-(require "dice-functs.rkt")
+(require "dice.rkt")
 (provide (all-defined-out))
 #|
 Module containing functions to help simulate dice rolls during gameplay for things such as turn selection and attacks/defenses.
@@ -106,6 +106,9 @@ Provided by matdes.rkt:
 (require test-engine/racket-tests)
 ;test-engine/racket-tests library contains all functions necessary for testing functions, such as check-expect, test, and check-random.
 
+(require 2htdp/universe)
+;Requires the How To Design Programs lib that includes far more functions than PP.
+
 ;__________________________________________________________________________________________________________________________________________________
 
 ;Debug mode variable
@@ -118,6 +121,15 @@ Provided by matdes.rkt:
 ;This constant is the size of the users screen
 (define-values (display-w display-h)
       (get-display-size))
+
+;Determines wether the screen merits a mini mode trigger.
+(define MINI-MODE
+  (if (< 1000 display-h)
+    #t
+    #f ))
+
+;Temp MODE default for debugging. Set to "mini" for experimental changes, and "regular" to ignore new changes.
+(define MODE "regular")
 
 ;__________________________________________________________________________________________________________________________________________________
 (define BOARD (scale .6 (bitmap "imgs/board.png")))
@@ -140,7 +152,7 @@ Provided by matdes.rkt:
   )
 
 (define (toolbar-x model)
-    (image-width (toolbar model))
+    (image-width (toolbar model MODE))
   )
 
 
@@ -149,7 +161,7 @@ Provided by matdes.rkt:
     )
 
 (define (HORIZONTAL-TOOLBAR-PADDING model)
-    (/  (- display-w (image-width (toolbar model))) 2)
+    (/  (- display-w (image-width (toolbar model MODE))) 2)
   )
 
   (define HORIZONTAL-PADDING
@@ -435,45 +447,71 @@ SAMPLE IMPLEMENTATION!
         [else "white"]
         )
   )
+
+(define (image-stack mode . args)
+  (cond [(equal? mode "regular")
+    (local [(define (beside-all lon)
+              (cond [(empty? lon) empty-image]
+                    [else (beside (first lon) (beside-all (rest lon)))]
+                    )
+                )
+           ]
+
+    (beside-all args))]
+    [(equal? mode "mini")
+    (local [(define (above-all lon)
+              (cond [(empty? lon) empty-image]
+                    [else (above (first lon) (above-all (rest lon)))]
+                    )
+                )
+           ]
+
+    (above-all args))]
+    [else (error "Invalid mode given in toolbar call")]
+    )
+)
+
 ;This shows the toolbar on the bottom of the HUD.
 ;System (model, used to grab info) -> Image (toolbar)
-(define (toolbar model)
-  (beside
-   (overlay
-    (cond [(equal? DEBUG 0)
-           (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")]
-          [else (textc (system-debug model) 16 "black")])
-    (square 75 "solid" (turncolor model))
+(define (toolbar model mode)
+    (image-stack mode
+     (overlay
+      (cond [(equal? DEBUG 0)
+             (textc (string-append "Player " (number->string (+ 1 (system-player-turn model)))) 16 "black")]
+            [else (textc (system-debug model) 16 "black")])
+      (square 75 "solid" (turncolor model))
+      )
+     ;No more dice button! Woohoo!
+     (cond [(equal? (system-screen model) "slider_warning" )
+            SLIDER-WARN
+            ]
+           [else (die-bar (system-dicelist model))]
+           )
+     (overlay
+      (textc (cond [(equal? (system-turn-stage model) "recruit")
+                   "Recruit"]
+                  [(equal? (system-turn-stage model) "attack")
+                   "Attack"]
+                  [(equal? (system-turn-stage model) "fortify")
+                   "Fortify"]
+                  [(equal? (system-turn-stage model) "init-recruit")
+                   "Initial Recruitment"]
+                  )
+            16 "black")
+      (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "recruit")
+                                           (equal? (system-turn-stage model) "init-recruit")
+                                           )
+                                       "blue"]
+                                      [(equal? (system-turn-stage model) "attack")
+                                       "red"]
+                                      [(equal? (system-turn-stage model) "fortify")
+                                       "yellow"]
+                                      [else "white"]
+                                      )
+                 )
+
     )
-   ;No more dice button! Woohoo!
-   (cond [(equal? (system-screen model) "slider_warning" )
-          SLIDER-WARN
-          ]
-         [else (die-bar (system-dicelist model))]
-         )
-   (overlay
-    (textc (cond [(equal? (system-turn-stage model) "recruit")
-                 "Recruit"]
-                [(equal? (system-turn-stage model) "attack")
-                 "Attack"]
-                [(equal? (system-turn-stage model) "fortify")
-                 "Fortify"]
-                [(equal? (system-turn-stage model) "init-recruit")
-                 "Initial Recruitment"]
-                )
-          16 "black")
-    (rectangle 150 75 "solid" (cond [(or (equal? (system-turn-stage model) "recruit")
-                                         (equal? (system-turn-stage model) "init-recruit")
-                                         )
-                                     "blue"]
-                                    [(equal? (system-turn-stage model) "attack")
-                                     "red"]
-                                    [(equal? (system-turn-stage model) "fortify")
-                                     "yellow"]
-                                    [else "white"]
-                                    )
-               )
-    )
+
    (cond [(equal? (system-screen model) "cards")
           SUBMIT-BUTTON]
          [else CARD-BUTTON]
@@ -498,8 +536,11 @@ SAMPLE IMPLEMENTATION!
           ]
 
          [else empty-image])
+         )
+
    )
-  )
+
+
 
 (define (card-create card)
   (overlay
@@ -575,31 +616,29 @@ SAMPLE IMPLEMENTATION!
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
          (overlay
           (above
-          (cond [(not (equal? (system-territory-selected model) "null"))
-                 ;*****************************************************!!!!!!Work on null is needed.
-
-                  (place-image (overlay
-                               (above
-                                (textc (system-territory-selected model) 16 "black")
-                                (textc (who-owns? model) 12 "black")
-                                (textc (string-append
-                                       (number->string
-                                        (territory-armies
-                                         (territory-scan
-                                          (system-territory-selected model)
-                                          (system-territory-list model))))
-                                       " Armies")
-                                      12
-                                      "black"
-                                      )
-                                )
-                               (rectangle (tooltip-width (system-territory-selected model)) 50 "solid" (playercolor model))
-                               )
-                              (system-x model) (system-y model)
-                              BOARD)]
-                [else BOARD]
-                )
-          (toolbar model))
+            (cond [(not (equal? (system-territory-selected model) "null"))
+                    (place-image (overlay
+                                 (above
+                                  (textc (system-territory-selected model) 16 "black")
+                                  (textc (who-owns? model) 12 "black")
+                                  (textc (string-append
+                                         (number->string
+                                          (territory-armies
+                                           (territory-scan
+                                            (system-territory-selected model)
+                                            (system-territory-list model))))
+                                         " Armies")
+                                        12
+                                        "black"
+                                          )
+                                  )
+                                 (rectangle (tooltip-width (system-territory-selected model)) 50 "solid" (playercolor model))
+                                 )
+                                (system-x model) (system-y model)
+                                BOARD)]
+                  [else BOARD]
+                  )
+          (toolbar model MODE))
           WOOD-BG)]
         [(equal? (system-screen model) "cards")
           (overlay
@@ -626,7 +665,7 @@ SAMPLE IMPLEMENTATION!
                                 (system-x model) (system-y model)
                                 BOARD)]
                   [else BOARD])
-            (toolbar model))
+            (toolbar model MODE))
             WOOD-BG)
           )]
         [else (error "Well, this is embarassing: render could not detect a valid screen. Contact a developer and yell at them")]
@@ -2170,6 +2209,7 @@ We shoulda defined this sucker long ago:
           (on-key key-handler)
           ;Tick Handler
           ;(on-tick animation-handler .1)
+          (display-mode 'fullscreen)
           )
 
 (test)

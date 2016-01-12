@@ -3,9 +3,9 @@
 (require "graph.rkt")
 (provide DICE-BUTTON CARD-BUTTON SUBMIT-BUTTON SLIDER-WARN textc)
 
-(define DICE-ICO (bitmap "imgs/diceico.png"))
-(define CARD-ICO (bitmap "imgs/cardico.png"))
-(define SUBMIT-ICO (bitmap "imgs/submitico.png"))
+(define DICE-ICO (bitmap "../imgs/diceico.png"))
+(define CARD-ICO (bitmap "../imgs/cardico.png"))
+(define SUBMIT-ICO (bitmap "../imgs/submitico.png"))
 
 ;The custom roboto fonted text function:
 ;textc: Prints a text image with the defined font below

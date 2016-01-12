@@ -1,6 +1,11 @@
 
 BUILD IS NOW IN ALPHA
-Current Version: 1.7a
+Current Version: 1.8a
+Version 1.8a (1/11/15)
+- Added in a mini-mode for smaller screens (Under heavy development)
+- Made a fullscreen mode
+- Updated project to require Racket v6.3
+
 Version 1.7a (12/28/15)
 - Made the window dynamic to the user's screen size
 - Fixed hitboxes to be dynamic as well
