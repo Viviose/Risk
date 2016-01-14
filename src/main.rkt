@@ -420,12 +420,12 @@ SAMPLE IMPLEMENTATION!
 
 ;This shows a variable number of die on the bar.
 ;Dicelist (dice structs) -> Image (die)
-(define (die-bar leest)
+(define (die-bar leest mode)
   (cond [(empty? leest) (square 0 "outline" "white")]
-        [else (beside (render-dice (die-number (first leest))
+        [else (image-stack mode (render-dice (die-number (first leest))
                                  (die-type (first leest))
                                  )
-                      (die-bar (rest leest))
+                      (die-bar (rest leest) mode)
                       )]
         )
   )
@@ -485,7 +485,7 @@ SAMPLE IMPLEMENTATION!
      (cond [(equal? (system-screen model) "slider_warning" )
             SLIDER-WARN
             ]
-           [else (die-bar (system-dicelist model))]
+           [else (die-bar (system-dicelist model) MODE)]
            )
      (overlay
       (textc (cond [(equal? (system-turn-stage model) "recruit")
@@ -516,19 +516,35 @@ SAMPLE IMPLEMENTATION!
           SUBMIT-BUTTON]
          [else CARD-BUTTON]
          )
-   (overlay
-    (textc (string-append
-            (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
-            (cond [(equal? (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model)))
-                           1)
-                   " army in reserves."]
-                  [else " armies in reserves."]
-                  )
-            )
-
-          16 "orange")
-
-    (rectangle 160 75 "solid" "purple"))
+   (cond [(equal? "regular" MODE)
+          (overlay
+           (textc (string-append
+                   (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
+                   (cond [(equal? (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model)))
+                                  1)
+                          " army in reserves."]
+                         [else " armies in reserves."]
+                         )
+                   )
+                  
+                  16 "orange")
+           
+           (rectangle 160 75 "solid" "purple"))]
+         [(equal? "mini" MODE)
+          (overlay
+           (textc (string-append
+                   (number->string   (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model))))
+                   (cond [(equal? (player-reserved-armies (select-player (system-playerlist model) (system-player-turn model)))
+                                  1)
+                          " army"]
+                         [else " armies"]
+                         )
+                   )
+                  
+                  16 "orange")
+           
+           (rectangle 75 75 "solid" "purple"))]
+         )
    (cond [(or
            (equal? (system-turn-stage model) "attack")
            (equal? (system-turn-stage model) "recruit"));Adding more later to this [BOOKMARK]
@@ -614,8 +630,11 @@ SAMPLE IMPLEMENTATION!
           (equal? (system-screen model) "slider_warning")
           )
          ;This screen is where the board and toolbar are located, and is the main screen of the game.
-         (overlay
-          (above
+         (place-image
+           (toolbar model MODE)
+           (if (equal? MODE "regular") (/ display-w 2) 150)
+           (if (equal? MODE "regular") (/ display-h 2) 400)
+          (overlay
             (cond [(not (equal? (system-territory-selected model) "null"))
                     (place-image (overlay
                                  (above
@@ -638,8 +657,8 @@ SAMPLE IMPLEMENTATION!
                                 BOARD)]
                   [else BOARD]
                   )
-          (toolbar model MODE))
-          WOOD-BG)]
+         
+          WOOD-BG))]
         [(equal? (system-screen model) "cards")
           (overlay
            (overlay/align "right" "top" X
@@ -2209,7 +2228,7 @@ We shoulda defined this sucker long ago:
           (on-key key-handler)
           ;Tick Handler
           ;(on-tick animation-handler .1)
-          (display-mode 'fullscreen)
+          ;(display-mode 'fullscreen)
           )
 
 (test)
