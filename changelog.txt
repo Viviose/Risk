@@ -15,7 +15,6 @@ Version 1.6.12a (12/27/15)
 - Scrapping existing dice-functs functions for redo
 - Implementing new structs for dice and new functions for compatibility and usage
 
-
 Version 1.6.11a (12/2/15)
 - Added conditionals to attack-phase
 - Added win clause to attack-phase
