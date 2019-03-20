@@ -120,7 +120,7 @@ Provided by matdes.rkt:
 ;Screensize
 ;This constant is the size of the users screen
 (define-values (display-w display-h)
-      (get-display-size))
+     (values 1306 875))
 
 ;Determines wether the screen merits a mini mode trigger.
 (define MINI-MODE
@@ -633,7 +633,7 @@ SAMPLE IMPLEMENTATION!
          (place-image
            (toolbar model MODE)
            (if (equal? MODE "regular") (/ display-w 2) 150)
-           (if (equal? MODE "regular") (/ display-h 2) 400)
+           (if (equal? MODE "regular") (- display-h 30) 400)
           (overlay
             (cond [(not (equal? (system-territory-selected model) "null"))
                     (place-image (overlay
